@@ -1,0 +1,104 @@
+name: Analysis
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+
+jobs:
+  build-health:
+    name: Build health
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: corretto
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Checkout base branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          fetch-depth: 0
+
+      - name: Analyse build health on base branch
+        run: |
+          ./gradlew :buildHealth \
+          --scan \
+          -Pgpr.user=${{ github.repository_owner }} \
+          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Store base build health report
+        run: cp build/reports/dependency-analysis/build-health-report.txt build-health-report.base.txt
+
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          clean: false
+
+      - name: Analyse build health
+        run: |
+          ./gradlew :buildHealth \
+          --scan \
+          -Pgpr.user=${{ github.repository_owner }} \
+          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish report
+        run: |
+          cp build/reports/dependency-analysis/build-health-report.txt build-health-report.current.txt
+          status=$?
+          git --no-pager diff --no-index build-health-report.base.txt build-health-report.current.txt > build-health-report.diff || status=$?
+          if [ $status -gt 1 ]; then
+            exit $status
+          fi
+          if [ -s build-health-report.diff ]; then
+            echo '```diff' >> "$GITHUB_STEP_SUMMARY"
+            cat build-health-report.diff >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  dependencies-sorting:
+    name: Dependencies sorting
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: 21
+          distribution: corretto
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Sort dependencies
+        run: |
+          ./gradlew sortDependencies \
+          -Pgpr.user=${{ github.repository_owner }} \
+          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish report
+        run: |
+          git --no-pager diff > dependencies-sorting.diff
+          if [ -s dependencies-sorting.diff ]; then
+            echo '```diff' >> "$GITHUB_STEP_SUMMARY"
+            cat dependencies-sorting.diff >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            echo 'Dependencies are not sorted'
+            exit 1
+          fi
