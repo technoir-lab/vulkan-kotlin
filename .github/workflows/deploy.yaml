@@ -1,9 +1,8 @@
-name: Publish
+name: Deploy
 
 on:
   push:
     tags: [ "*" ]
-  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}
@@ -24,8 +23,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
-          distribution: "corretto"
+          java-version: 21
+          distribution: corretto
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
@@ -96,8 +95,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v5
         with:
-          java-version: "21"
-          distribution: "corretto"
+          java-version: 21
+          distribution: corretto
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v5
