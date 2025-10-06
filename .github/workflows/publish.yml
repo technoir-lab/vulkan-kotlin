@@ -133,7 +133,7 @@ jobs:
           -Pproject.version=${{ github.ref_name }}
 
       - name: Upload documentation
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: vulkan-kotlin/build/dokka/html
 
