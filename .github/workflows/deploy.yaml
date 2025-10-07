@@ -55,8 +55,6 @@ jobs:
         run: |
           ./gradlew publish \
           --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }} \
           -Pproject.version=${{ github.ref_name }} \
           -Ppublish.url=https://maven.pkg.github.com/technoir-lab/vulkan-kotlin \
           -Ppublish.username=${{ secrets.GPR_DEPLOY_USER }} \
@@ -71,8 +69,6 @@ jobs:
         run: |
           ./gradlew publishAggregationToCentralPortal \
           --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }} \
           -Pproject.version=${{ github.ref_name }}
 
       - name: Create release
@@ -133,8 +129,6 @@ jobs:
         run: |
           ./gradlew :vulkan-kotlin:dokkaGenerate \
           --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }} \
           -Pproject.version=${{ github.ref_name }}
 
       - name: Upload documentation

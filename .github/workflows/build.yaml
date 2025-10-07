@@ -53,8 +53,4 @@ jobs:
           echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> $GITHUB_ENV
 
       - name: Build with Gradle
-        run: |
-          ./gradlew build \
-          --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew build --scan

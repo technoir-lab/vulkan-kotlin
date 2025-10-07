@@ -31,11 +31,7 @@ jobs:
           fetch-depth: 0
 
       - name: Analyse build health on base branch
-        run: |
-          ./gradlew :buildHealth \
-          --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :buildHealth --scan
 
       - name: Store base build health report
         run: cp build/reports/dependency-analysis/build-health-report.txt build-health-report.base.txt
@@ -46,11 +42,7 @@ jobs:
           clean: false
 
       - name: Analyse build health
-        run: |
-          ./gradlew :buildHealth \
-          --scan \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew :buildHealth --scan
 
       - name: Publish report
         run: |
@@ -87,10 +79,7 @@ jobs:
         uses: actions/checkout@v5
 
       - name: Sort dependencies
-        run: |
-          ./gradlew sortDependencies \
-          -Pgpr.user=${{ github.repository_owner }} \
-          -Pgpr.token=${{ secrets.GITHUB_TOKEN }}
+        run: ./gradlew sortDependencies
 
       - name: Publish report
         run: |

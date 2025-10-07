@@ -3,12 +3,6 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         mavenLocal()
-        maven("https://maven.pkg.github.com/technoir-lab/convention-plugins") {
-            credentials {
-                username = providers.gradleProperty("gpr.user").orNull
-                password = providers.gradleProperty("gpr.token").orNull
-            }
-        }
     }
     plugins {
         val conventionPluginsVersion = "v37"
