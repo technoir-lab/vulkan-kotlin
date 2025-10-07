@@ -56,9 +56,9 @@ jobs:
           ./gradlew publish \
           --scan \
           -Pproject.version=${{ github.ref_name }} \
-          -Ppublish.url=https://maven.pkg.github.com/technoir-lab/vulkan-kotlin \
-          -Ppublish.username=${{ secrets.GPR_DEPLOY_USER }} \
-          -Ppublish.password=${{ secrets.GPR_DEPLOY_TOKEN }}
+          -Ppublish.github.url=https://maven.pkg.github.com/technoir-lab/vulkan-kotlin \
+          -Ppublish.github.username=${{ secrets.GPR_DEPLOY_USER }} \
+          -Ppublish.github.password=${{ secrets.GPR_DEPLOY_TOKEN }}
 
       - name: Publish to Maven Central
         env:
