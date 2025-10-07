@@ -1,17 +1,9 @@
 version: 2
-registries:
-  convention-plugins:
-    type: maven-repository
-    url: https://maven.pkg.github.com/technoir-lab/convention-plugins
-    username: ${{ secrets.DEPENDABOT_USER }}
-    password: ${{ secrets.DEPENDABOT_TOKEN }}
-
 updates:
   - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
-    registries: "*"
 
   - package-ecosystem: "github-actions"
     directory: "/"
