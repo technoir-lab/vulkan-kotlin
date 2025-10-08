@@ -156,8 +156,8 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer.html">vkCmdBindIndexBuffer Manual Page</a>
      */
-    fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, size: ULong = VK_WHOLE_SIZE) {
-        vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, size, indexType)
+    fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0u) {
+        vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
     }
 
     /**
