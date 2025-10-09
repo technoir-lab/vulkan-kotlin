@@ -39,7 +39,7 @@ See a sample project [here](sample).
 * macosArm64
 * mingwX64
 
-# License
+## License
 
 ```
    Copyright 2025 Sergei Chelombitko
