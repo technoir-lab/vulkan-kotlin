@@ -5,21 +5,28 @@ complexity:
 formatting:
   ArgumentListWrapping:
     maxLineLength: 140
+  FunctionReturnTypeSpacing:
+    maxLineLength: 140
+  FunctionSignature:
+    maxLineLength: 140
   MaximumLineLength:
     maxLineLength: 140
-  # Fails on context parameters
-  ParameterListWrapping:
-    active: false
-  # Fails on context parameters
-  SpacingAroundColon:
-    active: false
-  # Fails on context parameters
   NoUnusedImports:
+    # Issues with context parameters
     active: false
-  # Fails on context parameters
+  ParameterListWrapping:
+    maxLineLength: 140
+  ParameterWrapping:
+    maxLineLength: 140
+  PropertyWrapping:
+    maxLineLength: 140
+  SpacingAroundColon:
+    # Issues with context parameters
+    active: false
   Wrapping:
+    # Issues with context parameters
     active: false
-    maxLineLength: 160
+    maxLineLength: 140
 
 style:
   MaxLineLength:
