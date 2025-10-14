@@ -20,6 +20,7 @@ import io.technoirlab.volk.VkFrontFace
 import io.technoirlab.volk.VkImageMemoryBarrier2
 import io.technoirlab.volk.VkIndexType
 import io.technoirlab.volk.VkPipelineBindPoint
+import io.technoirlab.volk.VkPipelineStageFlags2
 import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPrimitiveTopology
 import io.technoirlab.volk.VkRect2D
@@ -44,6 +45,7 @@ import io.technoirlab.volk.vkCmdEndRendering
 import io.technoirlab.volk.vkCmdExecuteCommands
 import io.technoirlab.volk.vkCmdPipelineBarrier2
 import io.technoirlab.volk.vkCmdPushConstants
+import io.technoirlab.volk.vkCmdResetEvent2
 import io.technoirlab.volk.vkCmdSetBlendConstants
 import io.technoirlab.volk.vkCmdSetCullMode
 import io.technoirlab.volk.vkCmdSetDepthBias
@@ -52,6 +54,7 @@ import io.technoirlab.volk.vkCmdSetDepthBoundsTestEnable
 import io.technoirlab.volk.vkCmdSetDepthCompareOp
 import io.technoirlab.volk.vkCmdSetDepthTestEnable
 import io.technoirlab.volk.vkCmdSetDepthWriteEnable
+import io.technoirlab.volk.vkCmdSetEvent2
 import io.technoirlab.volk.vkCmdSetFrontFace
 import io.technoirlab.volk.vkCmdSetLineWidth
 import io.technoirlab.volk.vkCmdSetPolygonModeEXT
@@ -67,6 +70,7 @@ import io.technoirlab.volk.vkCmdSetStencilTestEnable
 import io.technoirlab.volk.vkCmdSetStencilWriteMask
 import io.technoirlab.volk.vkCmdSetViewport
 import io.technoirlab.volk.vkCmdSetViewportWithCount
+import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
 import kotlinx.cinterop.MemScope
@@ -362,6 +366,15 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     }
 
     /**
+     * Resets an event on the device.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetEvent2.html">vkCmdResetEvent2 Manual Page</a>
+     */
+    fun resetEvent2(event: Event, stageMask: VkPipelineStageFlags2) {
+        vkCmdResetEvent2!!(handle, event.handle, stageMask)
+    }
+
+    /**
      * Set blend constants dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetBlendConstants.html">vkCmdSetBlendConstants Manual Page</a>
@@ -380,6 +393,20 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      */
     fun setCullMode(cullMode: VkCullModeFlags) {
         vkCmdSetCullMode!!(handle, cullMode)
+    }
+
+    /**
+     * Set an event with memory and execution dependencies.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetEvent2.html">vkCmdSetEvent2 Manual Page</a>
+     */
+    context(memScope: MemScope)
+    fun setEvent(event: Event, dependencyInfo: VkDependencyInfo.() -> Unit) {
+        val dep = memScope.alloc<VkDependencyInfo> {
+            sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
+            dependencyInfo()
+        }
+        vkCmdSetEvent2!!(handle, event.handle, dep.ptr)
     }
 
     /**
@@ -585,5 +612,20 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     fun setViewportWithCount(count: UInt, viewport: VkViewport.(UInt) -> Unit) {
         val viewports = memScope.allocArray<VkViewport>(count.toLong()) { viewport(it.toUInt()) }
         vkCmdSetViewportWithCount!!(handle, count, viewports)
+    }
+
+    /**
+     * Makes the command buffer wait for one or more events to become signaled.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWaitEvents2.html">vkCmdWaitEvents2 Manual Page</a>
+     */
+    context(memScope: MemScope)
+    fun waitEvents(events: List<Event>, dependencyInfo: VkDependencyInfo.(UInt) -> Unit) {
+        val eventsArray = memScope.allocArrayOf(events.map { it.handle })
+        val deps = memScope.allocArray<VkDependencyInfo>(events.size) { index: Int ->
+            sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
+            dependencyInfo(index.toUInt())
+        }
+        vkCmdWaitEvents2!!(handle, events.size.toUInt(), eventsArray, deps)
     }
 }
