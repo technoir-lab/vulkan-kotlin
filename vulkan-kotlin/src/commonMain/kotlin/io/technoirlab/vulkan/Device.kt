@@ -5,6 +5,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
@@ -41,6 +42,9 @@ import io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo
 import io.technoirlab.volk.VkDescriptorSetLayoutVar
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemoryVar
+import io.technoirlab.volk.VkEventCreateFlags
+import io.technoirlab.volk.VkEventCreateInfo
+import io.technoirlab.volk.VkEventVar
 import io.technoirlab.volk.VkFenceCreateInfo
 import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.VkGraphicsPipelineCreateInfo
@@ -84,6 +88,7 @@ import io.technoirlab.volk.vkCreateBufferView
 import io.technoirlab.volk.vkCreateCommandPool
 import io.technoirlab.volk.vkCreateDescriptorPool
 import io.technoirlab.volk.vkCreateDescriptorSetLayout
+import io.technoirlab.volk.vkCreateEvent
 import io.technoirlab.volk.vkCreateFence
 import io.technoirlab.volk.vkCreateGraphicsPipelines
 import io.technoirlab.volk.vkCreateImage
@@ -220,6 +225,23 @@ class Device(
         vkCreateDescriptorSetLayout!!(handle, descriptorSetLayoutCreateInfo.ptr, null, layoutVar.ptr)
             .checkResult("Failed to create descriptor set layout")
         return DescriptorSetLayout(handle, layoutVar.value!!)
+    }
+
+    /**
+     * Create a new event.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateEvent.html">vkCreateEvent Manual Page</a>
+     */
+    context(memScope: MemScope)
+    fun createEvent(flags: VkEventCreateFlags = 0u): Event {
+        val eventInfo = memScope.alloc<VkEventCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
+            this.flags = flags
+        }
+        val eventVar = memScope.alloc<VkEventVar>()
+        vkCreateEvent!!(handle, eventInfo.ptr, null, eventVar.ptr)
+            .checkResult("Failed to create event")
+        return Event(handle, eventVar.value!!)
     }
 
     /**
