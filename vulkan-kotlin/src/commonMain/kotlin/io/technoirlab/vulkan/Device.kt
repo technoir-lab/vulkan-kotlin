@@ -33,6 +33,7 @@ import io.technoirlab.volk.VkBufferCreateInfo
 import io.technoirlab.volk.VkBufferVar
 import io.technoirlab.volk.VkBufferViewCreateInfo
 import io.technoirlab.volk.VkBufferViewVar
+import io.technoirlab.volk.VkCommandPoolCreateFlags
 import io.technoirlab.volk.VkCommandPoolCreateInfo
 import io.technoirlab.volk.VkCommandPoolVar
 import io.technoirlab.volk.VkCopyDescriptorSet
@@ -182,10 +183,11 @@ class Device(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateCommandPool.html">vkCreateCommandPool Manual Page</a>
      */
     context(memScope: MemScope)
-    fun createCommandPool(createInfo: VkCommandPoolCreateInfo.() -> Unit): CommandPool {
+    fun createCommandPool(queueFamilyIndex: UInt, flags: VkCommandPoolCreateFlags = 0u): CommandPool {
         val commandPoolCreateInfo = memScope.alloc<VkCommandPoolCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
-            createInfo()
+            this.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
+            this.queueFamilyIndex = queueFamilyIndex
+            this.flags = flags
         }
         val commandPoolVar = memScope.alloc<VkCommandPoolVar>()
         vkCreateCommandPool!!(handle, commandPoolCreateInfo.ptr, null, commandPoolVar.ptr)
