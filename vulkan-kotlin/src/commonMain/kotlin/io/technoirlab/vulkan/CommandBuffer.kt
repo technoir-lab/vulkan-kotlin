@@ -366,11 +366,11 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     }
 
     /**
-     * Resets an event on the device.
+     * Resets an event to a non-signaled state.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetEvent2.html">vkCmdResetEvent2 Manual Page</a>
      */
-    fun resetEvent2(event: Event, stageMask: VkPipelineStageFlags2) {
+    fun resetEvent(event: Event, stageMask: VkPipelineStageFlags2) {
         vkCmdResetEvent2!!(handle, event.handle, stageMask)
     }
 
