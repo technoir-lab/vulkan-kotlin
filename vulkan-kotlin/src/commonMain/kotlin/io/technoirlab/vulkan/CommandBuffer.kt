@@ -23,6 +23,8 @@ import io.technoirlab.volk.VkPipelineBindPoint
 import io.technoirlab.volk.VkPipelineStageFlags2
 import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPrimitiveTopology
+import io.technoirlab.volk.VkQueryControlFlags
+import io.technoirlab.volk.VkQueryResultFlags
 import io.technoirlab.volk.VkRect2D
 import io.technoirlab.volk.VkRenderingInfo
 import io.technoirlab.volk.VkShaderStageFlags
@@ -30,6 +32,7 @@ import io.technoirlab.volk.VkStencilFaceFlags
 import io.technoirlab.volk.VkStencilOp
 import io.technoirlab.volk.VkViewport
 import io.technoirlab.volk.vkBeginCommandBuffer
+import io.technoirlab.volk.vkCmdBeginQuery
 import io.technoirlab.volk.vkCmdBeginRendering
 import io.technoirlab.volk.vkCmdBindDescriptorSets
 import io.technoirlab.volk.vkCmdBindIndexBuffer
@@ -37,15 +40,18 @@ import io.technoirlab.volk.vkCmdBindIndexBuffer2
 import io.technoirlab.volk.vkCmdBindPipeline
 import io.technoirlab.volk.vkCmdBindVertexBuffers
 import io.technoirlab.volk.vkCmdBindVertexBuffers2
+import io.technoirlab.volk.vkCmdCopyQueryPoolResults
 import io.technoirlab.volk.vkCmdDraw
 import io.technoirlab.volk.vkCmdDrawIndexed
 import io.technoirlab.volk.vkCmdDrawIndexedIndirect
 import io.technoirlab.volk.vkCmdDrawIndirect
+import io.technoirlab.volk.vkCmdEndQuery
 import io.technoirlab.volk.vkCmdEndRendering
 import io.technoirlab.volk.vkCmdExecuteCommands
 import io.technoirlab.volk.vkCmdPipelineBarrier2
 import io.technoirlab.volk.vkCmdPushConstants
 import io.technoirlab.volk.vkCmdResetEvent2
+import io.technoirlab.volk.vkCmdResetQueryPool
 import io.technoirlab.volk.vkCmdSetBlendConstants
 import io.technoirlab.volk.vkCmdSetCullMode
 import io.technoirlab.volk.vkCmdSetDepthBias
@@ -71,6 +77,7 @@ import io.technoirlab.volk.vkCmdSetStencilWriteMask
 import io.technoirlab.volk.vkCmdSetViewport
 import io.technoirlab.volk.vkCmdSetViewportWithCount
 import io.technoirlab.volk.vkCmdWaitEvents2
+import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
 import kotlinx.cinterop.MemScope
@@ -105,6 +112,15 @@ class CommandBuffer(val handle: VkCommandBuffer) {
         }
         vkBeginCommandBuffer!!(handle, beginInfo.ptr)
             .checkResult("Failed to begin command buffer")
+    }
+
+    /**
+     * Begin a query.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBeginQuery.html">vkCmdBeginQuery Manual Page</a>
+     */
+    fun beginQuery(queryPool: QueryPool, query: UInt, flags: VkQueryControlFlags = 0u) {
+        vkCmdBeginQuery!!(handle, queryPool.handle, query, flags)
     }
 
     /**
@@ -236,6 +252,32 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     }
 
     /**
+     * Copy results from a query pool into a buffer.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyQueryPoolResults.html">vkCmdCopyQueryPoolResults Manual Page</a>
+     */
+    fun copyQueryPoolResults(
+        queryPool: QueryPool,
+        firstQuery: UInt,
+        queryCount: UInt,
+        dstBuffer: Buffer,
+        dstOffset: ULong,
+        stride: ULong,
+        flags: VkQueryResultFlags = 0u
+    ) {
+        vkCmdCopyQueryPoolResults!!(
+            handle,
+            queryPool.handle,
+            firstQuery,
+            queryCount,
+            dstBuffer.handle,
+            dstOffset,
+            stride,
+            flags
+        )
+    }
+
+    /**
      * Finish recording the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEndCommandBuffer.html">vkEndCommandBuffer Manual Page</a>
@@ -243,6 +285,15 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     fun end() {
         vkEndCommandBuffer!!(handle)
             .checkResult("Failed to end command buffer")
+    }
+
+    /**
+     * End a query.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdEndQuery.html">vkCmdEndQuery Manual Page</a>
+     */
+    fun endQuery(queryPool: QueryPool, query: UInt) {
+        vkCmdEndQuery!!(handle, queryPool.handle, query)
     }
 
     /**
@@ -372,6 +423,15 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      */
     fun resetEvent(event: Event, stageMask: VkPipelineStageFlags2) {
         vkCmdResetEvent2!!(handle, event.handle, stageMask)
+    }
+
+    /**
+     * Reset a range of queries in a query pool.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetQueryPool.html">vkCmdResetQueryPool Manual Page</a>
+     */
+    fun resetQueryPool(queryPool: QueryPool, firstQuery: UInt, queryCount: UInt) {
+        vkCmdResetQueryPool!!(handle, queryPool.handle, firstQuery, queryCount)
     }
 
     /**
@@ -627,5 +687,14 @@ class CommandBuffer(val handle: VkCommandBuffer) {
             dependencyInfo(index.toUInt())
         }
         vkCmdWaitEvents2!!(handle, events.size.toUInt(), eventsArray, deps)
+    }
+
+    /**
+     * Write a device timestamp into a query object.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWriteTimestamp2.html">vkCmdWriteTimestamp2 Manual Page</a>
+     */
+    fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
+        vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
     }
 }
