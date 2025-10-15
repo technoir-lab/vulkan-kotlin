@@ -60,7 +60,7 @@ class Queue(
     }
 
     /**
-     * Submits a sequence of semaphores or command buffers to the queue.
+     * Submit a sequence of semaphores or command buffers to the queue.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueSubmit2.html">vkQueueSubmit2 Manual Page</a>
      */

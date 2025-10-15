@@ -96,22 +96,22 @@ class PhysicalDevice(val handle: VkPhysicalDevice) {
     }
 
     /**
-     * Enumerate the extensions supported by the device.
+     * List the extensions supported by the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateDeviceExtensionProperties.html">vkEnumerateDeviceExtensionProperties Manual Page</a>
      */
     context(memScope: MemScope)
-    fun enumerateDeviceExtensionProperties(): Sequence<VkExtensionProperties> {
+    fun enumerateDeviceExtensionProperties(): List<VkExtensionProperties> {
         val countVar = memScope.alloc<UIntVar>()
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val extensionProperties = memScope.allocArray<VkExtensionProperties>(count)
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
 
-        return (0 until count).asSequence().map { extensionProperties[it] }
+        return (0 until count).map { extensionProperties[it] }
     }
 
     /**
@@ -213,17 +213,17 @@ class PhysicalDevice(val handle: VkPhysicalDevice) {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceQueueFamilyProperties.html">vkGetPhysicalDeviceQueueFamilyProperties Manual Page</a>
      */
     context(memScope: MemScope)
-    fun getQueueFamilyProperties(): Sequence<VkQueueFamilyProperties> {
+    fun getQueueFamilyProperties(): List<VkQueueFamilyProperties> {
         val countVar = memScope.alloc<UIntVar>()
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val queueFamilyProperties = memScope.allocArray<VkQueueFamilyProperties>(count)
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
 
-        return (0 until count).asSequence().map { queueFamilyProperties[it] }
+        return (0 until count).map { queueFamilyProperties[it] }
     }
 
     /**
@@ -245,19 +245,19 @@ class PhysicalDevice(val handle: VkPhysicalDevice) {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html">vkGetPhysicalDeviceSurfaceFormatsKHR Manual Page</a>
      */
     context(memScope: MemScope)
-    fun getSurfaceFormats(surface: Surface): Sequence<VkSurfaceFormatKHR> {
+    fun getSurfaceFormats(surface: Surface): List<VkSurfaceFormatKHR> {
         val countVar = memScope.alloc<UIntVar>()
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
             .checkResult("Failed to get surface formats")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val surfaceFormats = memScope.allocArray<VkSurfaceFormatKHR>(count)
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
             .checkResult("Failed to get surface formats")
 
-        return (0 until count).asSequence().map { surfaceFormats[it] }
+        return (0 until count).map { surfaceFormats[it] }
     }
 
     /**
@@ -271,8 +271,8 @@ class PhysicalDevice(val handle: VkPhysicalDevice) {
         vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
             .checkResult("Failed to get surface present modes")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySet()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptySet()
 
         val presentModes = memScope.allocArray<VkPresentModeKHRVar>(count)
         vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)

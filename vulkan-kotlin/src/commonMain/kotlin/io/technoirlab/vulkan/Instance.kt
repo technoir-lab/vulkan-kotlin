@@ -46,24 +46,24 @@ class Instance(val handle: VkInstance) : AutoCloseable {
     }
 
     /**
-     * Enumerates the physical devices accessible to a Vulkan instance.
+     * List the physical devices accessible to a Vulkan instance.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumeratePhysicalDevices.html">vkEnumeratePhysicalDevices Manual Page</a>
      */
     context(memScope: MemScope)
-    fun enumeratePhysicalDevices(): Sequence<PhysicalDevice> {
+    fun enumeratePhysicalDevices(): List<PhysicalDevice> {
         val countVar = memScope.alloc<UIntVar>()
         vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
             .checkResult("Failed to enumerate physical devices")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val physicalDevices = memScope.allocArray<VkPhysicalDeviceVar>(count)
         vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
             .checkResult("Failed to enumerate physical devices")
 
-        return (0 until count).asSequence().map { PhysicalDevice(physicalDevices[it]!!) }
+        return (0 until count).map { PhysicalDevice(physicalDevices[it]!!) }
     }
 
     /**

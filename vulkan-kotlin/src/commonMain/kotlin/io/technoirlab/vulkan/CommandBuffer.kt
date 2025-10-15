@@ -11,11 +11,10 @@ import io.technoirlab.volk.VkBufferMemoryBarrier2
 import io.technoirlab.volk.VkBufferVar
 import io.technoirlab.volk.VkCommandBuffer
 import io.technoirlab.volk.VkCommandBufferBeginInfo
+import io.technoirlab.volk.VkCommandBufferResetFlags
 import io.technoirlab.volk.VkCompareOp
 import io.technoirlab.volk.VkCullModeFlags
 import io.technoirlab.volk.VkDependencyInfo
-import io.technoirlab.volk.VkDeviceSize
-import io.technoirlab.volk.VkDeviceSizeVar
 import io.technoirlab.volk.VkFrontFace
 import io.technoirlab.volk.VkImageMemoryBarrier2
 import io.technoirlab.volk.VkIndexType
@@ -35,10 +34,8 @@ import io.technoirlab.volk.vkBeginCommandBuffer
 import io.technoirlab.volk.vkCmdBeginQuery
 import io.technoirlab.volk.vkCmdBeginRendering
 import io.technoirlab.volk.vkCmdBindDescriptorSets
-import io.technoirlab.volk.vkCmdBindIndexBuffer
 import io.technoirlab.volk.vkCmdBindIndexBuffer2
 import io.technoirlab.volk.vkCmdBindPipeline
-import io.technoirlab.volk.vkCmdBindVertexBuffers
 import io.technoirlab.volk.vkCmdBindVertexBuffers2
 import io.technoirlab.volk.vkCmdCopyQueryPoolResults
 import io.technoirlab.volk.vkCmdDraw
@@ -174,18 +171,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     /**
      * Bind an index buffer to the command buffer.
      *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer.html">vkCmdBindIndexBuffer Manual Page</a>
-     */
-    fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0u) {
-        vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
-    }
-
-    /**
-     * Bind an index buffer to the command buffer.
-     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer2.html">vkCmdBindIndexBuffer2 Manual Page</a>
      */
-    fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0u, size: ULong = VK_WHOLE_SIZE) {
+    fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0uL, size: ULong = VK_WHOLE_SIZE) {
         vkCmdBindIndexBuffer2!!(handle, indexBuffer.handle, offset, size, indexType)
     }
 
@@ -194,32 +182,36 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindPipeline.html">vkCmdBindPipeline Manual Page</a>
      */
-    fun bindPipeline(pipeline: Pipeline, pipelineBindPoint: VkPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS) {
+    fun bindPipeline(pipelineBindPoint: VkPipelineBindPoint, pipeline: Pipeline) {
         vkCmdBindPipeline!!(handle, pipelineBindPoint, pipeline.handle)
     }
 
     /**
      * Bind a vertex buffer to the command buffer.
      *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers.html">vkCmdBindVertexBuffers Manual Page</a>
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers2.html">vkCmdBindVertexBuffers2 Manual Page</a>
      */
     context(memScope: MemScope)
-    fun bindVertexBuffer(vertexBuffer: Buffer, offset: VkDeviceSize = 0u, bindingIndex: UInt = 0u) {
+    fun bindVertexBuffer(
+        vertexBuffer: Buffer,
+        bindingIndex: UInt = 0u,
+        offset: ULong = 0uL,
+        size: ULong? = null,
+        stride: ULong? = null
+    ) {
         val vertexBufferVar = memScope.alloc<VkBufferVar> { value = vertexBuffer.handle }
-        val offsetVar = memScope.alloc<VkDeviceSizeVar> { value = offset }
-        vkCmdBindVertexBuffers!!(handle, bindingIndex, 1u, vertexBufferVar.ptr, offsetVar.ptr)
-    }
-
-    /**
-     * Bind vertex buffers to the command buffer.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers.html">vkCmdBindVertexBuffers Manual Page</a>
-     */
-    context(memScope: MemScope)
-    fun bindVertexBuffers(vertexBuffers: List<Buffer>, offsets: List<ULong>, firstBinding: UInt = 0u) {
-        val vertexBufferHandles = memScope.allocArrayOf(vertexBuffers.map { it.handle })
-        val offsetsArray = memScope.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
-        vkCmdBindVertexBuffers!!(handle, firstBinding, vertexBuffers.size.toUInt(), vertexBufferHandles, offsetsArray)
+        val offsetVar = memScope.alloc<ULongVar> { value = offset }
+        val sizeVar = size?.let { memScope.alloc<ULongVar> { value = it } }
+        val strideVar = stride?.let { memScope.alloc<ULongVar> { value = it } }
+        vkCmdBindVertexBuffers2!!(
+            handle,
+            bindingIndex,
+            1u,
+            vertexBufferVar.ptr,
+            offsetVar.ptr,
+            sizeVar?.ptr,
+            strideVar?.ptr
+        )
     }
 
     /**
@@ -228,10 +220,26 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers2.html">vkCmdBindVertexBuffers2 Manual Page</a>
      */
     context(memScope: MemScope)
-    fun bindVertexBuffers2(vertexBuffers: List<Buffer>, offsets: List<ULong>, firstBinding: UInt = 0u) {
+    fun bindVertexBuffers(
+        vertexBuffers: List<Buffer>,
+        firstBinding: UInt = 0u,
+        offsets: List<ULong> = nCopies(vertexBuffers.size, 0uL),
+        sizes: List<ULong>? = null,
+        strides: List<ULong>? = null
+    ) {
         val vertexBufferHandles = memScope.allocArrayOf(vertexBuffers.map { it.handle })
         val offsetsArray = memScope.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
-        vkCmdBindVertexBuffers2!!(handle, firstBinding, vertexBuffers.size.toUInt(), vertexBufferHandles, null, null, null)
+        val sizesArray = sizes?.let { memScope.allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
+        val stridesArray = strides?.let { memScope.allocArray<ULongVar>(strides.size) { value = strides[it] } }
+        vkCmdBindVertexBuffers2!!(
+            handle,
+            firstBinding,
+            vertexBuffers.size.toUInt(),
+            vertexBufferHandles,
+            offsetsArray,
+            sizesArray,
+            stridesArray
+        )
     }
 
     /**
@@ -411,13 +419,13 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetCommandBuffer.html">vkResetCommandBuffer Manual Page</a>
      */
-    fun reset(flags: UInt = 0u) {
+    fun reset(flags: VkCommandBufferResetFlags = 0u) {
         vkResetCommandBuffer!!(handle, flags)
             .checkResult("Failed to reset command buffer")
     }
 
     /**
-     * Resets an event to a non-signaled state.
+     * Reset an event to a non-signaled state.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetEvent2.html">vkCmdResetEvent2 Manual Page</a>
      */
@@ -591,13 +599,13 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     }
 
     /**
-     *
+     * Set the scissor count and scissor rectangular bounds dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissorWithCount.html">vkCmdSetScissorWithCount Manual Page</a>
      */
     context(memScope: MemScope)
-    fun setScissorWithCount(count: UInt, scissor: VkRect2D.(UInt) -> Unit) {
-        val scissors = memScope.allocArray<VkRect2D>(count.toLong()) { scissor(it.toUInt()) }
+    fun setScissorWithCount(count: UInt, scissors: VkRect2D.(UInt) -> Unit) {
+        val scissors = memScope.allocArray<VkRect2D>(count.toLong()) { scissors(it.toUInt()) }
         vkCmdSetScissorWithCount!!(handle, count, scissors)
     }
 
@@ -669,22 +677,22 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewportWithCount.html">vkCmdSetViewportWithCount Manual Page</a>
      */
     context(memScope: MemScope)
-    fun setViewportWithCount(count: UInt, viewport: VkViewport.(UInt) -> Unit) {
-        val viewports = memScope.allocArray<VkViewport>(count.toLong()) { viewport(it.toUInt()) }
+    fun setViewportWithCount(count: UInt, viewports: VkViewport.(UInt) -> Unit) {
+        val viewports = memScope.allocArray<VkViewport>(count.toLong()) { viewports(it.toUInt()) }
         vkCmdSetViewportWithCount!!(handle, count, viewports)
     }
 
     /**
-     * Makes the command buffer wait for one or more events to become signaled.
+     * Make the command buffer wait for one or more events to become signaled.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWaitEvents2.html">vkCmdWaitEvents2 Manual Page</a>
      */
     context(memScope: MemScope)
-    fun waitEvents(events: List<Event>, dependencyInfo: VkDependencyInfo.(UInt) -> Unit) {
+    fun waitEvents(events: List<Event>, dependencyInfos: VkDependencyInfo.(UInt) -> Unit) {
         val eventsArray = memScope.allocArrayOf(events.map { it.handle })
         val deps = memScope.allocArray<VkDependencyInfo>(events.size) { index: Int ->
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
-            dependencyInfo(index.toUInt())
+            dependencyInfos(index.toUInt())
         }
         vkCmdWaitEvents2!!(handle, events.size.toUInt(), eventsArray, deps)
     }

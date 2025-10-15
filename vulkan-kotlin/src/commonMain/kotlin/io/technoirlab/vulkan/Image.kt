@@ -29,7 +29,7 @@ class Image(
 ) : AutoCloseable {
 
     /**
-     * Returns memory requirements for the image.
+     * Determine memory requirements for the image.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageMemoryRequirements2.html">vkGetImageMemoryRequirements2 Manual Page</a>
      */
@@ -52,7 +52,7 @@ class Image(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBindImageMemory2.html">vkBindImageMemory2 Manual Page</a>
      */
     context(memScope: MemScope)
-    fun bindMemory(memory: DeviceMemory, offset: ULong = 0u) {
+    fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
         val bindImageMemoryInfo = memScope.alloc<VkBindImageMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
             image = handle

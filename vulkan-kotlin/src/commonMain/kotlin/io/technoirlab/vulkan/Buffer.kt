@@ -29,7 +29,7 @@ class Buffer(
 ) : AutoCloseable {
 
     /**
-     * Returns memory requirements for the buffer.
+     * Determine memory requirements for the buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetBufferMemoryRequirements2.html">vkGetBufferMemoryRequirements2 Manual Page</a>
      */
@@ -52,7 +52,7 @@ class Buffer(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBindBufferMemory2.html">vkBindBufferMemory2 Manual Page</a>
      */
     context(memScope: MemScope)
-    fun bindMemory(memory: DeviceMemory, offset: ULong = 0u) {
+    fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
         val bindImageMemoryInfo = memScope.alloc<VkBindBufferMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO
             buffer = handle

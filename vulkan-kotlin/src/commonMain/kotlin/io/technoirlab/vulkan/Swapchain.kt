@@ -58,7 +58,7 @@ class Swapchain(
     }
 
     /**
-     * Obtain the array of presentable images associated with the swapchain.
+     * Retrieve the array of presentable images associated with the swapchain.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetSwapchainImagesKHR.html">vkGetSwapchainImagesKHR Manual Page</a>
      */
@@ -68,8 +68,8 @@ class Swapchain(
         vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, null)
             .checkResult("Failed to get swap chain image count")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptyList()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val images = memScope.allocArray<VkImageVar>(count)
         vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, images)

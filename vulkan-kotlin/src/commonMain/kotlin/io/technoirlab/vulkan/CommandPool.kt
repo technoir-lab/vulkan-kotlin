@@ -5,6 +5,8 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
 import io.technoirlab.volk.VkCommandBufferAllocateInfo
 import io.technoirlab.volk.VkCommandBufferVar
 import io.technoirlab.volk.VkCommandPool
+import io.technoirlab.volk.VkCommandPoolResetFlags
+import io.technoirlab.volk.VkCommandPoolTrimFlags
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.vkAllocateCommandBuffers
 import io.technoirlab.volk.vkDestroyCommandPool
@@ -64,7 +66,7 @@ class CommandPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetCommandPool.html">vkResetCommandPool Manual Page</a>
      */
-    fun reset(flags: UInt = 0u) {
+    fun reset(flags: VkCommandPoolResetFlags = 0u) {
         vkResetCommandPool!!(device, handle, flags)
             .checkResult("Failed to reset command pool")
     }
@@ -74,7 +76,7 @@ class CommandPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkTrimCommandPool.html">vkTrimCommandPool Manual Page</a>
      */
-    fun trim(flags: UInt = 0u) {
+    fun trim(flags: VkCommandPoolTrimFlags = 0u) {
         vkTrimCommandPool!!(device, handle, flags)
     }
 

@@ -2,6 +2,7 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
 import io.technoirlab.volk.VkDescriptorPool
+import io.technoirlab.volk.VkDescriptorPoolResetFlags
 import io.technoirlab.volk.VkDescriptorSetAllocateInfo
 import io.technoirlab.volk.VkDescriptorSetVar
 import io.technoirlab.volk.VkDevice
@@ -64,7 +65,7 @@ class DescriptorPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetDescriptorPool.html">vkResetDescriptorPool Manual Page</a>
      */
-    fun reset(flags: UInt = 0u) {
+    fun reset(flags: VkDescriptorPoolResetFlags = 0u) {
         vkResetDescriptorPool!!(device, handle, flags).checkResult("Failed to reset descriptor pool")
     }
 

@@ -66,44 +66,44 @@ class Vulkan : AutoCloseable {
     }
 
     /**
-     * Enumerate global extension properties.
+     * List global extension properties.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceExtensionProperties.html">vkEnumerateInstanceExtensionProperties Manual Page</a>
      */
     context(memScope: MemScope)
-    fun enumerateInstanceExtensionProperties(): Sequence<VkExtensionProperties> {
+    fun enumerateInstanceExtensionProperties(): List<VkExtensionProperties> {
         val countVar = memScope.alloc<UIntVar>()
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, null)
             .checkResult("Failed to enumerate instance extensions")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val extensionProperties = memScope.allocArray<VkExtensionProperties>(count)
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, extensionProperties)
             .checkResult("Failed to enumerate instance extensions")
 
-        return (0 until count).asSequence().map { extensionProperties[it] }
+        return (0 until count).map { extensionProperties[it] }
     }
 
     /**
-     * Enumerate global layer properties.
+     * List global layer properties.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceLayerProperties.html">vkEnumerateInstanceLayerProperties Manual Page</a>
      */
     context(memScope: MemScope)
-    fun enumerateInstanceLayerProperties(): Sequence<VkLayerProperties> {
+    fun enumerateInstanceLayerProperties(): List<VkLayerProperties> {
         val countVar = memScope.alloc<UIntVar>()
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
             .checkResult("Failed to enumerate instance layers")
 
-        val count = countVar.value.toInt()
-        if (count == 0) return emptySequence()
+        val count = countVar.value.toLong()
+        if (count == 0L) return emptyList()
 
         val layerProperties = memScope.allocArray<VkLayerProperties>(count)
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
             .checkResult("Failed to enumerate instance layers")
 
-        return (0 until count).asSequence().map { layerProperties[it] }
+        return (0 until count).map { layerProperties[it] }
     }
 }

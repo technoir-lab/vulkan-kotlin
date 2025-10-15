@@ -25,16 +25,7 @@ class Fence(
 ) : AutoCloseable {
 
     /**
-     * Destroy the fence.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyFence.html">vkDestroyFence Manual Page</a>
-     */
-    override fun close() {
-        vkDestroyFence!!(device, handle, null)
-    }
-
-    /**
-     * Resets the status of the fence from signaled to unsignaled state.
+     * Reset the status of the fence from signaled to unsignaled state.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetFences.html">vkResetFences Manual Page</a>
      */
@@ -59,5 +50,14 @@ class Fence(
         }
         vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanoseconds.toULong())
             .checkResult("Failed to wait for fence")
+    }
+
+    /**
+     * Destroy the fence.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyFence.html">vkDestroyFence Manual Page</a>
+     */
+    override fun close() {
+        vkDestroyFence!!(device, handle, null)
     }
 }
