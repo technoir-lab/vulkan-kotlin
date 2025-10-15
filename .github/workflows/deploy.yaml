@@ -53,10 +53,9 @@ jobs:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
         run: |
-          ./gradlew publish \
+          ./gradlew publishAllPublicationsToGithubRepository \
           --scan \
           -Pproject.version=${{ github.ref_name }} \
-          -Ppublish.github.url=https://maven.pkg.github.com/technoir-lab/vulkan-kotlin \
           -Ppublish.github.username=${{ secrets.GPR_DEPLOY_USER }} \
           -Ppublish.github.password=${{ secrets.GPR_DEPLOY_TOKEN }}
 
