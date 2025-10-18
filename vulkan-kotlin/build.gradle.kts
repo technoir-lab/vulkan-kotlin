@@ -1,3 +1,5 @@
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 plugins {
     id("io.technoirlab.conventions.kotlin-multiplatform-library")
 }
@@ -25,5 +27,15 @@ kotlin {
             api(libs.kotlinx.datetime)
             api(libs.kotlinx.io.core)
         }
+        commonTest.dependencies {
+            implementation(kotlin("test"))
+        }
+    }
+}
+
+tasks.withType<AbstractTestTask>().configureEach {
+    testLogging {
+        showStandardStreams = true
+        events(TestLogEvent.PASSED, TestLogEvent.FAILED)
     }
 }

@@ -47,8 +47,12 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "C_INCLUDE_PATH=${{ env.VULKAN_SDK }}/include" >> $GITHUB_ENV
+          echo "CPATH=${{ env.VULKAN_SDK }}/include" >> $GITHUB_ENV
           echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> $GITHUB_ENV
+          echo "DYLD_LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib:$DYLD_LIBRARY_PATH" >> $GITHUB_ENV
+          echo "VK_ICD_FILENAMES=${{ env.VULKAN_SDK }}/share/vulkan/icd.d/MoltenVK_icd.json" >> $GITHUB_ENV
+          echo "VK_LAYER_PATH=${{ env.VULKAN_SDK }}/share/vulkan/explicit_layer.d" >> $GITHUB_ENV
+          echo "VK_LOADER_DEBUG=all" >> $GITHUB_ENV
 
       - name: Build with Gradle
         run: ./gradlew build --scan
