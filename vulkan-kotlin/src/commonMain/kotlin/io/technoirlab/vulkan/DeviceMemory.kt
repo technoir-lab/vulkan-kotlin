@@ -83,7 +83,6 @@ class DeviceMemory(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkUnmapMemory.html">vkUnmapMemory Manual Page</a>
      */
-    context(allocator: NativePlacement)
     fun unmap() {
         vkUnmapMemory!!(device, handle)
     }
