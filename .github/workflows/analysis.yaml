@@ -9,7 +9,7 @@ concurrency:
 jobs:
   build-health:
     name: Build health
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
@@ -60,7 +60,7 @@ jobs:
 
   dependencies-sorting:
     name: Dependencies sorting
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
 
     permissions:
       contents: read
