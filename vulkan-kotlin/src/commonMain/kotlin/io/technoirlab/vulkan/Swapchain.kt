@@ -47,7 +47,7 @@ class Swapchain(
             swapchain = handle
             this.semaphore = semaphore?.handle
             this.fence = fence?.handle
-            this.timeout = timeout.inWholeNanoseconds.toULong()
+            this.timeout = timeout.inWholeNanosecondsULong
         }
         val imageIndexVar = allocator.alloc<UIntVar>()
         val result = vkAcquireNextImage2KHR!!(device, acquireInfo.ptr, imageIndexVar.ptr)

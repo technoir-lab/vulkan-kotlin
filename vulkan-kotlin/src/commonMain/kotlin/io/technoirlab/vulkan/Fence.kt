@@ -48,7 +48,7 @@ class Fence(
         val fenceVar = allocator.alloc<VkFenceVar> {
             value = handle
         }
-        vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanoseconds.toULong())
+        vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanosecondsULong)
             .checkResult("Failed to wait for fence")
     }
 

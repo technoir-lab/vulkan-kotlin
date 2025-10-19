@@ -5,9 +5,13 @@ package io.technoirlab.vulkan
 import io.technoirlab.volk.VK_FALSE
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBool32
+import kotlin.time.Duration
 
 internal inline fun Boolean.toVkBool32(): VkBool32 =
     if (this) VK_TRUE else VK_FALSE
+
+internal inline val Duration.inWholeNanosecondsULong: ULong
+    get() = if (this == Duration.INFINITE) ULong.MAX_VALUE else inWholeNanoseconds.toULong()
 
 internal fun <T> nCopies(size: Int, element: T): List<T> = NCopiesList(size, element)
 
