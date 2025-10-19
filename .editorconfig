@@ -8,6 +8,21 @@ indent_style = space
 insert_final_newline = true
 max_line_length = 140
 tab_width = 4
+trim_trailing_whitespace = true
+
+[{*.kt,*.kts}]
+ij_kotlin_keep_blank_lines_before_right_brace = 0
+ij_kotlin_keep_blank_lines_in_code = 1
+ij_kotlin_keep_blank_lines_in_declarations = 1
+ij_kotlin_name_count_to_use_star_import = 2147483647
+ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
+ij_kotlin_packages_to_use_import_on_demand =
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.properties]
+ij_properties_keep_blank_lines = true
 
 [{*.yaml,*.yml}]
 indent_size = 2
