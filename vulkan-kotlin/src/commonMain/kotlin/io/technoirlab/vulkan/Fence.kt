@@ -1,10 +1,13 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_NOT_READY
+import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkFence
 import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.vkDestroyFence
+import io.technoirlab.volk.vkGetFenceStatus
 import io.technoirlab.volk.vkResetFences
 import io.technoirlab.volk.vkWaitForFences
 import kotlinx.cinterop.NativePlacement
@@ -23,6 +26,18 @@ class Fence(
     private val device: VkDevice,
     val handle: VkFence
 ) : AutoCloseable {
+
+    /**
+     * Indicates whether the fence is signaled.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetFenceStatus.html">vkGetFenceStatus Manual Page</a>
+     */
+    val isSignaled: Boolean
+        get() = when (val result = vkGetFenceStatus!!(device, handle)) {
+            VK_SUCCESS -> true
+            VK_NOT_READY -> false
+            else -> throw VulkanException(result, "Failed to get fence status")
+        }
 
     /**
      * Reset the status of the fence from signaled to unsignaled state.
