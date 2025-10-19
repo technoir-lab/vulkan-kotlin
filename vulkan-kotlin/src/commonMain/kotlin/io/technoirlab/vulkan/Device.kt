@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
@@ -27,6 +28,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
 import io.technoirlab.volk.VkBufferCreateInfo
@@ -77,6 +79,8 @@ import io.technoirlab.volk.VkQueueVar
 import io.technoirlab.volk.VkSamplerCreateInfo
 import io.technoirlab.volk.VkSamplerVar
 import io.technoirlab.volk.VkSemaphoreCreateInfo
+import io.technoirlab.volk.VkSemaphoreType
+import io.technoirlab.volk.VkSemaphoreTypeCreateInfo
 import io.technoirlab.volk.VkSemaphoreVar
 import io.technoirlab.volk.VkShaderModuleCreateInfo
 import io.technoirlab.volk.VkShaderModuleVar
@@ -459,20 +463,25 @@ class Device(
     }
 
     /**
-     * Create a new queue semaphore.
+     * Create a new semaphore.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSemaphore.html">vkCreateSemaphore Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun createSemaphore(createInfo: VkSemaphoreCreateInfo.() -> Unit = {}): Semaphore {
+    fun createSemaphore(type: VkSemaphoreType = VK_SEMAPHORE_TYPE_BINARY, initialValue: ULong = 0uL): Semaphore {
+        val typeInfo = allocator.alloc<VkSemaphoreTypeCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
+            semaphoreType = type
+            this.initialValue = initialValue
+        }
         val semaphoreInfo = allocator.alloc<VkSemaphoreCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
-            createInfo()
+            pNext = typeInfo.ptr
         }
         val semaphore = allocator.alloc<VkSemaphoreVar>()
         vkCreateSemaphore!!(handle, semaphoreInfo.ptr, null, semaphore.ptr)
             .checkResult("Failed to create a semaphore")
-        return Semaphore(handle, semaphore.value!!)
+        return Semaphore(device = handle, handle = semaphore.value!!, type = type)
     }
 
     /**
