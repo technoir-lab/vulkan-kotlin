@@ -4,7 +4,7 @@ import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkPipelineCache
 import io.technoirlab.volk.vkDestroyPipelineCache
 import io.technoirlab.volk.vkMergePipelineCaches
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.invoke
 
@@ -23,9 +23,9 @@ class PipelineCache(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkMergePipelineCaches.html">vkMergePipelineCaches Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun merge(srcCaches: List<PipelineCache>) {
-        val srcCacheHandles = memScope.allocArrayOf(srcCaches.map { it.handle })
+        val srcCacheHandles = allocator.allocArrayOf(srcCaches.map { it.handle })
         vkMergePipelineCaches!!(device, handle, srcCaches.size.toUInt(), srcCacheHandles)
             .checkResult("Failed to merge pipeline caches")
     }

@@ -7,7 +7,7 @@ import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.vkDestroyFence
 import io.technoirlab.volk.vkResetFences
 import io.technoirlab.volk.vkWaitForFences
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
@@ -29,9 +29,9 @@ class Fence(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetFences.html">vkResetFences Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun reset() {
-        val fenceVar = memScope.alloc<VkFenceVar> {
+        val fenceVar = allocator.alloc<VkFenceVar> {
             value = handle
         }
         vkResetFences!!(device, 1u, fenceVar.ptr)
@@ -43,9 +43,9 @@ class Fence(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkWaitForFences.html">vkWaitForFences Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun wait(timeout: Duration = Duration.INFINITE) {
-        val fenceVar = memScope.alloc<VkFenceVar> {
+        val fenceVar = allocator.alloc<VkFenceVar> {
             value = handle
         }
         vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanoseconds.toULong())

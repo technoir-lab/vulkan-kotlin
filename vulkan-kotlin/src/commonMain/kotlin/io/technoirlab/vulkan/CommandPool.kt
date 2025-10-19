@@ -13,7 +13,7 @@ import io.technoirlab.volk.vkDestroyCommandPool
 import io.technoirlab.volk.vkFreeCommandBuffers
 import io.technoirlab.volk.vkResetCommandPool
 import io.technoirlab.volk.vkTrimCommandPool
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
@@ -36,15 +36,15 @@ class CommandPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateCommandBuffers.html">vkAllocateCommandBuffers Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun allocateCommandBuffers(count: Int): List<CommandBuffer> {
-        val allocateInfo = memScope.alloc<VkCommandBufferAllocateInfo> {
+        val allocateInfo = allocator.alloc<VkCommandBufferAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
             commandPool = handle
             commandBufferCount = count.toUInt()
             level = VK_COMMAND_BUFFER_LEVEL_PRIMARY
         }
-        val commandBufferArray = memScope.allocArray<VkCommandBufferVar>(count)
+        val commandBufferArray = allocator.allocArray<VkCommandBufferVar>(count)
         vkAllocateCommandBuffers!!(device, allocateInfo.ptr, commandBufferArray)
             .checkResult("Failed to allocate command buffers")
         return (0 until count).map { CommandBuffer(commandBufferArray[it]!!) }
@@ -55,9 +55,9 @@ class CommandPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkFreeCommandBuffers.html">vkFreeCommandBuffers Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun freeCommandBuffers(commandBuffers: List<CommandBuffer>) {
-        val commandBufferHandles = memScope.allocArrayOf(commandBuffers.map { it.handle })
+        val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
         vkFreeCommandBuffers!!(device, handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
 

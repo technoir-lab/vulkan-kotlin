@@ -12,7 +12,7 @@ import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.vkBindImageMemory2
 import io.technoirlab.volk.vkDestroyImage
 import io.technoirlab.volk.vkGetImageMemoryRequirements2
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
@@ -33,13 +33,13 @@ class Image(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageMemoryRequirements2.html">vkGetImageMemoryRequirements2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun getMemoryRequirements(): VkMemoryRequirements {
-        val memoryRequirementsInfo = memScope.alloc<VkImageMemoryRequirementsInfo2> {
+        val memoryRequirementsInfo = allocator.alloc<VkImageMemoryRequirementsInfo2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
             image = handle
         }
-        val memoryRequirements = memScope.alloc<VkMemoryRequirements2> {
+        val memoryRequirements = allocator.alloc<VkMemoryRequirements2> {
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
         }
         vkGetImageMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
@@ -51,9 +51,9 @@ class Image(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBindImageMemory2.html">vkBindImageMemory2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
-        val bindImageMemoryInfo = memScope.alloc<VkBindImageMemoryInfo> {
+        val bindImageMemoryInfo = allocator.alloc<VkBindImageMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
             image = handle
             memoryOffset = offset

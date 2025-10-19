@@ -10,7 +10,7 @@ import io.technoirlab.volk.vkAllocateDescriptorSets
 import io.technoirlab.volk.vkDestroyDescriptorPool
 import io.technoirlab.volk.vkFreeDescriptorSets
 import io.technoirlab.volk.vkResetDescriptorPool
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
@@ -33,16 +33,16 @@ class DescriptorPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateDescriptorSets.html">vkAllocateDescriptorSets Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>): List<DescriptorSet> {
-        val layoutsNative = memScope.allocArrayOf(setLayouts.map { it.handle })
-        val allocInfo = memScope.alloc<VkDescriptorSetAllocateInfo> {
+        val layoutsNative = allocator.allocArrayOf(setLayouts.map { it.handle })
+        val allocInfo = allocator.alloc<VkDescriptorSetAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
             descriptorPool = handle
             descriptorSetCount = setLayouts.size.toUInt()
             pSetLayouts = layoutsNative
         }
-        val sets = memScope.allocArray<VkDescriptorSetVar>(setLayouts.size)
+        val sets = allocator.allocArray<VkDescriptorSetVar>(setLayouts.size)
         vkAllocateDescriptorSets!!(device, allocInfo.ptr, sets)
             .checkResult("Failed to allocate descriptor sets")
 
@@ -54,9 +54,9 @@ class DescriptorPool(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkFreeDescriptorSets.html">vkFreeDescriptorSets Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun freeDescriptorSets(descriptorSets: List<DescriptorSet>) {
-        val descriptorSetHandles = memScope.allocArrayOf(descriptorSets.map { it.handle })
+        val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         vkFreeDescriptorSets!!(device, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
     }
 

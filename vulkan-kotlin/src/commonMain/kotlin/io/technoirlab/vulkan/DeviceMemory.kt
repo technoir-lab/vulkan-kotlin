@@ -9,7 +9,7 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.convert
@@ -37,7 +37,7 @@ class DeviceMemory(
     /**
      * Copy data from a source to the device memory.
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun copyData(source: Source, expectedSize: ULong, offset: ULong = 0uL) {
         val mappedPtr = map(expectedSize, offset).reinterpret<ByteVar>()
         try {
@@ -67,12 +67,12 @@ class DeviceMemory(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkMapMemory.html">vkMapMemory Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun map(size: ULong, offset: ULong = 0uL): CPointer<out CPointed> {
         require(size > 0uL) { "Size must be greater than 0" }
         require(offset + size <= this.size) { "Offset $offset + $size exceeds total memory size ${this.size}" }
 
-        val mappedPtr = memScope.alloc<CPointerVar<out CPointed>>()
+        val mappedPtr = allocator.alloc<CPointerVar<out CPointed>>()
         vkMapMemory!!(device, handle, offset, size, 0u, mappedPtr.ptr)
             .checkResult("Failed to map memory")
         return mappedPtr.value!!
@@ -83,7 +83,7 @@ class DeviceMemory(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkUnmapMemory.html">vkUnmapMemory Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun unmap() {
         vkUnmapMemory!!(device, handle)
     }

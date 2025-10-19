@@ -77,7 +77,7 @@ import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.addressOf
@@ -101,9 +101,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBeginCommandBuffer.html">vkBeginCommandBuffer Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun begin(beginInfo: VkCommandBufferBeginInfo.() -> Unit = {}) {
-        val beginInfo = memScope.alloc<VkCommandBufferBeginInfo> {
+        val beginInfo = allocator.alloc<VkCommandBufferBeginInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
             beginInfo()
         }
@@ -125,9 +125,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBeginRendering.html">vkCmdBeginRendering Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun beginRendering(renderingInfo: VkRenderingInfo.() -> Unit) {
-        val renderingInfo = memScope.alloc<VkRenderingInfo> {
+        val renderingInfo = allocator.alloc<VkRenderingInfo> {
             sType = VK_STRUCTURE_TYPE_RENDERING_INFO
             renderingInfo()
         }
@@ -139,7 +139,7 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindDescriptorSets.html">vkCmdBindDescriptorSets Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bindDescriptorSets(
         pipelineBindPoint: VkPipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS,
         layout: PipelineLayout,
@@ -147,9 +147,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
         descriptorSets: List<DescriptorSet>,
         dynamicOffsets: List<UInt> = emptyList()
     ) {
-        val descriptorSetHandles = memScope.allocArrayOf(descriptorSets.map { it.handle })
+        val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         val dynamicOffsetArray = if (dynamicOffsets.isNotEmpty()) {
-            memScope.allocArray<UIntVar>(dynamicOffsets.size) { index ->
+            allocator.allocArray<UIntVar>(dynamicOffsets.size) { index ->
                 value = dynamicOffsets[index]
             }
         } else {
@@ -191,7 +191,7 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers2.html">vkCmdBindVertexBuffers2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bindVertexBuffer(
         vertexBuffer: Buffer,
         bindingIndex: UInt = 0u,
@@ -199,10 +199,10 @@ class CommandBuffer(val handle: VkCommandBuffer) {
         size: ULong? = null,
         stride: ULong? = null
     ) {
-        val vertexBufferVar = memScope.alloc<VkBufferVar> { value = vertexBuffer.handle }
-        val offsetVar = memScope.alloc<ULongVar> { value = offset }
-        val sizeVar = size?.let { memScope.alloc<ULongVar> { value = it } }
-        val strideVar = stride?.let { memScope.alloc<ULongVar> { value = it } }
+        val vertexBufferVar = allocator.alloc<VkBufferVar> { value = vertexBuffer.handle }
+        val offsetVar = allocator.alloc<ULongVar> { value = offset }
+        val sizeVar = size?.let { allocator.alloc<ULongVar> { value = it } }
+        val strideVar = stride?.let { allocator.alloc<ULongVar> { value = it } }
         vkCmdBindVertexBuffers2!!(
             handle,
             bindingIndex,
@@ -219,7 +219,7 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers2.html">vkCmdBindVertexBuffers2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bindVertexBuffers(
         vertexBuffers: List<Buffer>,
         firstBinding: UInt = 0u,
@@ -227,10 +227,10 @@ class CommandBuffer(val handle: VkCommandBuffer) {
         sizes: List<ULong>? = null,
         strides: List<ULong>? = null
     ) {
-        val vertexBufferHandles = memScope.allocArrayOf(vertexBuffers.map { it.handle })
-        val offsetsArray = memScope.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
-        val sizesArray = sizes?.let { memScope.allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
-        val stridesArray = strides?.let { memScope.allocArray<ULongVar>(strides.size) { value = strides[it] } }
+        val vertexBufferHandles = allocator.allocArrayOf(vertexBuffers.map { it.handle })
+        val offsetsArray = allocator.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
+        val sizesArray = sizes?.let { allocator.allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
+        val stridesArray = strides?.let { allocator.allocArray<ULongVar>(strides.size) { value = strides[it] } }
         vkCmdBindVertexBuffers2!!(
             handle,
             firstBinding,
@@ -247,9 +247,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bufferMemoryBarrier(barrierInfo: VkBufferMemoryBarrier2.() -> Unit) {
-        val bufferMemoryBarrier = memScope.alloc<VkBufferMemoryBarrier2> {
+        val bufferMemoryBarrier = allocator.alloc<VkBufferMemoryBarrier2> {
             sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
             barrierInfo()
         }
@@ -318,9 +318,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdExecuteCommands.html">vkCmdExecuteCommands Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun executeCommands(commandBuffers: List<CommandBuffer>) {
-        val commandBufferHandles = memScope.allocArrayOf(commandBuffers.map { it.handle })
+        val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
         vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
 
@@ -365,9 +365,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun imageMemoryBarrier(barrierInfo: VkImageMemoryBarrier2.() -> Unit) {
-        val imageMemoryBarrier = memScope.alloc<VkImageMemoryBarrier2> {
+        val imageMemoryBarrier = allocator.alloc<VkImageMemoryBarrier2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
             barrierInfo()
         }
@@ -382,9 +382,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun pipelineBarrier(dependencyInfo: VkDependencyInfo.() -> Unit) {
-        val dependencyInfo = memScope.alloc<VkDependencyInfo> {
+        val dependencyInfo = allocator.alloc<VkDependencyInfo> {
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfo()
         }
@@ -468,9 +468,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetEvent2.html">vkCmdSetEvent2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun setEvent(event: Event, dependencyInfo: VkDependencyInfo.() -> Unit) {
-        val dep = memScope.alloc<VkDependencyInfo> {
+        val dep = allocator.alloc<VkDependencyInfo> {
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfo()
         }
@@ -592,9 +592,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissor.html">vkCmdSetScissor Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun setScissor(scissor: VkRect2D.() -> Unit) {
-        val scissor = memScope.alloc<VkRect2D> { scissor() }
+        val scissor = allocator.alloc<VkRect2D> { scissor() }
         vkCmdSetScissor!!(handle, 0u, 1u, scissor.ptr)
     }
 
@@ -603,9 +603,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissorWithCount.html">vkCmdSetScissorWithCount Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun setScissorWithCount(count: UInt, scissors: VkRect2D.(UInt) -> Unit) {
-        val scissors = memScope.allocArray<VkRect2D>(count.toLong()) { scissors(it.toUInt()) }
+        val scissors = allocator.allocArray<VkRect2D>(count.toLong()) { scissors(it.toUInt()) }
         vkCmdSetScissorWithCount!!(handle, count, scissors)
     }
 
@@ -665,9 +665,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewport.html">vkCmdSetViewport Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun setViewport(viewport: VkViewport.() -> Unit) {
-        val vp = memScope.alloc<VkViewport> { viewport() }
+        val vp = allocator.alloc<VkViewport> { viewport() }
         vkCmdSetViewport!!(handle, 0u, 1u, vp.ptr)
     }
 
@@ -676,9 +676,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewportWithCount.html">vkCmdSetViewportWithCount Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun setViewportWithCount(count: UInt, viewports: VkViewport.(UInt) -> Unit) {
-        val viewports = memScope.allocArray<VkViewport>(count.toLong()) { viewports(it.toUInt()) }
+        val viewports = allocator.allocArray<VkViewport>(count.toLong()) { viewports(it.toUInt()) }
         vkCmdSetViewportWithCount!!(handle, count, viewports)
     }
 
@@ -687,10 +687,10 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWaitEvents2.html">vkCmdWaitEvents2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun waitEvents(events: List<Event>, dependencyInfos: VkDependencyInfo.(UInt) -> Unit) {
-        val eventsArray = memScope.allocArrayOf(events.map { it.handle })
-        val deps = memScope.allocArray<VkDependencyInfo>(events.size) { index: Int ->
+        val eventsArray = allocator.allocArrayOf(events.map { it.handle })
+        val deps = allocator.allocArray<VkDependencyInfo>(events.size) { index: Int ->
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfos(index.toUInt())
         }

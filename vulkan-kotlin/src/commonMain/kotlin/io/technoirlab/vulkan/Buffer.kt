@@ -12,7 +12,7 @@ import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.vkBindBufferMemory2
 import io.technoirlab.volk.vkDestroyBuffer
 import io.technoirlab.volk.vkGetBufferMemoryRequirements2
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
@@ -33,13 +33,13 @@ class Buffer(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetBufferMemoryRequirements2.html">vkGetBufferMemoryRequirements2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun getMemoryRequirements(): VkMemoryRequirements {
-        val memoryRequirementsInfo = memScope.alloc<VkBufferMemoryRequirementsInfo2> {
+        val memoryRequirementsInfo = allocator.alloc<VkBufferMemoryRequirementsInfo2> {
             sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2
             buffer = handle
         }
-        val memoryRequirements = memScope.alloc<VkMemoryRequirements2> {
+        val memoryRequirements = allocator.alloc<VkMemoryRequirements2> {
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
         }
         vkGetBufferMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
@@ -51,9 +51,9 @@ class Buffer(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBindBufferMemory2.html">vkBindBufferMemory2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
-        val bindImageMemoryInfo = memScope.alloc<VkBindBufferMemoryInfo> {
+        val bindImageMemoryInfo = allocator.alloc<VkBindBufferMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO
             buffer = handle
             memoryOffset = offset

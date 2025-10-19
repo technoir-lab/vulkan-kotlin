@@ -13,7 +13,7 @@ import io.technoirlab.volk.vkEnumerateInstanceLayerProperties
 import io.technoirlab.volk.volkFinalize
 import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -48,18 +48,18 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateInstance.html">vkCreateInstance Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createInstance(applicationInfo: VkApplicationInfo.() -> Unit = {}, instanceInfo: VkInstanceCreateInfo.() -> Unit = {}): Instance {
-        val applicationInfo = memScope.alloc<VkApplicationInfo> {
+        val applicationInfo = allocator.alloc<VkApplicationInfo> {
             sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
             applicationInfo()
         }
-        val instanceCreateInfo = memScope.alloc<VkInstanceCreateInfo> {
+        val instanceCreateInfo = allocator.alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
             pApplicationInfo = applicationInfo.ptr
             instanceInfo()
         }
-        val instanceVar = memScope.alloc<VkInstanceVar>()
+        val instanceVar = allocator.alloc<VkInstanceVar>()
         vkCreateInstance!!(instanceCreateInfo.ptr, null, instanceVar.ptr)
             .checkResult("Failed to create a Vulkan instance")
         return Instance(instanceVar.value!!)
@@ -70,16 +70,16 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceExtensionProperties.html">vkEnumerateInstanceExtensionProperties Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun enumerateInstanceExtensionProperties(): List<VkExtensionProperties> {
-        val countVar = memScope.alloc<UIntVar>()
+        val countVar = allocator.alloc<UIntVar>()
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, null)
             .checkResult("Failed to enumerate instance extensions")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val extensionProperties = memScope.allocArray<VkExtensionProperties>(count)
+        val extensionProperties = allocator.allocArray<VkExtensionProperties>(count)
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, extensionProperties)
             .checkResult("Failed to enumerate instance extensions")
 
@@ -91,16 +91,16 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceLayerProperties.html">vkEnumerateInstanceLayerProperties Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun enumerateInstanceLayerProperties(): List<VkLayerProperties> {
-        val countVar = memScope.alloc<UIntVar>()
+        val countVar = allocator.alloc<UIntVar>()
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
             .checkResult("Failed to enumerate instance layers")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val layerProperties = memScope.allocArray<VkLayerProperties>(count)
+        val layerProperties = allocator.allocArray<VkLayerProperties>(count)
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
             .checkResult("Failed to enumerate instance layers")
 

@@ -106,7 +106,7 @@ import io.technoirlab.volk.vkDeviceWaitIdle
 import io.technoirlab.volk.vkGetDeviceQueue
 import io.technoirlab.volk.vkUpdateDescriptorSets
 import io.technoirlab.volk.volkLoadDevice
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.invoke
@@ -131,13 +131,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateMemory.html">vkAllocateMemory Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun allocateMemory(allocateInfo: VkMemoryAllocateInfo.() -> Unit): DeviceMemory {
-        val memoryAllocateInfo = memScope.alloc<VkMemoryAllocateInfo> {
+        val memoryAllocateInfo = allocator.alloc<VkMemoryAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
             allocateInfo()
         }
-        val memory = memScope.alloc<VkDeviceMemoryVar>()
+        val memory = allocator.alloc<VkDeviceMemoryVar>()
         vkAllocateMemory!!(handle, memoryAllocateInfo.ptr, null, memory.ptr)
             .checkResult("Failed to allocate memory")
         return DeviceMemory(handle, memory.value!!, memoryAllocateInfo.allocationSize)
@@ -148,13 +148,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateBuffer.html">vkCreateBuffer Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createBuffer(createInfo: VkBufferCreateInfo.() -> Unit): Buffer {
-        val bufferCreateInfo = memScope.alloc<VkBufferCreateInfo> {
+        val bufferCreateInfo = allocator.alloc<VkBufferCreateInfo> {
             sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
             createInfo()
         }
-        val bufferVar = memScope.alloc<VkBufferVar>()
+        val bufferVar = allocator.alloc<VkBufferVar>()
         vkCreateBuffer!!(handle, bufferCreateInfo.ptr, null, bufferVar.ptr)
             .checkResult("Failed to create a buffer")
         return Buffer(handle, bufferVar.value!!, bufferCreateInfo.size)
@@ -165,13 +165,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateBufferView.html">vkCreateBufferView Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createBufferView(createInfo: VkBufferViewCreateInfo.() -> Unit): BufferView {
-        val bufferViewCreateInfo = memScope.alloc<VkBufferViewCreateInfo> {
+        val bufferViewCreateInfo = allocator.alloc<VkBufferViewCreateInfo> {
             sType = VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
             createInfo()
         }
-        val bufferViewVar = memScope.alloc<VkBufferViewVar>()
+        val bufferViewVar = allocator.alloc<VkBufferViewVar>()
         vkCreateBufferView!!(handle, bufferViewCreateInfo.ptr, null, bufferViewVar.ptr)
             .checkResult("Failed to create buffer view")
         return BufferView(handle, bufferViewVar.value!!)
@@ -182,14 +182,14 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateCommandPool.html">vkCreateCommandPool Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createCommandPool(queueFamilyIndex: UInt, flags: VkCommandPoolCreateFlags = 0u): CommandPool {
-        val commandPoolCreateInfo = memScope.alloc<VkCommandPoolCreateInfo> {
+        val commandPoolCreateInfo = allocator.alloc<VkCommandPoolCreateInfo> {
             this.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
             this.queueFamilyIndex = queueFamilyIndex
             this.flags = flags
         }
-        val commandPoolVar = memScope.alloc<VkCommandPoolVar>()
+        val commandPoolVar = allocator.alloc<VkCommandPoolVar>()
         vkCreateCommandPool!!(handle, commandPoolCreateInfo.ptr, null, commandPoolVar.ptr)
             .checkResult("Failed to create a command pool")
         return CommandPool(handle, commandPoolVar.value!!)
@@ -200,13 +200,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDescriptorPool.html">vkCreateDescriptorPool Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createDescriptorPool(createInfo: VkDescriptorPoolCreateInfo.() -> Unit): DescriptorPool {
-        val descriptorPoolCreateInfo = memScope.alloc<VkDescriptorPoolCreateInfo> {
+        val descriptorPoolCreateInfo = allocator.alloc<VkDescriptorPoolCreateInfo> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
             createInfo()
         }
-        val poolVar = memScope.alloc<VkDescriptorPoolVar>()
+        val poolVar = allocator.alloc<VkDescriptorPoolVar>()
         vkCreateDescriptorPool!!(handle, descriptorPoolCreateInfo.ptr, null, poolVar.ptr)
             .checkResult("Failed to create descriptor pool")
         return DescriptorPool(handle, poolVar.value!!)
@@ -217,13 +217,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDescriptorSetLayout.html">vkCreateDescriptorSetLayout Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createDescriptorSetLayout(createInfo: VkDescriptorSetLayoutCreateInfo.() -> Unit): DescriptorSetLayout {
-        val descriptorSetLayoutCreateInfo = memScope.alloc<VkDescriptorSetLayoutCreateInfo> {
+        val descriptorSetLayoutCreateInfo = allocator.alloc<VkDescriptorSetLayoutCreateInfo> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
             createInfo()
         }
-        val layoutVar = memScope.alloc<VkDescriptorSetLayoutVar>()
+        val layoutVar = allocator.alloc<VkDescriptorSetLayoutVar>()
         vkCreateDescriptorSetLayout!!(handle, descriptorSetLayoutCreateInfo.ptr, null, layoutVar.ptr)
             .checkResult("Failed to create descriptor set layout")
         return DescriptorSetLayout(handle, layoutVar.value!!)
@@ -234,13 +234,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateEvent.html">vkCreateEvent Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createEvent(flags: VkEventCreateFlags = 0u): Event {
-        val eventInfo = memScope.alloc<VkEventCreateInfo> {
+        val eventInfo = allocator.alloc<VkEventCreateInfo> {
             sType = VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
             this.flags = flags
         }
-        val eventVar = memScope.alloc<VkEventVar>()
+        val eventVar = allocator.alloc<VkEventVar>()
         vkCreateEvent!!(handle, eventInfo.ptr, null, eventVar.ptr)
             .checkResult("Failed to create event")
         return Event(handle, eventVar.value!!)
@@ -251,13 +251,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateImage.html">vkCreateImage Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createImage(createInfo: VkImageCreateInfo.() -> Unit): Image {
-        val imageCreateInfo = memScope.alloc<VkImageCreateInfo> {
+        val imageCreateInfo = allocator.alloc<VkImageCreateInfo> {
             sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
             createInfo()
         }
-        val imageVar = memScope.alloc<VkImageVar>()
+        val imageVar = allocator.alloc<VkImageVar>()
         vkCreateImage!!(handle, imageCreateInfo.ptr, null, imageVar.ptr)
             .checkResult("Failed to create an image")
         return Image(handle, imageVar.value!!)
@@ -268,13 +268,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateImageView.html">vkCreateImageView Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createImageView(createInfo: VkImageViewCreateInfo.() -> Unit): ImageView {
-        val imageViewCreateInfo = memScope.alloc<VkImageViewCreateInfo> {
+        val imageViewCreateInfo = allocator.alloc<VkImageViewCreateInfo> {
             sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
             createInfo()
         }
-        val imageViewVar = memScope.alloc<VkImageViewVar>()
+        val imageViewVar = allocator.alloc<VkImageViewVar>()
         vkCreateImageView!!(handle, imageViewCreateInfo.ptr, null, imageViewVar.ptr)
             .checkResult("Failed to create an image view")
         return ImageView(handle, imageViewVar.value!!)
@@ -285,13 +285,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateFence.html">vkCreateFence Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createFence(createInfo: VkFenceCreateInfo.() -> Unit = {}): Fence {
-        val fenceInfo = memScope.alloc<VkFenceCreateInfo> {
+        val fenceInfo = allocator.alloc<VkFenceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
             createInfo()
         }
-        val fenceVar = memScope.alloc<VkFenceVar>()
+        val fenceVar = allocator.alloc<VkFenceVar>()
         vkCreateFence!!(handle, fenceInfo.ptr, null, fenceVar.ptr)
             .checkResult("Failed to create a fence")
         return Fence(handle, fenceVar.value!!)
@@ -302,7 +302,7 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     @Suppress("LongParameterList", "LongMethod")
     fun createGraphicsPipeline(
         layout: PipelineLayout,
@@ -322,51 +322,51 @@ class Device(
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null
     ): Pipeline {
-        val shaderStageCreateInfo = memScope.allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
+        val shaderStageCreateInfo = allocator.allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
             sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
             stages(it.toUInt())
         }
-        val vertexInputStateCreateInfo = memScope.alloc<VkPipelineVertexInputStateCreateInfo> {
+        val vertexInputStateCreateInfo = allocator.alloc<VkPipelineVertexInputStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
             vertexInputState()
         }
-        val inputAssemblyStateCreateInfo = memScope.alloc<VkPipelineInputAssemblyStateCreateInfo> {
+        val inputAssemblyStateCreateInfo = allocator.alloc<VkPipelineInputAssemblyStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
             inputAssemblyState()
         }
-        val tessellationStateCreateInfo = memScope.alloc<VkPipelineTessellationStateCreateInfo> {
+        val tessellationStateCreateInfo = allocator.alloc<VkPipelineTessellationStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
             tessellationState()
         }
-        val viewportStateCreateInfo = memScope.alloc<VkPipelineViewportStateCreateInfo> {
+        val viewportStateCreateInfo = allocator.alloc<VkPipelineViewportStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
             viewportState()
         }
-        val rasterizationStateCreateInfo = memScope.alloc<VkPipelineRasterizationStateCreateInfo> {
+        val rasterizationStateCreateInfo = allocator.alloc<VkPipelineRasterizationStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
             rasterizationState()
         }
-        val multisampleStateCreateInfo = memScope.alloc<VkPipelineMultisampleStateCreateInfo> {
+        val multisampleStateCreateInfo = allocator.alloc<VkPipelineMultisampleStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
             multisampleState()
         }
-        val depthStencilStateCreateInfo = memScope.alloc<VkPipelineDepthStencilStateCreateInfo> {
+        val depthStencilStateCreateInfo = allocator.alloc<VkPipelineDepthStencilStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
             depthStencilState()
         }
-        val colorBlendStateCreateInfo = memScope.alloc<VkPipelineColorBlendStateCreateInfo> {
+        val colorBlendStateCreateInfo = allocator.alloc<VkPipelineColorBlendStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
             colorBlendState()
         }
-        val dynamicStateCreateInfo = memScope.alloc<VkPipelineDynamicStateCreateInfo> {
+        val dynamicStateCreateInfo = allocator.alloc<VkPipelineDynamicStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
             dynamicState()
         }
-        val renderingCreateInfo = memScope.alloc<VkPipelineRenderingCreateInfo> {
+        val renderingCreateInfo = allocator.alloc<VkPipelineRenderingCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO
             renderingCreateInfo()
         }
-        val graphicsPipelineCreateInfo = memScope.alloc<VkGraphicsPipelineCreateInfo> {
+        val graphicsPipelineCreateInfo = allocator.alloc<VkGraphicsPipelineCreateInfo> {
             sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
             this.flags = flags
             this.stageCount = stageCount
@@ -384,7 +384,7 @@ class Device(
             pNext = renderingCreateInfo.ptr
             basePipelineHandle = basePipeline?.handle
         }
-        val pipelineVar = memScope.alloc<VkPipelineVar>()
+        val pipelineVar = allocator.alloc<VkPipelineVar>()
         vkCreateGraphicsPipelines!!(handle, cache?.handle, 1u, graphicsPipelineCreateInfo.ptr, null, pipelineVar.ptr)
             .checkResult("Failed to create graphics pipeline")
         return Pipeline(handle, pipelineVar.value!!)
@@ -395,13 +395,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreatePipelineCache.html">vkCreatePipelineCache Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createPipelineCache(createInfo: VkPipelineCacheCreateInfo.() -> Unit = {}): PipelineCache {
-        val pipelineCacheCreateInfo = memScope.alloc<VkPipelineCacheCreateInfo> {
+        val pipelineCacheCreateInfo = allocator.alloc<VkPipelineCacheCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
             createInfo()
         }
-        val pipelineCacheVar = memScope.alloc<VkPipelineCacheVar>()
+        val pipelineCacheVar = allocator.alloc<VkPipelineCacheVar>()
         vkCreatePipelineCache!!(handle, pipelineCacheCreateInfo.ptr, null, pipelineCacheVar.ptr)
             .checkResult("Failed to create pipeline cache")
         return PipelineCache(handle, pipelineCacheVar.value!!)
@@ -412,13 +412,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreatePipelineLayout.html">vkCreatePipelineLayout Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createPipelineLayout(createInfo: VkPipelineLayoutCreateInfo.() -> Unit = {}): PipelineLayout {
-        val pipelineLayoutCreateInfo = memScope.alloc<VkPipelineLayoutCreateInfo> {
+        val pipelineLayoutCreateInfo = allocator.alloc<VkPipelineLayoutCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO
             createInfo()
         }
-        val pipelineLayoutVar = memScope.alloc<VkPipelineLayoutVar>()
+        val pipelineLayoutVar = allocator.alloc<VkPipelineLayoutVar>()
         vkCreatePipelineLayout!!(handle, pipelineLayoutCreateInfo.ptr, null, pipelineLayoutVar.ptr)
             .checkResult("Failed to create pipeline layout")
         return PipelineLayout(handle, pipelineLayoutVar.value!!)
@@ -429,13 +429,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateQueryPool.html">vkCreateQueryPool Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createQueryPool(createInfo: VkQueryPoolCreateInfo.() -> Unit): QueryPool {
-        val queryPoolCreateInfo = memScope.alloc<VkQueryPoolCreateInfo> {
+        val queryPoolCreateInfo = allocator.alloc<VkQueryPoolCreateInfo> {
             sType = VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO
             createInfo()
         }
-        val queryPoolVar = memScope.alloc<VkQueryPoolVar>()
+        val queryPoolVar = allocator.alloc<VkQueryPoolVar>()
         vkCreateQueryPool!!(handle, queryPoolCreateInfo.ptr, null, queryPoolVar.ptr)
             .checkResult("Failed to create query pool")
         return QueryPool(handle, queryPoolVar.value!!)
@@ -446,13 +446,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSampler.html">vkCreateSampler Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createSampler(createInfo: VkSamplerCreateInfo.() -> Unit): Sampler {
-        val samplerCreateInfo = memScope.alloc<VkSamplerCreateInfo> {
+        val samplerCreateInfo = allocator.alloc<VkSamplerCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
             createInfo()
         }
-        val samplerVar = memScope.alloc<VkSamplerVar>()
+        val samplerVar = allocator.alloc<VkSamplerVar>()
         vkCreateSampler!!(handle, samplerCreateInfo.ptr, null, samplerVar.ptr)
             .checkResult("Failed to create sampler")
         return Sampler(handle, samplerVar.value!!)
@@ -463,13 +463,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSemaphore.html">vkCreateSemaphore Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createSemaphore(createInfo: VkSemaphoreCreateInfo.() -> Unit = {}): Semaphore {
-        val semaphoreInfo = memScope.alloc<VkSemaphoreCreateInfo> {
+        val semaphoreInfo = allocator.alloc<VkSemaphoreCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
             createInfo()
         }
-        val semaphore = memScope.alloc<VkSemaphoreVar>()
+        val semaphore = allocator.alloc<VkSemaphoreVar>()
         vkCreateSemaphore!!(handle, semaphoreInfo.ptr, null, semaphore.ptr)
             .checkResult("Failed to create a semaphore")
         return Semaphore(handle, semaphore.value!!)
@@ -480,13 +480,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateShaderModule.html">vkCreateShaderModule Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createShaderModule(createInfo: VkShaderModuleCreateInfo.() -> Unit): ShaderModule {
-        val shaderModuleCreateInfo = memScope.alloc<VkShaderModuleCreateInfo> {
+        val shaderModuleCreateInfo = allocator.alloc<VkShaderModuleCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
             createInfo()
         }
-        val shaderModule = memScope.alloc<VkShaderModuleVar>()
+        val shaderModule = allocator.alloc<VkShaderModuleVar>()
         vkCreateShaderModule!!(handle, shaderModuleCreateInfo.ptr, null, shaderModule.ptr)
             .checkResult("Failed to create shader module")
         return ShaderModule(handle, shaderModule.value!!)
@@ -497,13 +497,13 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSwapchainKHR.html">vkCreateSwapchainKHR Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun createSwapchain(createInfo: VkSwapchainCreateInfoKHR.() -> Unit): Swapchain {
-        val swapChainCreateInfo = memScope.alloc<VkSwapchainCreateInfoKHR> {
+        val swapChainCreateInfo = allocator.alloc<VkSwapchainCreateInfoKHR> {
             sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
             createInfo()
         }
-        val swapChainVar = memScope.alloc<VkSwapchainKHRVar>()
+        val swapChainVar = allocator.alloc<VkSwapchainKHRVar>()
         vkCreateSwapchainKHR!!(handle, swapChainCreateInfo.ptr, null, swapChainVar.ptr)
             .checkResult("Failed to create a swap chain")
         return Swapchain(handle, swapChainVar.value!!)
@@ -514,10 +514,10 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkUpdateDescriptorSets.html">vkUpdateDescriptorSets Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun updateDescriptorSets(writes: List<VkWriteDescriptorSet>, copies: List<VkCopyDescriptorSet> = emptyList()) {
         val writesArray = if (writes.isNotEmpty()) {
-            memScope.allocArray<VkWriteDescriptorSet>(writes.size) { index ->
+            allocator.allocArray<VkWriteDescriptorSet>(writes.size) { index ->
                 writes[index]
             }
         } else {
@@ -525,7 +525,7 @@ class Device(
         }
 
         val copiesArray = if (copies.isNotEmpty()) {
-            memScope.allocArray<VkCopyDescriptorSet>(copies.size) { index ->
+            allocator.allocArray<VkCopyDescriptorSet>(copies.size) { index ->
                 copies[index]
             }
         } else {
@@ -546,9 +546,9 @@ class Device(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceQueue.html">vkGetDeviceQueue Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun getQueue(queueFamilyIndex: UInt, queueIndex: UInt = 0u): Queue {
-        val queueVar = memScope.alloc<VkQueueVar>()
+        val queueVar = allocator.alloc<VkQueueVar>()
         vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
         return Queue(queueVar.value!!, queueFamilyIndex)
     }

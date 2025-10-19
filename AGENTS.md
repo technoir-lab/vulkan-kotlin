@@ -50,8 +50,8 @@ Required extensions:
 
 * The functions inside each class should be sorted by visibility (public then private), then lexicographically.
 * `Device` class acts as the factory for most of the other classes that need `VkDevice` for their creation.
-* When native memory allocation is required inside a function, always pass `MemScope` as a context parameter and 
-  make the caller responsible for releasing the memory.
+* When native memory allocation is required inside a function, `NativePlacement` should be passed as a context parameter.
+  The caller is responsible for handling the allocation and freeing the memory.
 * When the same functionality is available both in core and as an extension, the core functionality must be used.
 * Every `public` class, function and property must have a KDoc.
 

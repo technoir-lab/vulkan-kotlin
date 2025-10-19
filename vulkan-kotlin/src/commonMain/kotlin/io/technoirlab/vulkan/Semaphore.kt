@@ -6,7 +6,7 @@ import io.technoirlab.volk.VkSemaphore
 import io.technoirlab.volk.VkSemaphoreSignalInfo
 import io.technoirlab.volk.vkDestroySemaphore
 import io.technoirlab.volk.vkSignalSemaphore
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
@@ -26,9 +26,9 @@ class Semaphore(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSignalSemaphore.html">vkSignalSemaphore Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun signal(value: ULong) {
-        val signalInfo = memScope.alloc<VkSemaphoreSignalInfo> {
+        val signalInfo = allocator.alloc<VkSemaphoreSignalInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
             semaphore = handle
             this.value = value

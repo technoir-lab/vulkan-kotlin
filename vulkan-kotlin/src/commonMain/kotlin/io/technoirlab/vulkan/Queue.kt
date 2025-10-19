@@ -12,7 +12,7 @@ import io.technoirlab.volk.VkSwapchainKHRVar
 import io.technoirlab.volk.vkQueuePresentKHR
 import io.technoirlab.volk.vkQueueSubmit2
 import io.technoirlab.volk.vkQueueWaitIdle
-import kotlinx.cinterop.MemScope
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArrayOf
@@ -34,22 +34,22 @@ class Queue(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueuePresentKHR.html">vkQueuePresentKHR Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun present(swapChain: Swapchain, imageIndex: UInt, waitSemaphores: List<Semaphore> = emptyList()): VkResult {
-        val swapChainVar = memScope.alloc<VkSwapchainKHRVar> {
+        val swapChainVar = allocator.alloc<VkSwapchainKHRVar> {
             value = swapChain.handle
         }
-        val imageIndexVar = memScope.alloc<UIntVar> {
+        val imageIndexVar = allocator.alloc<UIntVar> {
             value = imageIndex
         }
-        val presentInfo = memScope.alloc<VkPresentInfoKHR> {
+        val presentInfo = allocator.alloc<VkPresentInfoKHR> {
             sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR
             swapchainCount = 1u
             pSwapchains = swapChainVar.ptr
             pImageIndices = imageIndexVar.ptr
             if (waitSemaphores.isNotEmpty()) {
                 waitSemaphoreCount = waitSemaphores.size.toUInt()
-                pWaitSemaphores = memScope.allocArrayOf(waitSemaphores.map { it.handle })
+                pWaitSemaphores = allocator.allocArrayOf(waitSemaphores.map { it.handle })
             }
         }
         val result = vkQueuePresentKHR!!(handle, presentInfo.ptr)
@@ -64,9 +64,9 @@ class Queue(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueSubmit2.html">vkQueueSubmit2 Manual Page</a>
      */
-    context(memScope: MemScope)
+    context(allocator: NativePlacement)
     fun submit(fence: Fence? = null, submitInfo: VkSubmitInfo2.() -> Unit) {
-        val submitInfo = memScope.alloc<VkSubmitInfo2> {
+        val submitInfo = allocator.alloc<VkSubmitInfo2> {
             sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2
             submitInfo()
         }
