@@ -1,9 +1,11 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_INSTANCE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
 import io.technoirlab.volk.VkDebugUtilsMessengerCreateInfoEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerEXTVar
 import io.technoirlab.volk.VkInstance
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDeviceVar
 import io.technoirlab.volk.vkCreateDebugUtilsMessengerEXT
 import io.technoirlab.volk.vkDestroyInstance
@@ -30,6 +32,11 @@ class Instance(
     init {
         volkLoadInstanceOnly(handle)
     }
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_INSTANCE
 
     /**
      * Create a debug messenger.

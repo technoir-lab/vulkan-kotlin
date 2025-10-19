@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_COMMAND_BUFFER
 import io.technoirlab.volk.VK_PIPELINE_BIND_POINT_GRAPHICS
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
@@ -18,6 +19,7 @@ import io.technoirlab.volk.VkDependencyInfo
 import io.technoirlab.volk.VkFrontFace
 import io.technoirlab.volk.VkImageMemoryBarrier2
 import io.technoirlab.volk.VkIndexType
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineBindPoint
 import io.technoirlab.volk.VkPipelineStageFlags2
 import io.technoirlab.volk.VkPolygonMode
@@ -97,6 +99,11 @@ import kotlinx.cinterop.value
 class CommandBuffer(
     override val handle: VkCommandBuffer
 ) : Object<VkCommandBuffer> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_COMMAND_BUFFER
 
     /**
      * Start recording the command buffer.

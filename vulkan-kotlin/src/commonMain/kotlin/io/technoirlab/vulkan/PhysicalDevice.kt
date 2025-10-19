@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_PHYSICAL_DEVICE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2
@@ -16,6 +17,7 @@ import io.technoirlab.volk.VkExtensionProperties
 import io.technoirlab.volk.VkFormat
 import io.technoirlab.volk.VkFormatProperties2
 import io.technoirlab.volk.VkImageFormatProperties2
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDevice
 import io.technoirlab.volk.VkPhysicalDeviceFeatures
 import io.technoirlab.volk.VkPhysicalDeviceFeatures2
@@ -60,6 +62,11 @@ import kotlinx.cinterop.value
 class PhysicalDevice(
     override val handle: VkPhysicalDevice
 ) : Object<VkPhysicalDevice> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_PHYSICAL_DEVICE
 
     /**
      * Create a new device instance.

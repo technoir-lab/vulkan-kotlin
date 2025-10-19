@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_SAMPLER
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSampler
 import io.technoirlab.volk.vkDestroySampler
 import kotlinx.cinterop.invoke
@@ -14,6 +16,11 @@ class Sampler(
     private val device: VkDevice,
     override val handle: VkSampler
 ) : Object<VkSampler> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_SAMPLER
 
     /**
      * Destroy the sampler.

@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_PIPELINE_CACHE
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineCache
 import io.technoirlab.volk.vkDestroyPipelineCache
 import io.technoirlab.volk.vkMergePipelineCaches
@@ -17,6 +19,11 @@ class PipelineCache(
     private val device: VkDevice,
     override val handle: VkPipelineCache
 ) : Object<VkPipelineCache> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_PIPELINE_CACHE
 
     /**
      * Combine the data stores of pipeline caches.

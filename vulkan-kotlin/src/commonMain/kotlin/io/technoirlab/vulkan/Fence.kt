@@ -1,11 +1,13 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_NOT_READY
+import io.technoirlab.volk.VK_OBJECT_TYPE_FENCE
 import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkFence
 import io.technoirlab.volk.VkFenceVar
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkDestroyFence
 import io.technoirlab.volk.vkGetFenceStatus
 import io.technoirlab.volk.vkResetFences
@@ -26,6 +28,11 @@ class Fence(
     private val device: VkDevice,
     override val handle: VkFence
 ) : Object<VkFence> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_FENCE
 
     /**
      * Indicates whether the fence is signaled.

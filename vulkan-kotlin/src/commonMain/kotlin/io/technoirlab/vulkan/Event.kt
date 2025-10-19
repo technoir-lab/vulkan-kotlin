@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_EVENT
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkEvent
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkDestroyEvent
 import kotlinx.cinterop.invoke
 
@@ -14,6 +16,11 @@ class Event(
     private val device: VkDevice,
     override val handle: VkEvent
 ) : Object<VkEvent> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_EVENT
 
     /**
      * Destroy the event.

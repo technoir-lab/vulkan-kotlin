@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_BUFFER_VIEW
 import io.technoirlab.volk.VkBufferView
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkDestroyBufferView
 import kotlinx.cinterop.invoke
 
@@ -14,6 +16,11 @@ class BufferView(
     private val device: VkDevice,
     override val handle: VkBufferView
 ) : Object<VkBufferView> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_BUFFER_VIEW
 
     /**
      * Destroy the buffer view.

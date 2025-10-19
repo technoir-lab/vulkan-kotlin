@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_BUFFER
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
@@ -9,6 +10,7 @@ import io.technoirlab.volk.VkBufferMemoryRequirementsInfo2
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkMemoryRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindBufferMemory2
 import io.technoirlab.volk.vkDestroyBuffer
 import io.technoirlab.volk.vkGetBufferMemoryRequirements2
@@ -27,6 +29,11 @@ class Buffer(
     override val handle: VkBuffer,
     val size: ULong
 ) : Object<VkBuffer> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_BUFFER
 
     /**
      * Determine memory requirements for the buffer.

@@ -1,6 +1,7 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_COMMAND_BUFFER_LEVEL_PRIMARY
+import io.technoirlab.volk.VK_OBJECT_TYPE_COMMAND_POOL
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
 import io.technoirlab.volk.VkCommandBufferAllocateInfo
 import io.technoirlab.volk.VkCommandBufferVar
@@ -8,6 +9,7 @@ import io.technoirlab.volk.VkCommandPool
 import io.technoirlab.volk.VkCommandPoolResetFlags
 import io.technoirlab.volk.VkCommandPoolTrimFlags
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkAllocateCommandBuffers
 import io.technoirlab.volk.vkDestroyCommandPool
 import io.technoirlab.volk.vkFreeCommandBuffers
@@ -30,6 +32,11 @@ class CommandPool(
     private val device: VkDevice,
     override val handle: VkCommandPool
 ) : Object<VkCommandPool> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_COMMAND_POOL
 
     /**
      * Allocate command buffers from the command pool.

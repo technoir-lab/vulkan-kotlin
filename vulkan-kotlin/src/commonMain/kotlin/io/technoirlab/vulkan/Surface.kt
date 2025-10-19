@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_SURFACE_KHR
 import io.technoirlab.volk.VkInstance
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSurfaceKHR
 import io.technoirlab.volk.vkDestroySurfaceKHR
 import kotlinx.cinterop.invoke
@@ -14,6 +16,11 @@ class Surface(
     private val instance: VkInstance,
     override val handle: VkSurfaceKHR
 ) : Object<VkSurfaceKHR> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_SURFACE_KHR
 
     /**
      * Destroy the surface.

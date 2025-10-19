@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE_VIEW
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImageView
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkDestroyImageView
 import kotlinx.cinterop.invoke
 
@@ -14,6 +16,11 @@ class ImageView(
     private val device: VkDevice,
     override val handle: VkImageView
 ) : Object<VkImageView> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_IMAGE_VIEW
 
     /**
      * Destroy the image view.

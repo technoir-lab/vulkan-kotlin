@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_MODULE
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkShaderModule
 import io.technoirlab.volk.vkDestroyShaderModule
 import kotlinx.cinterop.invoke
@@ -14,6 +16,11 @@ class ShaderModule(
     private val device: VkDevice,
     override val handle: VkShaderModule
 ) : Object<VkShaderModule> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_SHADER_MODULE
 
     /**
      * Destroy the shader module.

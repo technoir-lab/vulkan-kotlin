@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT
 import io.technoirlab.volk.VkDescriptorSetLayout
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkDestroyDescriptorSetLayout
 import kotlinx.cinterop.invoke
 
@@ -14,6 +16,11 @@ class DescriptorSetLayout(
     private val device: VkDevice,
     override val handle: VkDescriptorSetLayout
 ) : Object<VkDescriptorSetLayout> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_DESCRIPTOR_SET_LAYOUT
 
     /**
      * Destroy the descriptor set layout.

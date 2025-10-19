@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
@@ -9,6 +10,7 @@ import io.technoirlab.volk.VkImage
 import io.technoirlab.volk.VkImageMemoryRequirementsInfo2
 import io.technoirlab.volk.VkMemoryRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindImageMemory2
 import io.technoirlab.volk.vkDestroyImage
 import io.technoirlab.volk.vkGetImageMemoryRequirements2
@@ -27,6 +29,11 @@ class Image(
     override val handle: VkImage,
     val destroyable: Boolean = true
 ) : Object<VkImage> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_IMAGE
 
     /**
      * Determine memory requirements for the image.

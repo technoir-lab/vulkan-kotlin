@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_QUERY_POOL
 import io.technoirlab.volk.VK_QUERY_RESULT_64_BIT
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkQueryPool
 import io.technoirlab.volk.VkQueryResultFlags
 import io.technoirlab.volk.vkDestroyQueryPool
@@ -19,6 +21,11 @@ class QueryPool(
     private val device: VkDevice,
     override val handle: VkQueryPool
 ) : Object<VkQueryPool> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_QUERY_POOL
 
     /**
      * Retrieve status and results for a set of queries.

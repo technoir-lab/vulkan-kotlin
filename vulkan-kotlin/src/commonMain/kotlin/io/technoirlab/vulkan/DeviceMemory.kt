@@ -1,7 +1,9 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE_MEMORY
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemory
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkFreeMemory
 import io.technoirlab.volk.vkMapMemory
 import io.technoirlab.volk.vkUnmapMemory
@@ -33,6 +35,11 @@ class DeviceMemory(
     override val handle: VkDeviceMemory,
     val size: ULong
 ) : Object<VkDeviceMemory> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_DEVICE_MEMORY
 
     /**
      * Copy data from a source to the device memory.

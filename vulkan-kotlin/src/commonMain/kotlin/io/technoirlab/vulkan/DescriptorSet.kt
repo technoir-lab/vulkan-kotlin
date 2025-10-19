@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_DESCRIPTOR_SET
 import io.technoirlab.volk.VkDescriptorSet
+import io.technoirlab.volk.VkObjectType
 
 /**
  * Wrapper for [VkDescriptorSet].
@@ -10,6 +12,11 @@ import io.technoirlab.volk.VkDescriptorSet
 class DescriptorSet(
     override val handle: VkDescriptorSet
 ) : Object<VkDescriptorSet> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_DESCRIPTOR_SET
 
     /**
      * No-op. Use [DescriptorPool.freeDescriptorSets] to free descriptor sets.

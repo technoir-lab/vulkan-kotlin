@@ -1,9 +1,11 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_ERROR_OUT_OF_DATE_KHR
+import io.technoirlab.volk.VK_OBJECT_TYPE_QUEUE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PRESENT_INFO_KHR
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SUBMIT_INFO_2
 import io.technoirlab.volk.VK_SUBOPTIMAL_KHR
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPresentInfoKHR
 import io.technoirlab.volk.VkQueue
 import io.technoirlab.volk.VkResult
@@ -29,6 +31,11 @@ class Queue(
     override val handle: VkQueue,
     val familyIndex: UInt
 ) : Object<VkQueue> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_QUEUE
 
     /**
      * Queue an image for presentation.

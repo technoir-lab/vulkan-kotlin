@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
@@ -56,6 +57,7 @@ import io.technoirlab.volk.VkImageVar
 import io.technoirlab.volk.VkImageViewCreateInfo
 import io.technoirlab.volk.VkImageViewVar
 import io.technoirlab.volk.VkMemoryAllocateInfo
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineCacheCreateInfo
 import io.technoirlab.volk.VkPipelineCacheVar
 import io.technoirlab.volk.VkPipelineColorBlendStateCreateInfo
@@ -129,6 +131,11 @@ class Device(
     init {
         volkLoadDevice(handle)
     }
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_DEVICE
 
     /**
      * Allocate device memory.

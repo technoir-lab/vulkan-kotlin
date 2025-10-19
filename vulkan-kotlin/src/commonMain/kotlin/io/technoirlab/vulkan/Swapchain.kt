@@ -1,11 +1,13 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_ERROR_OUT_OF_DATE_KHR
+import io.technoirlab.volk.VK_OBJECT_TYPE_SWAPCHAIN_KHR
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
 import io.technoirlab.volk.VK_SUBOPTIMAL_KHR
 import io.technoirlab.volk.VkAcquireNextImageInfoKHR
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImageVar
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSwapchainKHR
 import io.technoirlab.volk.vkAcquireNextImage2KHR
 import io.technoirlab.volk.vkDestroySwapchainKHR
@@ -29,6 +31,11 @@ class Swapchain(
     private val device: VkDevice,
     override val handle: VkSwapchainKHR
 ) : Object<VkSwapchainKHR> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_SWAPCHAIN_KHR
 
     /**
      * Retrieve the index of the next available presentable image.

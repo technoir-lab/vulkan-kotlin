@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_PIPELINE
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipeline
 import io.technoirlab.volk.vkDestroyPipeline
 import kotlinx.cinterop.invoke
@@ -14,6 +16,8 @@ class Pipeline(
     private val device: VkDevice,
     override val handle: VkPipeline
 ) : Object<VkPipeline> {
+
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_PIPELINE
 
     /**
      * Destroy the pipeline.

@@ -1,9 +1,11 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_SEMAPHORE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSemaphore
 import io.technoirlab.volk.VkSemaphoreSignalInfo
 import io.technoirlab.volk.VkSemaphoreType
@@ -31,6 +33,11 @@ class Semaphore(
     override val handle: VkSemaphore,
     val semaphoreType: VkSemaphoreType
 ) : Object<VkSemaphore> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_SEMAPHORE
 
     /**
      * Get the current counter value of the timeline semaphore.

@@ -1,11 +1,13 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_OBJECT_TYPE_DESCRIPTOR_POOL
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
 import io.technoirlab.volk.VkDescriptorPool
 import io.technoirlab.volk.VkDescriptorPoolResetFlags
 import io.technoirlab.volk.VkDescriptorSetAllocateInfo
 import io.technoirlab.volk.VkDescriptorSetVar
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkAllocateDescriptorSets
 import io.technoirlab.volk.vkDestroyDescriptorPool
 import io.technoirlab.volk.vkFreeDescriptorSets
@@ -27,6 +29,11 @@ class DescriptorPool(
     private val device: VkDevice,
     override val handle: VkDescriptorPool
 ) : Object<VkDescriptorPool> {
+
+    /**
+     * @inheritDoc
+     */
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_DESCRIPTOR_POOL
 
     /**
      * Allocate one or more descriptor sets.
