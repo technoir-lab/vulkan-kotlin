@@ -57,7 +57,10 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPhysicalDevice.html">VkPhysicalDevice Manual Page</a>
  */
-class PhysicalDevice(val handle: VkPhysicalDevice) {
+class PhysicalDevice(
+    override val handle: VkPhysicalDevice
+) : Object<VkPhysicalDevice> {
+
     /**
      * Create a new device instance.
      *
@@ -293,6 +296,11 @@ class PhysicalDevice(val handle: VkPhysicalDevice) {
             .checkResult("Failed to check surface support")
         return isSupported.value == VK_TRUE
     }
+
+    /**
+     * No-op.
+     */
+    override fun close() = Unit
 
     data class Features(
         val features: VkPhysicalDeviceFeatures2,

@@ -27,8 +27,8 @@ import kotlin.time.Duration
  */
 class Swapchain(
     private val device: VkDevice,
-    val handle: VkSwapchainKHR
-) : AutoCloseable {
+    override val handle: VkSwapchainKHR
+) : Object<VkSwapchainKHR> {
 
     /**
      * Retrieve the index of the next available presentable image.

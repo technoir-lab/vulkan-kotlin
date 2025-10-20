@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class ImageView(
     private val device: VkDevice,
-    val handle: VkImageView
-) : AutoCloseable {
+    override val handle: VkImageView
+) : Object<VkImageView> {
 
     /**
      * Destroy the image view.

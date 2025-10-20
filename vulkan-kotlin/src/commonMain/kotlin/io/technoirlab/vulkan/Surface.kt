@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class Surface(
     private val instance: VkInstance,
-    val handle: VkSurfaceKHR
-) : AutoCloseable {
+    override val handle: VkSurfaceKHR
+) : Object<VkSurfaceKHR> {
 
     /**
      * Destroy the surface.

@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class PipelineLayout(
     private val device: VkDevice,
-    val handle: VkPipelineLayout
-) : AutoCloseable {
+    override val handle: VkPipelineLayout
+) : Object<VkPipelineLayout> {
 
     /**
      * Destroy the pipeline layout.

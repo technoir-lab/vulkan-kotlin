@@ -17,8 +17,8 @@ import kotlinx.cinterop.usePinned
  */
 class QueryPool(
     private val device: VkDevice,
-    val handle: VkQueryPool
-) : AutoCloseable {
+    override val handle: VkQueryPool
+) : Object<VkQueryPool> {
 
     /**
      * Retrieve status and results for a set of queries.

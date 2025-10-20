@@ -24,8 +24,8 @@ import kotlin.time.Duration
  */
 class Fence(
     private val device: VkDevice,
-    val handle: VkFence
-) : AutoCloseable {
+    override val handle: VkFence
+) : Object<VkFence> {
 
     /**
      * Indicates whether the fence is signaled.

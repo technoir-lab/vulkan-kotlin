@@ -94,8 +94,10 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandBuffer.html">VkCommandBuffer Manual Page</a>
  */
-@Suppress("LongParameterList")
-class CommandBuffer(val handle: VkCommandBuffer) {
+class CommandBuffer(
+    override val handle: VkCommandBuffer
+) : Object<VkCommandBuffer> {
+
     /**
      * Start recording the command buffer.
      *
@@ -264,6 +266,7 @@ class CommandBuffer(val handle: VkCommandBuffer) {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyQueryPoolResults.html">vkCmdCopyQueryPoolResults Manual Page</a>
      */
+    @Suppress("LongParameterList")
     fun copyQueryPoolResults(
         queryPool: QueryPool,
         firstQuery: UInt,
@@ -705,4 +708,9 @@ class CommandBuffer(val handle: VkCommandBuffer) {
     fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
         vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
     }
+
+    /**
+     * No-op. Use [CommandPool.freeCommandBuffers] to free command buffers.
+     */
+    override fun close() = Unit
 }

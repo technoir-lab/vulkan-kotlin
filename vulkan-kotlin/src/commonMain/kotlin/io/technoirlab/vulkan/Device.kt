@@ -123,8 +123,8 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDevice.html">VkDevice Manual Page</a>
  */
 class Device(
-    val handle: VkDevice
-) : AutoCloseable {
+    override val handle: VkDevice
+) : Object<VkDevice> {
 
     init {
         volkLoadDevice(handle)
@@ -468,10 +468,10 @@ class Device(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSemaphore.html">vkCreateSemaphore Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun createSemaphore(type: VkSemaphoreType = VK_SEMAPHORE_TYPE_BINARY, initialValue: ULong = 0uL): Semaphore {
+    fun createSemaphore(semaphoreType: VkSemaphoreType = VK_SEMAPHORE_TYPE_BINARY, initialValue: ULong = 0uL): Semaphore {
         val typeInfo = allocator.alloc<VkSemaphoreTypeCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
-            semaphoreType = type
+            this.semaphoreType = semaphoreType
             this.initialValue = initialValue
         }
         val semaphoreInfo = allocator.alloc<VkSemaphoreCreateInfo> {
@@ -481,7 +481,7 @@ class Device(
         val semaphore = allocator.alloc<VkSemaphoreVar>()
         vkCreateSemaphore!!(handle, semaphoreInfo.ptr, null, semaphore.ptr)
             .checkResult("Failed to create a semaphore")
-        return Semaphore(device = handle, handle = semaphore.value!!, type = type)
+        return Semaphore(device = handle, handle = semaphore.value!!, semaphoreType)
     }
 
     /**

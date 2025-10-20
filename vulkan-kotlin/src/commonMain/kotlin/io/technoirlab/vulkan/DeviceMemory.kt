@@ -30,9 +30,9 @@ import kotlin.math.min
  */
 class DeviceMemory(
     private val device: VkDevice,
-    val handle: VkDeviceMemory,
+    override val handle: VkDeviceMemory,
     val size: ULong
-) : AutoCloseable {
+) : Object<VkDeviceMemory> {
 
     /**
      * Copy data from a source to the device memory.

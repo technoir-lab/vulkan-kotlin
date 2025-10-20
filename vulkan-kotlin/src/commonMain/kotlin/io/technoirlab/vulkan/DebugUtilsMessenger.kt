@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class DebugUtilsMessenger(
     private val instance: VkInstance,
-    val handle: VkDebugUtilsMessengerEXT
-) : AutoCloseable {
+    override val handle: VkDebugUtilsMessengerEXT
+) : Object<VkDebugUtilsMessengerEXT> {
 
     /**
      * Destroy the debug messenger.

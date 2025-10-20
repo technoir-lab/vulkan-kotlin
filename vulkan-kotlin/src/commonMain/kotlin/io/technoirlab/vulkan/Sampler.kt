@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class Sampler(
     private val device: VkDevice,
-    val handle: VkSampler
-) : AutoCloseable {
+    override val handle: VkSampler
+) : Object<VkSampler> {
 
     /**
      * Destroy the sampler.

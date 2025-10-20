@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class ShaderModule(
     private val device: VkDevice,
-    val handle: VkShaderModule
-) : AutoCloseable {
+    override val handle: VkShaderModule
+) : Object<VkShaderModule> {
 
     /**
      * Destroy the shader module.
