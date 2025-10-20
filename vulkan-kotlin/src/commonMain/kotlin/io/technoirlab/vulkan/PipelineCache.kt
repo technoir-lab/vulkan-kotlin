@@ -15,8 +15,8 @@ import kotlinx.cinterop.invoke
  */
 class PipelineCache(
     private val device: VkDevice,
-    val handle: VkPipelineCache
-) : AutoCloseable {
+    override val handle: VkPipelineCache
+) : Object<VkPipelineCache> {
 
     /**
      * Combine the data stores of pipeline caches.

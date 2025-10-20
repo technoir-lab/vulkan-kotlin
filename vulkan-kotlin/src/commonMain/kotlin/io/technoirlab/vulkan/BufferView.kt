@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class BufferView(
     private val device: VkDevice,
-    val handle: VkBufferView
-) : AutoCloseable {
+    override val handle: VkBufferView
+) : Object<VkBufferView> {
 
     /**
      * Destroy the buffer view.

@@ -28,8 +28,8 @@ import kotlinx.cinterop.ptr
  */
 class CommandPool(
     private val device: VkDevice,
-    val handle: VkCommandPool
-) : AutoCloseable {
+    override val handle: VkCommandPool
+) : Object<VkCommandPool> {
 
     /**
      * Allocate command buffers from the command pool.

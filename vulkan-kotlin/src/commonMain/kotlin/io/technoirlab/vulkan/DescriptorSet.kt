@@ -8,5 +8,11 @@ import io.technoirlab.volk.VkDescriptorSet
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDescriptorSet.html">VkDescriptorSet Manual Page</a>
  */
 class DescriptorSet(
-    val handle: VkDescriptorSet
-)
+    override val handle: VkDescriptorSet
+) : Object<VkDescriptorSet> {
+
+    /**
+     * No-op. Use [DescriptorPool.freeDescriptorSets] to free descriptor sets.
+     */
+    override fun close() = Unit
+}

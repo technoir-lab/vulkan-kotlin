@@ -25,8 +25,8 @@ import kotlinx.cinterop.ptr
  */
 class DescriptorPool(
     private val device: VkDevice,
-    val handle: VkDescriptorPool
-) : AutoCloseable {
+    override val handle: VkDescriptorPool
+) : Object<VkDescriptorPool> {
 
     /**
      * Allocate one or more descriptor sets.

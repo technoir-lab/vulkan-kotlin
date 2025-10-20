@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class DescriptorSetLayout(
     private val device: VkDevice,
-    val handle: VkDescriptorSetLayout
-) : AutoCloseable {
+    override val handle: VkDescriptorSetLayout
+) : Object<VkDescriptorSetLayout> {
 
     /**
      * Destroy the descriptor set layout.

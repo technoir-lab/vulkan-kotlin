@@ -23,7 +23,10 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkInstance.html">VkInstance Manual Page</a>
  */
-class Instance(val handle: VkInstance) : AutoCloseable {
+class Instance(
+    override val handle: VkInstance
+) : Object<VkInstance> {
+
     init {
         volkLoadInstanceOnly(handle)
     }

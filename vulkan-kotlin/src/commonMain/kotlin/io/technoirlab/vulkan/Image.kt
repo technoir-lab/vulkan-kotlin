@@ -24,9 +24,9 @@ import kotlinx.cinterop.ptr
  */
 class Image(
     private val device: VkDevice,
-    val handle: VkImage,
+    override val handle: VkImage,
     val destroyable: Boolean = true
-) : AutoCloseable {
+) : Object<VkImage> {
 
     /**
      * Determine memory requirements for the image.

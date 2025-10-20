@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class Pipeline(
     private val device: VkDevice,
-    val handle: VkPipeline
-) : AutoCloseable {
+    override val handle: VkPipeline
+) : Object<VkPipeline> {
 
     /**
      * Destroy the pipeline.

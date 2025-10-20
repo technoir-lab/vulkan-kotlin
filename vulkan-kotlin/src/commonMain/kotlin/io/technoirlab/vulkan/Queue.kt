@@ -26,9 +26,10 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkQueue.html">VkQueue Manual Page</a>
  */
 class Queue(
-    val handle: VkQueue,
+    override val handle: VkQueue,
     val familyIndex: UInt
-) {
+) : Object<VkQueue> {
+
     /**
      * Queue an image for presentation.
      *
@@ -82,4 +83,9 @@ class Queue(
     fun waitIdle() {
         vkQueueWaitIdle!!(handle).checkResult("Failed to wait for queue idle")
     }
+
+    /**
+     * No-op.
+     */
+    override fun close() = Unit
 }

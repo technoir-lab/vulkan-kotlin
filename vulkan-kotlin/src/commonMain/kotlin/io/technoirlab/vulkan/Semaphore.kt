@@ -28,9 +28,9 @@ import kotlin.time.Duration
  */
 class Semaphore(
     private val device: VkDevice,
-    val handle: VkSemaphore,
-    val type: VkSemaphoreType
-) : AutoCloseable {
+    override val handle: VkSemaphore,
+    val semaphoreType: VkSemaphoreType
+) : Object<VkSemaphore> {
 
     /**
      * Get the current counter value of the timeline semaphore.
@@ -39,7 +39,7 @@ class Semaphore(
      */
     context(allocator: NativePlacement)
     fun counterValue(): ULong {
-        require(type == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
 
         val valueVar = allocator.alloc<ULongVar>()
         vkGetSemaphoreCounterValue!!(device, handle, valueVar.ptr)
@@ -54,7 +54,7 @@ class Semaphore(
      */
     context(allocator: NativePlacement)
     fun signal(value: ULong) {
-        require(type == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
 
         val signalInfo = allocator.alloc<VkSemaphoreSignalInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
@@ -72,7 +72,7 @@ class Semaphore(
      */
     context(allocator: NativePlacement)
     fun wait(value: ULong, timeout: Duration = Duration.INFINITE) {
-        require(type == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
 
         val valueVar = allocator.alloc<ULongVar> { this.value = value }
         val waitInfo = allocator.alloc<VkSemaphoreWaitInfo> {

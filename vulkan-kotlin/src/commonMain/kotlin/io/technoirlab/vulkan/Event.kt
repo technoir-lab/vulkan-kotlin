@@ -12,8 +12,8 @@ import kotlinx.cinterop.invoke
  */
 class Event(
     private val device: VkDevice,
-    val handle: VkEvent
-) : AutoCloseable {
+    override val handle: VkEvent
+) : Object<VkEvent> {
 
     /**
      * Destroy the event.

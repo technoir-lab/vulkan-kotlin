@@ -24,9 +24,9 @@ import kotlinx.cinterop.ptr
  */
 class Buffer(
     private val device: VkDevice,
-    val handle: VkBuffer,
+    override val handle: VkBuffer,
     val size: ULong
-) : AutoCloseable {
+) : Object<VkBuffer> {
 
     /**
      * Determine memory requirements for the buffer.
