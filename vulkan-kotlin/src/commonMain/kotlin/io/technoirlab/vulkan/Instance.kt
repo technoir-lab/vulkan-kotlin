@@ -40,6 +40,7 @@ class Instance(
 
     /**
      * Create a debug messenger.
+     * Requires `VK_EXT_debug_utils` extension.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDebugUtilsMessengerEXT.html">vkCreateDebugUtilsMessengerEXT Manual Page</a>
      */
