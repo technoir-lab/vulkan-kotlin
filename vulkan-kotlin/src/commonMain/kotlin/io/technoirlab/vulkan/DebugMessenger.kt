@@ -39,21 +39,21 @@ class DebugMessenger(
     override val type: VkObjectType get() = VK_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT
 
     /**
-     * Submit a message to the debug callback.
+     * Submit a message to the debug stream.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSubmitDebugUtilsMessageEXT.html">vkSubmitDebugUtilsMessageEXT Manual Page</a>
      */
     context(allocator: NativePlacement)
     fun submitMessage(
-        severity: VkDebugUtilsMessageSeverityFlagBitsEXT,
-        types: VkDebugUtilsMessageTypeFlagsEXT,
+        messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
+        messageTypes: VkDebugUtilsMessageTypeFlagsEXT,
         callbackData: VkDebugUtilsMessengerCallbackDataEXT.() -> Unit
     ) {
         val callbackDataStruct = allocator.alloc<VkDebugUtilsMessengerCallbackDataEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
             callbackData()
         }
-        vkSubmitDebugUtilsMessageEXT!!(instance, severity, types, callbackDataStruct.ptr)
+        vkSubmitDebugUtilsMessageEXT!!(instance, messageSeverity, messageTypes, callbackDataStruct.ptr)
     }
 
     /**
