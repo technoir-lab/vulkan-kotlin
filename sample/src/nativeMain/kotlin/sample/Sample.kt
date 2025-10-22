@@ -1,6 +1,5 @@
 package sample
 
-import io.technoirlab.volk.VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
@@ -9,7 +8,6 @@ import io.technoirlab.vulkan.Device
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.Vulkan
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toKString
 import kotlin.experimental.ExperimentalNativeApi
 
@@ -35,14 +33,7 @@ class Sample : AutoCloseable {
             }
         }
 
-        val instance = vulkan.createInstance(instanceInfo = {
-            if (VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME in extensions) {
-                flags = flags or VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
-            }
-            ppEnabledExtensionNames = extensions.toCStringArray(memScope)
-            enabledExtensionCount = extensions.size.toUInt()
-        }).also { instance = it }
-
+        val instance = vulkan.createInstance(enabledExtensions = extensions).also { instance = it }
         println("Created Vulkan instance")
 
         val physicalDevices = instance.enumeratePhysicalDevices().map { it to it.getProperties().deviceName.toKString() }
