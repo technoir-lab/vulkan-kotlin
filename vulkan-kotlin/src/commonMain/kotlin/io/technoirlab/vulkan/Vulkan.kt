@@ -1,5 +1,7 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_APPLICATION_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
 import io.technoirlab.volk.VkApplicationInfo
@@ -13,13 +15,16 @@ import io.technoirlab.volk.vkEnumerateInstanceLayerProperties
 import io.technoirlab.volk.volkFinalize
 import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
+import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
+import kotlinx.cinterop.cstr
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.value
 
 /**
@@ -48,16 +53,28 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateInstance.html">vkCreateInstance Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun createInstance(applicationInfo: VkApplicationInfo.() -> Unit = {}, instanceInfo: VkInstanceCreateInfo.() -> Unit = {}): Instance {
-        val applicationInfo = allocator.alloc<VkApplicationInfo> {
-            sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
-            applicationInfo()
-        }
+    context(allocator: AutofreeScope)
+    fun createInstance(
+        enabledLayers: List<String> = emptyList(),
+        enabledExtensions: List<String> = emptyList(),
+        applicationInfo: ApplicationInfo? = null
+    ): Instance {
         val instanceCreateInfo = allocator.alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
-            pApplicationInfo = applicationInfo.ptr
-            instanceInfo()
+            pApplicationInfo = applicationInfo?.toVkApplicationInfo()?.ptr
+            flags = if (VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME in enabledExtensions) {
+                VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
+            } else {
+                0u
+            }
+            if (enabledLayers.isNotEmpty()) {
+                enabledLayerCount = enabledLayers.size.toUInt()
+                ppEnabledLayerNames = enabledLayers.toCStringArray(allocator)
+            }
+            if (enabledExtensions.isNotEmpty()) {
+                enabledExtensionCount = enabledExtensions.size.toUInt()
+                ppEnabledExtensionNames = enabledExtensions.toCStringArray(allocator)
+            }
         }
         val instanceVar = allocator.alloc<VkInstanceVar>()
         vkCreateInstance!!(instanceCreateInfo.ptr, null, instanceVar.ptr)
@@ -106,4 +123,15 @@ class Vulkan : AutoCloseable {
 
         return (0 until count).map { layerProperties[it] }
     }
+
+    context(allocator: AutofreeScope)
+    private fun ApplicationInfo.toVkApplicationInfo(): VkApplicationInfo =
+        allocator.alloc {
+            sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
+            apiVersion = this@toVkApplicationInfo.apiVersion
+            pApplicationName = this@toVkApplicationInfo.applicationName?.cstr?.getPointer(allocator)
+            applicationVersion = this@toVkApplicationInfo.applicationVersion
+            pEngineName = this@toVkApplicationInfo.engineName?.cstr?.getPointer(allocator)
+            engineVersion = this@toVkApplicationInfo.engineVersion
+        }
 }
