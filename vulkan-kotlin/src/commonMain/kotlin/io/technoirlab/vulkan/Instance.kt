@@ -2,6 +2,8 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_INSTANCE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
+import io.technoirlab.volk.VkDebugUtilsMessageSeverityFlagsEXT
+import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagsEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerCreateInfoEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerEXTVar
 import io.technoirlab.volk.VkInstance
@@ -12,12 +14,14 @@ import io.technoirlab.volk.vkDestroyInstance
 import io.technoirlab.volk.vkEnumeratePhysicalDevices
 import io.technoirlab.volk.volkLoadInstanceOnly
 import kotlinx.cinterop.NativePlacement
+import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.value
 
 /**
@@ -45,15 +49,23 @@ class Instance(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDebugUtilsMessengerEXT.html">vkCreateDebugUtilsMessengerEXT Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun createDebugUtilsMessenger(createInfo: VkDebugUtilsMessengerCreateInfoEXT.() -> Unit): DebugUtilsMessenger {
+    fun createDebugMessenger(
+        messageSeverity: VkDebugUtilsMessageSeverityFlagsEXT,
+        messageType: VkDebugUtilsMessageTypeFlagsEXT,
+        callback: DebugMessenger.Callback
+    ): DebugMessenger {
+        val callbackRef = StableRef.create(callback)
         val debugUtilsMessengerCreateInfo = allocator.alloc<VkDebugUtilsMessengerCreateInfoEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
-            createInfo()
+            pfnUserCallback = staticCFunction(::debugMessengerCallback)
+            pUserData = callbackRef.asCPointer()
+            this.messageSeverity = messageSeverity
+            this.messageType = messageType
         }
         val messengerVar = allocator.alloc<VkDebugUtilsMessengerEXTVar>()
         vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
-            .checkResult("Failed to create a debug utils messenger")
-        return DebugUtilsMessenger(handle, messengerVar.value!!)
+            .checkResult("Failed to create a debug messenger")
+        return DebugMessenger(handle, messengerVar.value!!, callbackRef)
     }
 
     /**
