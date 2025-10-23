@@ -44,7 +44,6 @@ For more information, please see the [API reference](https://technoir-lab.github
 
 * Render passes and framebuffers (de-facto deprecated)
 * Custom memory allocators (will be added in the future)
-* Compute (will be added in the future)
 * Raytracing (will be added in the future)
 * Multiview
 
