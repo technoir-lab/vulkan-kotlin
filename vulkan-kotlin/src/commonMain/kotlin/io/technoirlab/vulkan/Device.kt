@@ -7,6 +7,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
@@ -32,6 +33,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
+import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBufferCreateInfo
 import io.technoirlab.volk.VkBufferVar
 import io.technoirlab.volk.VkBufferViewCreateInfo
@@ -43,6 +45,7 @@ import io.technoirlab.volk.VkCopyDescriptorSet
 import io.technoirlab.volk.VkDescriptorPoolCreateInfo
 import io.technoirlab.volk.VkDescriptorPoolVar
 import io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo
+import io.technoirlab.volk.VkDescriptorSetLayoutSupport
 import io.technoirlab.volk.VkDescriptorSetLayoutVar
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemoryVar
@@ -109,6 +112,7 @@ import io.technoirlab.volk.vkCreateShaderModule
 import io.technoirlab.volk.vkCreateSwapchainKHR
 import io.technoirlab.volk.vkDestroyDevice
 import io.technoirlab.volk.vkDeviceWaitIdle
+import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
 import io.technoirlab.volk.vkGetDeviceQueue
 import io.technoirlab.volk.vkUpdateDescriptorSets
 import io.technoirlab.volk.volkLoadDevice
@@ -526,6 +530,32 @@ class Device(
     }
 
     /**
+     * Query whether a descriptor set layout can be created.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDescriptorSetLayoutSupport.html">vkGetDescriptorSetLayoutSupport Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun getDescriptorSetLayoutSupport(createInfo: VkDescriptorSetLayoutCreateInfo): Boolean {
+        val layoutSupport = allocator.alloc<VkDescriptorSetLayoutSupport> {
+            sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
+        }
+        vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
+        return layoutSupport.supported == VK_TRUE
+    }
+
+    /**
+     * Get a queue from the device.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceQueue.html">vkGetDeviceQueue Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun getQueue(queueFamilyIndex: UInt, queueIndex: UInt = 0u): Queue {
+        val queueVar = allocator.alloc<VkQueueVar>()
+        vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
+        return Queue(queueVar.value!!, queueFamilyIndex)
+    }
+
+    /**
      * Update descriptor sets.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkUpdateDescriptorSets.html">vkUpdateDescriptorSets Manual Page</a>
@@ -555,18 +585,6 @@ class Device(
             copies.size.toUInt(),
             copiesArray
         )
-    }
-
-    /**
-     * Get a queue from the device.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceQueue.html">vkGetDeviceQueue Manual Page</a>
-     */
-    context(allocator: NativePlacement)
-    fun getQueue(queueFamilyIndex: UInt, queueIndex: UInt = 0u): Queue {
-        val queueVar = allocator.alloc<VkQueueVar>()
-        vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
-        return Queue(queueVar.value!!, queueFamilyIndex)
     }
 
     /**
