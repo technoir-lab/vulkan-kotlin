@@ -5,6 +5,7 @@ import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
@@ -41,6 +42,7 @@ import io.technoirlab.volk.VkBufferViewVar
 import io.technoirlab.volk.VkCommandPoolCreateFlags
 import io.technoirlab.volk.VkCommandPoolCreateInfo
 import io.technoirlab.volk.VkCommandPoolVar
+import io.technoirlab.volk.VkComputePipelineCreateInfo
 import io.technoirlab.volk.VkCopyDescriptorSet
 import io.technoirlab.volk.VkDescriptorPoolCreateInfo
 import io.technoirlab.volk.VkDescriptorPoolVar
@@ -96,6 +98,7 @@ import io.technoirlab.volk.vkAllocateMemory
 import io.technoirlab.volk.vkCreateBuffer
 import io.technoirlab.volk.vkCreateBufferView
 import io.technoirlab.volk.vkCreateCommandPool
+import io.technoirlab.volk.vkCreateComputePipelines
 import io.technoirlab.volk.vkCreateDescriptorPool
 import io.technoirlab.volk.vkCreateDescriptorSetLayout
 import io.technoirlab.volk.vkCreateEvent
@@ -208,6 +211,41 @@ class Device(
         vkCreateCommandPool!!(handle, commandPoolCreateInfo.ptr, null, commandPoolVar.ptr)
             .checkResult("Failed to create a command pool")
         return CommandPool(handle, commandPoolVar.value!!)
+    }
+
+    /**
+     * Create a new compute pipeline.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateComputePipelines.html">vkCreateComputePipelines Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun createComputePipeline(
+        layout: PipelineLayout,
+        shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit = {},
+        flags: VkPipelineCreateFlags = 0u,
+        basePipeline: Pipeline? = null,
+        cache: PipelineCache? = null
+    ): Pipeline {
+        val computePipelineCreateInfo = allocator.alloc<VkComputePipelineCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+            this.flags = flags
+            this.layout = layout.handle
+            basePipelineHandle = basePipeline?.handle
+            stage.apply {
+                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+                shaderStage()
+            }
+        }
+        val pipelineVar = allocator.alloc<VkPipelineVar>()
+        vkCreateComputePipelines!!(
+            handle,
+            cache?.handle,
+            1u,
+            computePipelineCreateInfo.ptr,
+            null,
+            pipelineVar.ptr
+        ).checkResult("Failed to create compute pipeline")
+        return Pipeline(handle, pipelineVar.value!!)
     }
 
     /**
@@ -400,8 +438,14 @@ class Device(
             basePipelineHandle = basePipeline?.handle
         }
         val pipelineVar = allocator.alloc<VkPipelineVar>()
-        vkCreateGraphicsPipelines!!(handle, cache?.handle, 1u, graphicsPipelineCreateInfo.ptr, null, pipelineVar.ptr)
-            .checkResult("Failed to create graphics pipeline")
+        vkCreateGraphicsPipelines!!(
+            handle,
+            cache?.handle,
+            1u,
+            graphicsPipelineCreateInfo.ptr,
+            null,
+            pipelineVar.ptr
+        ).checkResult("Failed to create graphics pipeline")
         return Pipeline(handle, pipelineVar.value!!)
     }
 

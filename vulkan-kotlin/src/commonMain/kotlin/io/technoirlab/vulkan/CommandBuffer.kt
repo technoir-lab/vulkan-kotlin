@@ -40,6 +40,9 @@ import io.technoirlab.volk.vkCmdBindIndexBuffer2
 import io.technoirlab.volk.vkCmdBindPipeline
 import io.technoirlab.volk.vkCmdBindVertexBuffers2
 import io.technoirlab.volk.vkCmdCopyQueryPoolResults
+import io.technoirlab.volk.vkCmdDispatch
+import io.technoirlab.volk.vkCmdDispatchBase
+import io.technoirlab.volk.vkCmdDispatchIndirect
 import io.technoirlab.volk.vkCmdDraw
 import io.technoirlab.volk.vkCmdDrawIndexed
 import io.technoirlab.volk.vkCmdDrawIndexedIndirect
@@ -334,6 +337,49 @@ class CommandBuffer(
     fun executeCommands(commandBuffers: List<CommandBuffer>) {
         val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
         vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
+    }
+
+    /**
+     * Dispatch compute work items.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatch.html">vkCmdDispatch Manual Page</a>
+     */
+    fun dispatch(groupCountX: UInt, groupCountY: UInt = 1u, groupCountZ: UInt = 1u) {
+        vkCmdDispatch!!(handle, groupCountX, groupCountY, groupCountZ)
+    }
+
+    /**
+     * Dispatch compute work items with non-zero base values for the workgroup IDs.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatchBase.html">vkCmdDispatchBase Manual Page</a>
+     */
+    @Suppress("LongParameterList")
+    fun dispatchBase(
+        baseGroupX: UInt,
+        baseGroupY: UInt = 0u,
+        baseGroupZ: UInt = 0u,
+        groupCountX: UInt,
+        groupCountY: UInt = 1u,
+        groupCountZ: UInt = 1u
+    ) {
+        vkCmdDispatchBase!!(
+            handle,
+            baseGroupX,
+            baseGroupY,
+            baseGroupZ,
+            groupCountX,
+            groupCountY,
+            groupCountZ
+        )
+    }
+
+    /**
+     * Dispatch compute work items with indirect parameters.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatchIndirect.html">vkCmdDispatchIndirect Manual Page</a>
+     */
+    fun dispatchIndirect(buffer: Buffer, offset: ULong = 0uL) {
+        vkCmdDispatchIndirect!!(handle, buffer.handle, offset)
     }
 
     /**
