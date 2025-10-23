@@ -43,7 +43,9 @@ import io.technoirlab.volk.vkCmdCopyQueryPoolResults
 import io.technoirlab.volk.vkCmdDraw
 import io.technoirlab.volk.vkCmdDrawIndexed
 import io.technoirlab.volk.vkCmdDrawIndexedIndirect
+import io.technoirlab.volk.vkCmdDrawIndexedIndirectCount
 import io.technoirlab.volk.vkCmdDrawIndirect
+import io.technoirlab.volk.vkCmdDrawIndirectCount
 import io.technoirlab.volk.vkCmdEndQuery
 import io.technoirlab.volk.vkCmdEndRendering
 import io.technoirlab.volk.vkCmdExecuteCommands
@@ -353,6 +355,40 @@ class CommandBuffer(
     }
 
     /**
+     * Draw primitives with indexed vertices indirectly.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirect.html">vkCmdDrawIndexedIndirect Manual Page</a>
+     */
+    fun drawIndexedIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
+        vkCmdDrawIndexedIndirect!!(handle, buffer.handle, offset, drawCount, stride)
+    }
+
+    /**
+     * Draw indexed primitives indirectly with the draw count read from a buffer.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirectCount.html">vkCmdDrawIndexedIndirectCount Manual Page</a>
+     */
+    @Suppress("LongParameterList")
+    fun drawIndexedIndirectCount(
+        buffer: Buffer,
+        offset: ULong,
+        countBuffer: Buffer,
+        countBufferOffset: ULong,
+        maxDrawCount: UInt,
+        stride: UInt
+    ) {
+        vkCmdDrawIndexedIndirectCount!!(
+            handle,
+            buffer.handle,
+            offset,
+            countBuffer.handle,
+            countBufferOffset,
+            maxDrawCount,
+            stride
+        )
+    }
+
+    /**
      * Draw primitives indirectly.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirect.html">vkCmdDrawIndirect Manual Page</a>
@@ -362,12 +398,28 @@ class CommandBuffer(
     }
 
     /**
-     * Draw primitives with indexed vertices indirectly.
+     * Draw primitives indirectly with the draw count read from a buffer.
      *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirect.html">vkCmdDrawIndexedIndirect Manual Page</a>
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirectCount.html">vkCmdDrawIndirectCount Manual Page</a>
      */
-    fun drawIndexedIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
-        vkCmdDrawIndexedIndirect!!(handle, buffer.handle, offset, drawCount, stride)
+    @Suppress("LongParameterList")
+    fun drawIndirectCount(
+        buffer: Buffer,
+        offset: ULong,
+        countBuffer: Buffer,
+        countBufferOffset: ULong,
+        maxDrawCount: UInt,
+        stride: UInt
+    ) {
+        vkCmdDrawIndirectCount!!(
+            handle,
+            buffer.handle,
+            offset,
+            countBuffer.handle,
+            countBufferOffset,
+            maxDrawCount,
+            stride
+        )
     }
 
     /**
