@@ -55,7 +55,6 @@ jobs:
         run: |
           ./gradlew publishAllPublicationsToGithubRepository \
           --scan \
-          -Pproject.version=${{ github.ref_name }} \
           -Ppublish.github.username=${{ secrets.GPR_DEPLOY_USER }} \
           -Ppublish.github.password=${{ secrets.GPR_DEPLOY_TOKEN }}
 
@@ -65,10 +64,7 @@ jobs:
           CENTRAL_PORTAL_PASSWORD: ${{ secrets.CENTRAL_PORTAL_PASSWORD }}
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
-        run: |
-          ./gradlew publishAggregationToCentralPortal \
-          --scan \
-          -Pproject.version=${{ github.ref_name }}
+        run: ./gradlew publishAggregationToCentralPortal --scan
 
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -125,10 +121,7 @@ jobs:
           echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> $GITHUB_ENV
 
       - name: Generate documentation
-        run: |
-          ./gradlew :vulkan-kotlin:dokkaGenerate \
-          --scan \
-          -Pproject.version=${{ github.ref_name }}
+        run: ./gradlew :vulkan-kotlin:dokkaGenerate --scan
 
       - name: Upload documentation
         uses: actions/upload-pages-artifact@v4
