@@ -13,6 +13,7 @@ import io.technoirlab.volk.VkBufferVar
 import io.technoirlab.volk.VkCommandBuffer
 import io.technoirlab.volk.VkCommandBufferBeginInfo
 import io.technoirlab.volk.VkCommandBufferResetFlags
+import io.technoirlab.volk.VkCommandBufferUsageFlags
 import io.technoirlab.volk.VkCompareOp
 import io.technoirlab.volk.VkCullModeFlags
 import io.technoirlab.volk.VkDependencyInfo
@@ -116,10 +117,10 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBeginCommandBuffer.html">vkBeginCommandBuffer Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun begin(beginInfo: VkCommandBufferBeginInfo.() -> Unit = {}) {
+    fun begin(usageFlags: VkCommandBufferUsageFlags = 0u) {
         val beginInfo = allocator.alloc<VkCommandBufferBeginInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
-            beginInfo()
+            flags = usageFlags
         }
         vkBeginCommandBuffer!!(handle, beginInfo.ptr)
             .checkResult("Failed to begin command buffer")
