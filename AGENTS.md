@@ -11,7 +11,6 @@ any deprecated or intentionally unsupported functionality.
 Intentionally unsupported functionality:
 * Render passes and framebuffers (de-facto deprecated in Vulkan API 1.4)
 * Custom memory allocators (will be added in the future)
-* Compute (will be added in the future)
 * Raytracing (will be added in the future)
 * Multiview
 
