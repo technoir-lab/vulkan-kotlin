@@ -28,7 +28,7 @@ import kotlinx.cinterop.ptr
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandPool.html">VkCommandPool Manual Page</a>
  */
-class CommandPool(
+class CommandPool internal constructor(
     private val device: VkDevice,
     override val handle: VkCommandPool
 ) : Object<VkCommandPool> {

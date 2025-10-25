@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDescriptorSetLayout.html">VkDescriptorSetLayout Manual Page</a>
  */
-class DescriptorSetLayout(
+class DescriptorSetLayout internal constructor(
     private val device: VkDevice,
     override val handle: VkDescriptorSetLayout
 ) : Object<VkDescriptorSetLayout> {

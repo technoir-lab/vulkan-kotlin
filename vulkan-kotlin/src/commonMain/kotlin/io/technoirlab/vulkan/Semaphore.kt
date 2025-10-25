@@ -28,7 +28,7 @@ import kotlin.time.Duration
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSemaphore.html">VkSemaphore Manual Page</a>
  */
-class Semaphore(
+class Semaphore internal constructor(
     private val device: VkDevice,
     override val handle: VkSemaphore,
     val semaphoreType: VkSemaphoreType

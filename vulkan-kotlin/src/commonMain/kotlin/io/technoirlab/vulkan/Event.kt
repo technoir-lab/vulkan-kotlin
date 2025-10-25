@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkEvent.html">VkEvent Manual Page</a>
  */
-class Event(
+class Event internal constructor(
     private val device: VkDevice,
     override val handle: VkEvent
 ) : Object<VkEvent> {

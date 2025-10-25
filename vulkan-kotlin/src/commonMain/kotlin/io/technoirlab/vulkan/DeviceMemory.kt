@@ -30,7 +30,7 @@ import kotlin.math.min
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDeviceMemory.html">VkDeviceMemory Manual Page</a>
  */
-class DeviceMemory(
+class DeviceMemory internal constructor(
     private val device: VkDevice,
     override val handle: VkDeviceMemory,
     val size: ULong

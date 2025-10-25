@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineLayout.html">VkPipelineLayout Manual Page</a>
  */
-class PipelineLayout(
+class PipelineLayout internal constructor(
     private val device: VkDevice,
     override val handle: VkPipelineLayout
 ) : Object<VkPipelineLayout> {

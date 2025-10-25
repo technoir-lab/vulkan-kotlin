@@ -59,7 +59,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPhysicalDevice.html">VkPhysicalDevice Manual Page</a>
  */
-class PhysicalDevice(
+class PhysicalDevice internal constructor(
     override val handle: VkPhysicalDevice
 ) : Object<VkPhysicalDevice> {
 

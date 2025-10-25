@@ -17,7 +17,7 @@ import kotlinx.cinterop.usePinned
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkQueryPool.html">VkQueryPool Manual Page</a>
  */
-class QueryPool(
+class QueryPool internal constructor(
     private val device: VkDevice,
     override val handle: VkQueryPool
 ) : Object<VkQueryPool> {

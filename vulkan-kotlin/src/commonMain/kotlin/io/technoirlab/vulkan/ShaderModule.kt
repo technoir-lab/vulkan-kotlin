@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkShaderModule.html">VkShaderModule Manual Page</a>
  */
-class ShaderModule(
+class ShaderModule internal constructor(
     private val device: VkDevice,
     override val handle: VkShaderModule
 ) : Object<VkShaderModule> {

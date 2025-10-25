@@ -25,7 +25,7 @@ import kotlinx.cinterop.ptr
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDescriptorPool.html">VkDescriptorPool Manual Page</a>
  */
-class DescriptorPool(
+class DescriptorPool internal constructor(
     private val device: VkDevice,
     override val handle: VkDescriptorPool
 ) : Object<VkDescriptorPool> {

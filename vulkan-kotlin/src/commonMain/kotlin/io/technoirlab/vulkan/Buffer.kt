@@ -24,7 +24,7 @@ import kotlinx.cinterop.ptr
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkBuffer.html">VkBuffer Manual Page</a>
  */
-class Buffer(
+class Buffer internal constructor(
     private val device: VkDevice,
     override val handle: VkBuffer,
     val size: ULong

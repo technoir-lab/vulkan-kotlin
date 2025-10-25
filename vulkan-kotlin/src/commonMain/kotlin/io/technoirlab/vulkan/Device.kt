@@ -131,7 +131,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDevice.html">VkDevice Manual Page</a>
  */
-class Device(
+class Device internal constructor(
     override val handle: VkDevice
 ) : Object<VkDevice> {
 

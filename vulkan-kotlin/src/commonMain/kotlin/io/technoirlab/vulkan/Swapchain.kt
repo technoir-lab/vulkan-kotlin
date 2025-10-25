@@ -27,7 +27,7 @@ import kotlin.time.Duration
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSwapchainKHR.html">VkSwapchainKHR Manual Page</a>
  */
-class Swapchain(
+class Swapchain internal constructor(
     private val device: VkDevice,
     override val handle: VkSwapchainKHR
 ) : Object<VkSwapchainKHR> {
