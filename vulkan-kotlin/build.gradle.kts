@@ -4,6 +4,10 @@ plugins {
 
 kotlinMultiplatformLibrary {
     packageName = "io.technoirlab.vulkan"
+
+    buildFeatures {
+        abiValidation = true
+    }
 }
 
 kotlin {

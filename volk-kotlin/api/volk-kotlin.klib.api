@@ -1,0 +1,13 @@
+// Klib ABI Dump
+// Targets: [androidNativeArm64, iosArm64, iosSimulatorArm64, linuxArm64, linuxX64, macosArm64, mingwX64]
+// Rendering settings:
+// - Signature version: 2
+// - Show manifest properties: true
+// - Show declarations: true
+
+// Library unique name: <io.technoirlab.vulkan:volk-kotlin>
+final inline fun io.technoirlab.volk/VK_MAKE_API_VERSION(kotlin/UInt, kotlin/UInt, kotlin/UInt, kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_MAKE_API_VERSION|VK_MAKE_API_VERSION(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+final inline fun io.technoirlab.volk/VK_MAKE_VERSION(kotlin/UInt, kotlin/UInt, kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_MAKE_VERSION|VK_MAKE_VERSION(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+final inline fun io.technoirlab.volk/VK_VERSION_MAJOR(kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_VERSION_MAJOR|VK_VERSION_MAJOR(kotlin.UInt){}[0]
+final inline fun io.technoirlab.volk/VK_VERSION_MINOR(kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_VERSION_MINOR|VK_VERSION_MINOR(kotlin.UInt){}[0]
+final inline fun io.technoirlab.volk/VK_VERSION_PATCH(kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_VERSION_PATCH|VK_VERSION_PATCH(kotlin.UInt){}[0]
