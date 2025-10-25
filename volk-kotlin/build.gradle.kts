@@ -7,6 +7,7 @@ kotlinMultiplatformLibrary {
     packageName = "io.technoirlab.volk"
 
     buildFeatures {
+        abiValidation = true
         cinterop = true
     }
 }
