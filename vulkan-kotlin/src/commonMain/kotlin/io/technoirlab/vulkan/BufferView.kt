@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkBufferView.html">VkBufferView Manual Page</a>
  */
-class BufferView(
+class BufferView internal constructor(
     private val device: VkDevice,
     override val handle: VkBufferView
 ) : Object<VkBufferView> {

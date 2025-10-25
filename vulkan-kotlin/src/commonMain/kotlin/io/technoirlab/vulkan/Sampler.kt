@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSampler.html">VkSampler Manual Page</a>
  */
-class Sampler(
+class Sampler internal constructor(
     private val device: VkDevice,
     override val handle: VkSampler
 ) : Object<VkSampler> {

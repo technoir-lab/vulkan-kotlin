@@ -24,7 +24,7 @@ import kotlin.time.Duration
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkFence.html">VkFence Manual Page</a>
  */
-class Fence(
+class Fence internal constructor(
     private val device: VkDevice,
     override val handle: VkFence
 ) : Object<VkFence> {

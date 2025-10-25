@@ -29,7 +29,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkInstance.html">VkInstance Manual Page</a>
  */
-class Instance(
+class Instance internal constructor(
     override val handle: VkInstance
 ) : Object<VkInstance> {
 

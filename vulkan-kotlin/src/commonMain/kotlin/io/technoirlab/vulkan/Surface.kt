@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSurfaceKHR.html">VkSurfaceKHR Manual Page</a>
  */
-class Surface(
+class Surface internal constructor(
     private val instance: VkInstance,
     override val handle: VkSurfaceKHR
 ) : Object<VkSurfaceKHR> {

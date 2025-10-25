@@ -23,7 +23,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCache.html">VkPipelineCache Manual Page</a>
  */
-class PipelineCache(
+class PipelineCache internal constructor(
     private val device: VkDevice,
     override val handle: VkPipelineCache
 ) : Object<VkPipelineCache> {

@@ -12,7 +12,7 @@ import kotlinx.cinterop.invoke
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkImageView.html">VkImageView Manual Page</a>
  */
-class ImageView(
+class ImageView internal constructor(
     private val device: VkDevice,
     override val handle: VkImageView
 ) : Object<VkImageView> {

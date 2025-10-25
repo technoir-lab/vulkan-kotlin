@@ -27,7 +27,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkQueue.html">VkQueue Manual Page</a>
  */
-class Queue(
+class Queue internal constructor(
     override val handle: VkQueue,
     val familyIndex: UInt
 ) : Object<VkQueue> {

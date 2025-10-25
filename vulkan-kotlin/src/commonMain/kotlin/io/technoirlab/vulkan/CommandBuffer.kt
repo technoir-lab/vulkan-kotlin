@@ -101,7 +101,7 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandBuffer.html">VkCommandBuffer Manual Page</a>
  */
-class CommandBuffer(
+class CommandBuffer internal constructor(
     override val handle: VkCommandBuffer
 ) : Object<VkCommandBuffer> {
 

@@ -27,7 +27,7 @@ import kotlinx.cinterop.ptr
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDebugUtilsMessengerEXT.html">VkDebugUtilsMessengerEXT Manual Page</a>
  */
-class DebugMessenger(
+class DebugMessenger internal constructor(
     private val instance: VkInstance,
     override val handle: VkDebugUtilsMessengerEXT,
     private val callbackRef: StableRef<Callback>

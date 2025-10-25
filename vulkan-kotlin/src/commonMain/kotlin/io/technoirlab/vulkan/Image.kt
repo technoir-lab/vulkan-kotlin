@@ -24,7 +24,7 @@ import kotlinx.cinterop.ptr
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkImage.html">VkImage Manual Page</a>
  */
-class Image(
+class Image internal constructor(
     private val device: VkDevice,
     override val handle: VkImage,
     val destroyable: Boolean = true
