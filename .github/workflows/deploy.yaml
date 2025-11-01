@@ -5,7 +5,7 @@ on:
     tags: [ "*" ]
 
 concurrency:
-  group: ${{ github.workflow }}
+  group: ${{ github.workflow_ref }}
 
 jobs:
   packages:
