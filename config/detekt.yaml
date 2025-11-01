@@ -12,8 +12,7 @@ formatting:
   MaximumLineLength:
     maxLineLength: 140
   NoUnusedImports:
-    # Issues with context parameters
-    active: false
+    active: false # Issues with context parameters
   ParameterListWrapping:
     maxLineLength: 140
   ParameterWrapping:
@@ -21,13 +20,19 @@ formatting:
   PropertyWrapping:
     maxLineLength: 140
   SpacingAroundColon:
-    # Issues with context parameters
-    active: false
+    active: false # Issues with context parameters
   Wrapping:
-    # Issues with context parameters
-    active: false
+    active: false # Issues with context parameters
     maxLineLength: 140
+
+naming:
+  MatchingDeclarationName:
+    active: false # overlaps with formatting>Filename
 
 style:
   MaxLineLength:
-    active: false
+    active: false # overlaps with formatting>MaximumLineLength
+  ModifierOrder:
+    active: false # overlaps with formatting>ModifierOrdering
+  NewLineAtEndOfFile:
+    active: false # overlaps with formatting>FinalNewline
