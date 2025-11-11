@@ -13,6 +13,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
@@ -33,6 +34,8 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBufferCreateInfo
@@ -57,7 +60,9 @@ import io.technoirlab.volk.VkEventVar
 import io.technoirlab.volk.VkFenceCreateInfo
 import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.VkGraphicsPipelineCreateInfo
+import io.technoirlab.volk.VkImageAspectFlags
 import io.technoirlab.volk.VkImageCreateInfo
+import io.technoirlab.volk.VkImageSubresource2
 import io.technoirlab.volk.VkImageVar
 import io.technoirlab.volk.VkImageViewCreateInfo
 import io.technoirlab.volk.VkImageViewVar
@@ -91,6 +96,8 @@ import io.technoirlab.volk.VkSemaphoreTypeCreateInfo
 import io.technoirlab.volk.VkSemaphoreVar
 import io.technoirlab.volk.VkShaderModuleCreateInfo
 import io.technoirlab.volk.VkShaderModuleVar
+import io.technoirlab.volk.VkSubresourceHostMemcpySize
+import io.technoirlab.volk.VkSubresourceLayout2
 import io.technoirlab.volk.VkSwapchainCreateInfoKHR
 import io.technoirlab.volk.VkSwapchainKHRVar
 import io.technoirlab.volk.VkWriteDescriptorSet
@@ -117,6 +124,7 @@ import io.technoirlab.volk.vkDestroyDevice
 import io.technoirlab.volk.vkDeviceWaitIdle
 import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
 import io.technoirlab.volk.vkGetDeviceQueue
+import io.technoirlab.volk.vkGetImageSubresourceLayout2
 import io.technoirlab.volk.vkUpdateDescriptorSets
 import io.technoirlab.volk.volkLoadDevice
 import kotlinx.cinterop.NativePlacement
@@ -585,6 +593,35 @@ class Device internal constructor(
         }
         vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
         return layoutSupport.supported == VK_TRUE
+    }
+
+    /**
+     * Retrieve information about an image subresource.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageSubresourceLayout2.html">vkGetImageSubresourceLayout2 Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun getImageSubresourceLayout(
+        image: Image,
+        aspectMask: VkImageAspectFlags,
+        mipLevel: UInt = 0u,
+        arrayLayer: UInt = 0u
+    ): VkSubresourceLayout2 {
+        val subresource = allocator.alloc<VkImageSubresource2> {
+            sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
+            imageSubresource.aspectMask = aspectMask
+            imageSubresource.mipLevel = mipLevel
+            imageSubresource.arrayLayer = arrayLayer
+        }
+        val hostMemcpySize = allocator.alloc<VkSubresourceHostMemcpySize> {
+            sType = VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE
+        }
+        val subresourceLayout = allocator.alloc<VkSubresourceLayout2> {
+            sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
+            pNext = hostMemcpySize.ptr
+        }
+        vkGetImageSubresourceLayout2!!(handle, image.handle, subresource.ptr, subresourceLayout.ptr)
+        return subresourceLayout
     }
 
     /**
