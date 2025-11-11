@@ -2,14 +2,18 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_INSTANCE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
 import io.technoirlab.volk.VkDebugUtilsMessageSeverityFlagsEXT
 import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagsEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerCreateInfoEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerEXTVar
+import io.technoirlab.volk.VkHeadlessSurfaceCreateInfoEXT
 import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDeviceVar
+import io.technoirlab.volk.VkSurfaceKHRVar
 import io.technoirlab.volk.vkCreateDebugUtilsMessengerEXT
+import io.technoirlab.volk.vkCreateHeadlessSurfaceEXT
 import io.technoirlab.volk.vkDestroyInstance
 import io.technoirlab.volk.vkEnumeratePhysicalDevices
 import io.technoirlab.volk.volkLoadInstanceOnly
@@ -97,4 +101,20 @@ class Instance internal constructor(
     override fun close() {
         vkDestroyInstance!!(handle, null)
     }
+}
+
+/**
+ * Create a headless surface.
+ *
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateHeadlessSurfaceEXT.html">vkCreateHeadlessSurfaceEXT Manual Page</a>
+ */
+context(allocator: NativePlacement)
+fun Instance.createHeadlessSurface(): Surface {
+    val surfaceCreateInfo = allocator.alloc<VkHeadlessSurfaceCreateInfoEXT> {
+        sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
+    }
+    val surfaceVar = allocator.alloc<VkSurfaceKHRVar>()
+    vkCreateHeadlessSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
+        .checkResult("Failed to create a headless surface")
+    return Surface(handle, surfaceVar.value!!)
 }
