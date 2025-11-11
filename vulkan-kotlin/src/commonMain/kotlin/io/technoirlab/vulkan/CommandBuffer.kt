@@ -6,6 +6,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEPENDENCY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PUSH_DESCRIPTOR_SET_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INFO
 import io.technoirlab.volk.VK_WHOLE_SIZE
 import io.technoirlab.volk.VkBufferMemoryBarrier2
@@ -25,6 +26,7 @@ import io.technoirlab.volk.VkPipelineBindPoint
 import io.technoirlab.volk.VkPipelineStageFlags2
 import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPrimitiveTopology
+import io.technoirlab.volk.VkPushDescriptorSetInfo
 import io.technoirlab.volk.VkQueryControlFlags
 import io.technoirlab.volk.VkQueryResultFlags
 import io.technoirlab.volk.VkRect2D
@@ -55,6 +57,7 @@ import io.technoirlab.volk.vkCmdEndRendering
 import io.technoirlab.volk.vkCmdExecuteCommands
 import io.technoirlab.volk.vkCmdPipelineBarrier2
 import io.technoirlab.volk.vkCmdPushConstants
+import io.technoirlab.volk.vkCmdPushDescriptorSet2
 import io.technoirlab.volk.vkCmdResetEvent2
 import io.technoirlab.volk.vkCmdResetQueryPool
 import io.technoirlab.volk.vkCmdSetBlendConstants
@@ -521,6 +524,20 @@ class CommandBuffer internal constructor(
                 it.addressOf(0)
             )
         }
+    }
+
+    /**
+     * Pushes descriptor updates into the command buffer.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPushDescriptorSet2.html">vkCmdPushDescriptorSet2 Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun pushDescriptorSet(pushInfo: VkPushDescriptorSetInfo.() -> Unit) {
+        val pushDescriptorSetInfo = allocator.alloc<VkPushDescriptorSetInfo> {
+            sType = VK_STRUCTURE_TYPE_PUSH_DESCRIPTOR_SET_INFO
+            pushInfo()
+        }
+        vkCmdPushDescriptorSet2!!(handle, pushDescriptorSetInfo.ptr)
     }
 
     /**
