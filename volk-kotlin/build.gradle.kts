@@ -1,6 +1,8 @@
+import org.jetbrains.kotlin.konan.target.HostManager
+
 plugins {
     id("io.technoirlab.conventions.kotlin-multiplatform-library")
-    id("vfs-overlay")
+    id("io.technoirlab.vfs-overlay")
 }
 
 kotlinMultiplatformLibrary {
@@ -20,4 +22,15 @@ kotlin {
     linuxX64()
     macosArm64()
     mingwX64()
+}
+
+vfsOverlay {
+    mapping(
+        source = kotlinNativeDependenciesDir.map {
+            File(it, "target-toolchain-2-${HostManager.hostOs()}-android_ndk/sysroot/usr/include/vulkan")
+        },
+        target = providers.environmentVariable("VULKAN_SDK").map {
+            File(it, "${if (HostManager.hostIsMingw) "Include" else "include"}/vulkan")
+        }
+    )
 }
