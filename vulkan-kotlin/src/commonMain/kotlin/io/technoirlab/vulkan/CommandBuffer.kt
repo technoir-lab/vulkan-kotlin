@@ -39,6 +39,7 @@ import io.technoirlab.volk.vkBeginCommandBuffer
 import io.technoirlab.volk.vkCmdBeginQuery
 import io.technoirlab.volk.vkCmdBeginRendering
 import io.technoirlab.volk.vkCmdBindDescriptorSets
+import io.technoirlab.volk.vkCmdBindIndexBuffer
 import io.technoirlab.volk.vkCmdBindIndexBuffer2
 import io.technoirlab.volk.vkCmdBindPipeline
 import io.technoirlab.volk.vkCmdBindVertexBuffers2
@@ -192,7 +193,8 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer2.html">vkCmdBindIndexBuffer2 Manual Page</a>
      */
     fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0uL, size: ULong = VK_WHOLE_SIZE) {
-        vkCmdBindIndexBuffer2!!(handle, indexBuffer.handle, offset, size, indexType)
+        vkCmdBindIndexBuffer2?.invoke(handle, indexBuffer.handle, offset, size, indexType)
+            ?: vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
     }
 
     /**
