@@ -32,7 +32,7 @@ class QueryPool internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetQueryPoolResults.html">vkGetQueryPoolResults Manual Page</a>
      */
-    fun getResults(firstQuery: UInt, queryCount: UInt, flags: VkQueryResultFlags = 0u): Result<ULongArray> {
+    fun getResults(firstQuery: UInt, queryCount: UInt, flags: VkQueryResultFlags = 0u): VulkanResult<ULongArray> {
         val resultArray = ULongArray(queryCount.toInt())
         val result = resultArray.usePinned { pinned ->
             vkGetQueryPoolResults!!(
@@ -46,7 +46,7 @@ class QueryPool internal constructor(
                 flags or VK_QUERY_RESULT_64_BIT
             )
         }
-        return Result(resultArray, result)
+        return VulkanResult(resultArray, result)
     }
 
     /**

@@ -3,7 +3,7 @@ package io.technoirlab.vulkan
 import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VkResult
 
-data class Result<T>(
+data class VulkanResult<T> internal constructor(
     val payload: T,
     val status: VkResult
 )
