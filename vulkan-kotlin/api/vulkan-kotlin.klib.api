@@ -15,20 +15,17 @@ abstract interface <#A: kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>
         abstract fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/Object.type.<get-type>|<get-type>(){}[0]
 }
 
-final class <#A: kotlin/Any?> io.technoirlab.vulkan/Result { // io.technoirlab.vulkan/Result|null[0]
-    constructor <init>(#A, kotlin/Int) // io.technoirlab.vulkan/Result.<init>|<init>(1:0;kotlin.Int){}[0]
+final class <#A: kotlin/Any?> io.technoirlab.vulkan/VulkanResult { // io.technoirlab.vulkan/VulkanResult|null[0]
+    final val payload // io.technoirlab.vulkan/VulkanResult.payload|{}payload[0]
+        final fun <get-payload>(): #A // io.technoirlab.vulkan/VulkanResult.payload.<get-payload>|<get-payload>(){}[0]
+    final val status // io.technoirlab.vulkan/VulkanResult.status|{}status[0]
+        final fun <get-status>(): kotlin/Int // io.technoirlab.vulkan/VulkanResult.status.<get-status>|<get-status>(){}[0]
 
-    final val payload // io.technoirlab.vulkan/Result.payload|{}payload[0]
-        final fun <get-payload>(): #A // io.technoirlab.vulkan/Result.payload.<get-payload>|<get-payload>(){}[0]
-    final val status // io.technoirlab.vulkan/Result.status|{}status[0]
-        final fun <get-status>(): kotlin/Int // io.technoirlab.vulkan/Result.status.<get-status>|<get-status>(){}[0]
-
-    final fun component1(): #A // io.technoirlab.vulkan/Result.component1|component1(){}[0]
-    final fun component2(): kotlin/Int // io.technoirlab.vulkan/Result.component2|component2(){}[0]
-    final fun copy(#A = ..., kotlin/Int = ...): io.technoirlab.vulkan/Result<#A> // io.technoirlab.vulkan/Result.copy|copy(1:0;kotlin.Int){}[0]
-    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/Result.equals|equals(kotlin.Any?){}[0]
-    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/Result.hashCode|hashCode(){}[0]
-    final fun toString(): kotlin/String // io.technoirlab.vulkan/Result.toString|toString(){}[0]
+    final fun component1(): #A // io.technoirlab.vulkan/VulkanResult.component1|component1(){}[0]
+    final fun component2(): kotlin/Int // io.technoirlab.vulkan/VulkanResult.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/VulkanResult.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/VulkanResult.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan/VulkanResult.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan/ApplicationInfo { // io.technoirlab.vulkan/ApplicationInfo|null[0]
@@ -381,7 +378,7 @@ final class io.technoirlab.vulkan/QueryPool : io.technoirlab.vulkan/Object<kotli
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/QueryPool.type.<get-type>|<get-type>(){}[0]
 
     final fun close() // io.technoirlab.vulkan/QueryPool.close|close(){}[0]
-    final fun getResults(kotlin/UInt, kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan/Result<kotlin/ULongArray> // io.technoirlab.vulkan/QueryPool.getResults|getResults(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+    final fun getResults(kotlin/UInt, kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan/VulkanResult<kotlin/ULongArray> // io.technoirlab.vulkan/QueryPool.getResults|getResults(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
 }
 
 final class io.technoirlab.vulkan/Queue : io.technoirlab.vulkan/Object<kotlinx.cinterop/CPointer<cnames.structs/VkQueue_T>> { // io.technoirlab.vulkan/Queue|null[0]
@@ -445,7 +442,7 @@ final class io.technoirlab.vulkan/Swapchain : io.technoirlab.vulkan/Object<kotli
     final val type // io.technoirlab.vulkan/Swapchain.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/Swapchain.type.<get-type>|<get-type>(){}[0]
 
-    final fun (context(kotlinx.cinterop/NativePlacement)).acquireNextImage(io.technoirlab.vulkan/Semaphore? = ..., io.technoirlab.vulkan/Fence? = ..., kotlin.time/Duration = ...): io.technoirlab.vulkan/Result<kotlin/UInt> // io.technoirlab.vulkan/Swapchain.acquireNextImage|acquireNextImage(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.Semaphore?;io.technoirlab.vulkan.Fence?;kotlin.time.Duration){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).acquireNextImage(io.technoirlab.vulkan/Semaphore? = ..., io.technoirlab.vulkan/Fence? = ..., kotlin.time/Duration = ...): io.technoirlab.vulkan/VulkanResult<kotlin/UInt> // io.technoirlab.vulkan/Swapchain.acquireNextImage|acquireNextImage(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.Semaphore?;io.technoirlab.vulkan.Fence?;kotlin.time.Duration){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getImages(): kotlin.collections/List<io.technoirlab.vulkan/Image> // io.technoirlab.vulkan/Swapchain.getImages|getImages(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan/Swapchain.close|close(){}[0]
 }

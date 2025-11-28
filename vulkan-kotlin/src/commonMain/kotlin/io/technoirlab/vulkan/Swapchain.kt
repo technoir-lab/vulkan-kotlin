@@ -48,7 +48,7 @@ class Swapchain internal constructor(
         semaphore: Semaphore? = null,
         fence: Fence? = null,
         timeout: Duration = Duration.INFINITE
-    ): Result<UInt> {
+    ): VulkanResult<UInt> {
         val acquireInfo = allocator.alloc<VkAcquireNextImageInfoKHR> {
             sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
             deviceMask = 1u
@@ -62,7 +62,7 @@ class Swapchain internal constructor(
         if (result != VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR) {
             result.checkResult("Failed to acquire next swap chain image")
         }
-        return Result(imageIndexVar.value, result)
+        return VulkanResult(imageIndexVar.value, result)
     }
 
     /**
