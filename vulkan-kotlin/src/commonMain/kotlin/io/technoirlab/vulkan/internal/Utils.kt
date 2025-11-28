@@ -1,6 +1,6 @@
 @file:Suppress("NOTHING_TO_INLINE")
 
-package io.technoirlab.vulkan
+package io.technoirlab.vulkan.internal
 
 import io.technoirlab.volk.VK_FALSE
 import io.technoirlab.volk.VK_TRUE

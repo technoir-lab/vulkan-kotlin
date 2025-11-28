@@ -89,6 +89,8 @@ import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
+import io.technoirlab.vulkan.internal.nCopies
+import io.technoirlab.vulkan.internal.toVkBool32
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.ULongVar

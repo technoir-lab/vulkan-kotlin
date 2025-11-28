@@ -12,6 +12,7 @@ import io.technoirlab.volk.VkSwapchainKHR
 import io.technoirlab.volk.vkAcquireNextImage2KHR
 import io.technoirlab.volk.vkDestroySwapchainKHR
 import io.technoirlab.volk.vkGetSwapchainImagesKHR
+import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc

@@ -14,6 +14,7 @@ import io.technoirlab.volk.vkDestroySemaphore
 import io.technoirlab.volk.vkGetSemaphoreCounterValue
 import io.technoirlab.volk.vkSignalSemaphore
 import io.technoirlab.volk.vkWaitSemaphores
+import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc

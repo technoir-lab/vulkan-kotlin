@@ -12,6 +12,7 @@ import io.technoirlab.volk.vkDestroyFence
 import io.technoirlab.volk.vkGetFenceStatus
 import io.technoirlab.volk.vkResetFences
 import io.technoirlab.volk.vkWaitForFences
+import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
