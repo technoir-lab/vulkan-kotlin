@@ -1,6 +1,6 @@
 [versions]
 kotlinx-datetime = "0.7.1"
-kotlinx-io = "0.8.2"
+kotlinx-io = "0.9.0"
 
 [libraries]
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
