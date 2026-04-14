@@ -50,8 +50,8 @@ jobs:
 
       - name: Set environment variables
         run: |
-          echo "C_INCLUDE_PATH=${{ env.VULKAN_SDK }}/include" >> $GITHUB_ENV
-          echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> $GITHUB_ENV
+          echo "C_INCLUDE_PATH=${{ env.VULKAN_SDK }}/include" >> "$GITHUB_ENV"
+          echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> "$GITHUB_ENV"
 
       - name: Build with Gradle
         run: ./gradlew build --scan
@@ -71,4 +71,4 @@ jobs:
         uses: reviewdog/action-actionlint@v1.72.0
         with:
           level: warning
-          fail_level: error
+          fail_level: warning
