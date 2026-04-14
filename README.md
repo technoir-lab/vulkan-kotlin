@@ -18,7 +18,7 @@ Add entries to the version catalog:
 
 ```toml
 [versions]
-vulkan-kotlin = "1.4.328-5"
+vulkan-kotlin = "1.4.335-1"
 
 [libraries]
 vulkan-kotlin = { module = "io.technoirlab.vulkan:vulkan-kotlin", version.ref = "vulkan-kotlin" }
