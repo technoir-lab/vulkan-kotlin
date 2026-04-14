@@ -55,3 +55,20 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --scan
+
+  actionlint:
+    name: Lint GitHub Actions
+    runs-on: ubuntu-24.04
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6.0.2
+
+      - name: Run actionlint
+        uses: reviewdog/action-actionlint@v1.72.0
+        with:
+          level: warning
+          fail_level: error
