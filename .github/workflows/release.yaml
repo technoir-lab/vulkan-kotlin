@@ -8,7 +8,7 @@ concurrency:
   group: ${{ github.workflow_ref }}
 
 env:
-  VULKAN_SDK_VERSION: 1.4.335.1
+  VULKAN_SDK_VERSION: 1.4.341.1
 
 jobs:
   packages:
