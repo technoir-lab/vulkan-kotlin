@@ -11,12 +11,18 @@ tab_width = 4
 trim_trailing_whitespace = true
 
 [{*.kt,*.kts}]
+ij_kotlin_allow_trailing_comma = false
+ij_kotlin_allow_trailing_comma_on_call_site = false
 ij_kotlin_keep_blank_lines_before_right_brace = 0
 ij_kotlin_keep_blank_lines_in_code = 1
 ij_kotlin_keep_blank_lines_in_declarations = 1
 ij_kotlin_name_count_to_use_star_import = 2147483647
 ij_kotlin_name_count_to_use_star_import_for_members = 2147483647
 ij_kotlin_packages_to_use_import_on_demand =
+
+ktlint_code_style = intellij_idea
+ktlint_class_signature_rule_force_multiline_when_parameter_count_greater_or_equal_than = 1
+ktlint_function_signature_body_expression_wrapping = multiline
 
 [*.md]
 trim_trailing_whitespace = false

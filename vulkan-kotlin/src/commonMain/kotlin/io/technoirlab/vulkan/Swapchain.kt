@@ -44,11 +44,7 @@ class Swapchain internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAcquireNextImage2KHR.html">vkAcquireNextImage2KHR Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun acquireNextImage(
-        semaphore: Semaphore? = null,
-        fence: Fence? = null,
-        timeout: Duration = Duration.INFINITE
-    ): VulkanResult<UInt> {
+    fun acquireNextImage(semaphore: Semaphore? = null, fence: Fence? = null, timeout: Duration = Duration.INFINITE): VulkanResult<UInt> {
         val acquireInfo = allocator.alloc<VkAcquireNextImageInfoKHR> {
             sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
             deviceMask = 1u
