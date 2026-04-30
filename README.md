@@ -9,7 +9,7 @@ exceptions and integration with the Kotlin ecosystem.
 
 ## Requirements
 
-* Kotlin 2.3.20 or later
+* Kotlin 2.3.21 or later
 * [Context parameters](https://kotlinlang.org/docs/context-parameters.html#how-to-enable-context-parameters) enabled
 
 ## Getting Started
@@ -18,7 +18,7 @@ Add entries to the version catalog:
 
 ```toml
 [versions]
-vulkan-kotlin = "1.4.335-1"
+vulkan-kotlin = "1.4.341-1"
 
 [libraries]
 vulkan-kotlin = { module = "io.technoirlab.vulkan:vulkan-kotlin", version.ref = "vulkan-kotlin" }
