@@ -214,13 +214,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindVertexBuffers2.html">vkCmdBindVertexBuffers2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun bindVertexBuffer(
-        vertexBuffer: Buffer,
-        bindingIndex: UInt = 0u,
-        offset: ULong = 0uL,
-        size: ULong? = null,
-        stride: ULong? = null
-    ) {
+    fun bindVertexBuffer(vertexBuffer: Buffer, bindingIndex: UInt = 0u, offset: ULong = 0uL, size: ULong? = null, stride: ULong? = null) {
         val vertexBufferVar = allocator.alloc<VkBufferVar> { value = vertexBuffer.handle }
         val offsetVar = allocator.alloc<ULongVar> { value = offset }
         val sizeVar = size?.let { allocator.alloc<ULongVar> { value = it } }
@@ -457,14 +451,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirectCount.html">vkCmdDrawIndirectCount Manual Page</a>
      */
     @Suppress("LongParameterList")
-    fun drawIndirectCount(
-        buffer: Buffer,
-        offset: ULong,
-        countBuffer: Buffer,
-        countBufferOffset: ULong,
-        maxDrawCount: UInt,
-        stride: UInt
-    ) {
+    fun drawIndirectCount(buffer: Buffer, offset: ULong, countBuffer: Buffer, countBufferOffset: ULong, maxDrawCount: UInt, stride: UInt) {
         vkCmdDrawIndirectCount!!(
             handle,
             buffer.handle,
@@ -512,12 +499,7 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPushConstants.html">vkCmdPushConstants Manual Page</a>
      */
-    fun pushConstants(
-        layout: PipelineLayout,
-        stageFlags: VkShaderStageFlags,
-        values: ByteArray,
-        offset: UInt = 0u
-    ) {
+    fun pushConstants(layout: PipelineLayout, stageFlags: VkShaderStageFlags, values: ByteArray, offset: UInt = 0u) {
         values.usePinned {
             vkCmdPushConstants!!(
                 handle,
