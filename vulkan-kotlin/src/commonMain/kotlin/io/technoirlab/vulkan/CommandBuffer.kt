@@ -110,7 +110,7 @@ import kotlinx.cinterop.value
  */
 class CommandBuffer internal constructor(
     override val handle: VkCommandBuffer
-) : Object<VkCommandBuffer> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

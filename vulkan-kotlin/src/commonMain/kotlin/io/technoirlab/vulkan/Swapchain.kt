@@ -31,7 +31,7 @@ import kotlin.time.Duration
 class Swapchain internal constructor(
     private val device: VkDevice,
     override val handle: VkSwapchainKHR
-) : Object<VkSwapchainKHR> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

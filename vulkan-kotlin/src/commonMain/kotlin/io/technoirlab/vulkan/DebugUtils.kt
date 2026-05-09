@@ -68,7 +68,7 @@ fun CommandBuffer.insertDebugLabel(label: String) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSetDebugUtilsObjectNameEXT.html">vkSetDebugUtilsObjectNameEXT Manual Page</a>
  */
 context(allocator: AutofreeScope)
-fun Device.setObjectName(obj: Object<*>, name: String) {
+fun Device.setObjectName(obj: VulkanObject, name: String) {
     val objectNameInfo = allocator.alloc<VkDebugUtilsObjectNameInfoEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
         objectHandle = obj.handle.toLong().toULong()
@@ -85,7 +85,7 @@ fun Device.setObjectName(obj: Object<*>, name: String) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSetDebugUtilsObjectTagEXT.html">vkSetDebugUtilsObjectTagEXT Manual Page</a>
  */
 context(allocator: AutofreeScope)
-fun Device.setObjectTag(obj: Object<*>, tagInfo: VkDebugUtilsObjectTagInfoEXT.() -> Unit) {
+fun Device.setObjectTag(obj: VulkanObject, tagInfo: VkDebugUtilsObjectTagInfoEXT.() -> Unit) {
     val objectTagInfo = allocator.alloc<VkDebugUtilsObjectTagInfoEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT
         objectHandle = obj.handle.toLong().toULong()

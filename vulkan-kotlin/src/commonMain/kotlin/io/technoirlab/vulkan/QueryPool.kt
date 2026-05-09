@@ -20,7 +20,7 @@ import kotlinx.cinterop.usePinned
 class QueryPool internal constructor(
     private val device: VkDevice,
     override val handle: VkQueryPool
-) : Object<VkQueryPool> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

@@ -141,7 +141,7 @@ import kotlinx.cinterop.value
  */
 class Device internal constructor(
     override val handle: VkDevice
-) : Object<VkDevice> {
+) : VulkanObject {
 
     init {
         volkLoadDevice(handle)
