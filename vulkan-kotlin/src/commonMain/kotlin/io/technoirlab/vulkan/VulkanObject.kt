@@ -1,17 +1,15 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VkObjectType
-import kotlinx.cinterop.CPointed
-import kotlinx.cinterop.CPointer
 
 /**
  * Represents a Vulkan object.
  */
-interface Object<NativeHandleType : CPointer<out CPointed>> : AutoCloseable {
+interface VulkanObject : AutoCloseable {
     /**
      * The native handle to the Vulkan object.
      */
-    val handle: NativeHandleType
+    val handle: VulkanHandle
 
     /**
      * The type of the Vulkan object.

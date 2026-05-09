@@ -15,7 +15,7 @@ import kotlinx.cinterop.invoke
 class Sampler internal constructor(
     private val device: VkDevice,
     override val handle: VkSampler
-) : Object<VkSampler> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

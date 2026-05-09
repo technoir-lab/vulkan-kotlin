@@ -28,7 +28,7 @@ import kotlinx.cinterop.ptr
 class DescriptorPool internal constructor(
     private val device: VkDevice,
     override val handle: VkDescriptorPool
-) : Object<VkDescriptorPool> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

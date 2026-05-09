@@ -28,7 +28,7 @@ class Image internal constructor(
     private val device: VkDevice,
     override val handle: VkImage,
     val destroyable: Boolean = true
-) : Object<VkImage> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

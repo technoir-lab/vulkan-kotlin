@@ -15,7 +15,7 @@ import kotlinx.cinterop.invoke
 class BufferView internal constructor(
     private val device: VkDevice,
     override val handle: VkBufferView
-) : Object<VkBufferView> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

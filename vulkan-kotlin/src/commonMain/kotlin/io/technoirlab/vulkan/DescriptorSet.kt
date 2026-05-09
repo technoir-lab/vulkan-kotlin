@@ -11,7 +11,7 @@ import io.technoirlab.volk.VkObjectType
  */
 class DescriptorSet internal constructor(
     override val handle: VkDescriptorSet
-) : Object<VkDescriptorSet> {
+) : VulkanObject {
 
     /**
      * @inheritDoc

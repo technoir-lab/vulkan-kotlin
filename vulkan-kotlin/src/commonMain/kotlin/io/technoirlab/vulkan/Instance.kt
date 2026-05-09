@@ -35,7 +35,7 @@ import kotlinx.cinterop.value
  */
 class Instance internal constructor(
     override val handle: VkInstance
-) : Object<VkInstance> {
+) : VulkanObject {
 
     init {
         volkLoadInstanceOnly(handle)
