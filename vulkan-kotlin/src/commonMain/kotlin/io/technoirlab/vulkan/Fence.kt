@@ -44,7 +44,7 @@ class Fence internal constructor(
         get() = when (val result = vkGetFenceStatus!!(device, handle)) {
             VK_SUCCESS -> true
             VK_NOT_READY -> false
-            else -> throw VulkanException(result, "Failed to get fence status")
+            else -> result.checkResult("Failed to get fence status")
         }
 
     /**
