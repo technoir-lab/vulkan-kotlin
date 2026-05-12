@@ -1,5 +1,5 @@
 [versions]
-kotlinx-datetime = "0.7.1"
+kotlinx-datetime = "0.8.0"
 kotlinx-io = "0.9.0"
 
 [libraries]
