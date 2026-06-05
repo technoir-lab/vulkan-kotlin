@@ -19,6 +19,10 @@ kotlin {
     macosArm64()
     mingwX64()
 
+    compilerOptions {
+        optIn.add("kotlinx.cinterop.ExperimentalForeignApi")
+    }
+
     sourceSets {
         commonMain.dependencies {
             api(project(":volk-kotlin"))
