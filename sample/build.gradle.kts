@@ -11,9 +11,15 @@ kotlin {
     macosArm64()
     mingwX64()
 
-    sourceSets.commonMain {
-        dependencies {
-            implementation(project(":vulkan-kotlin"))
+    compilerOptions {
+        optIn.add("kotlinx.cinterop.ExperimentalForeignApi")
+    }
+
+    sourceSets {
+        commonMain {
+            dependencies {
+                implementation(project(":vulkan-kotlin"))
+            }
         }
     }
 }
