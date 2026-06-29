@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v6.0.3
 
       - name: Set up JDK
-        uses: actions/setup-java@v5.2.0
+        uses: actions/setup-java@v5.4.0
         with:
           java-version: 21
           distribution: corretto
@@ -95,7 +95,7 @@ jobs:
         uses: actions/checkout@v6.0.3
 
       - name: Set up JDK
-        uses: actions/setup-java@v5.2.0
+        uses: actions/setup-java@v5.4.0
         with:
           java-version: 21
           distribution: corretto
