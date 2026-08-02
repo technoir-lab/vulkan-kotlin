@@ -46,9 +46,10 @@ jobs:
             ${{ runner.os }}-konan-
 
       - name: Install Vulkan SDK
-        uses: technoir-lab/install-vulkan-sdk@v1.2.3
+        uses: technoir-lab/install-vulkan-sdk@v1.3.1
         with:
           version: ${{ env.VULKAN_SDK_VERSION }}
+          components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios
           cache: true
 
       - name: Set environment variables
