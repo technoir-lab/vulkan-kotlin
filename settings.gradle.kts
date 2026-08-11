@@ -1,3 +1,7 @@
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.targets.native.tasks.KotlinNativeTest
+import org.jetbrains.kotlin.konan.target.HostManager
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -34,6 +38,19 @@ globalSettings {
         description = "Kotlin Multiplatform bindings for Vulkan API."
         developer(name = "technoir", email = "technoir.dev@gmail.com")
         license(name = "The Apache Software License, Version 2.0", url = "https://www.apache.org/licenses/LICENSE-2.0.txt")
+    }
+}
+
+gradle.lifecycle.afterProject {
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        val vulkanSdkDir = providers.environmentVariable("VULKAN_SDK")
+        tasks.withType<KotlinNativeTest>().configureEach {
+            if (HostManager.hostIsMac) {
+                // macOS purges dyld environment variables when launching protected processes,
+                // so we have to define DYLD_LIBRARY_PATH ourselves
+                vulkanSdkDir.orNull?.let { environment("DYLD_LIBRARY_PATH", "$it/lib") }
+            }
+        }
     }
 }
 
