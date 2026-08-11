@@ -49,11 +49,6 @@ jobs:
           components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios
           cache: true
 
-      - name: Set environment variables
-        run: |
-          echo "C_INCLUDE_PATH=${{ env.VULKAN_SDK }}/include" >> "$GITHUB_ENV"
-          echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> "$GITHUB_ENV"
-
       - name: Publish to GitHub Packages
         env:
           SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
@@ -123,11 +118,6 @@ jobs:
           version: ${{ env.VULKAN_SDK_VERSION }}
           components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios
           cache: true
-
-      - name: Set environment variables
-        run: |
-          echo "C_INCLUDE_PATH=${{ env.VULKAN_SDK }}/include" >> "$GITHUB_ENV"
-          echo "LIBRARY_PATH=${{ env.VULKAN_SDK }}/lib" >> "$GITHUB_ENV"
 
       - name: Generate documentation
         run: ./gradlew :vulkan-kotlin:dokkaGenerate --scan
