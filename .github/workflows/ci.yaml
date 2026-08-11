@@ -21,6 +21,7 @@ jobs:
 
     permissions:
       contents: read
+      checks: write
 
     steps:
       - name: Checkout
@@ -54,6 +55,15 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build --scan
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v6.4.2
+        if: success() || failure()
+        with:
+          report_paths: '**/build/test-results/*Test/TEST-*.xml'
+          annotate_only: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository }}
+          detailed_summary: true
+          fail_on_parse_error: true
 
   actionlint:
     name: Lint GitHub Actions
