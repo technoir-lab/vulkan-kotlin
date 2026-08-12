@@ -17,7 +17,11 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: macos-26
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ macos-26, ubuntu-24.04 ]
 
     permissions:
       contents: read
