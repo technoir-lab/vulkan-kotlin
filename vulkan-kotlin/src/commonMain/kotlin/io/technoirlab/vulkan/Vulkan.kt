@@ -57,7 +57,7 @@ class Vulkan : AutoCloseable {
     fun createInstance(
         enabledLayers: List<String> = emptyList(),
         enabledExtensions: List<String> = emptyList(),
-        applicationInfo: ApplicationInfo? = null
+        applicationInfo: ApplicationInfo? = null,
     ): Instance {
         val instanceCreateInfo = allocator.alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO

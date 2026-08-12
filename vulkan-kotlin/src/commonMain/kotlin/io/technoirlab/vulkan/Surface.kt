@@ -14,7 +14,7 @@ import kotlinx.cinterop.invoke
  */
 class Surface internal constructor(
     private val instance: VkInstance,
-    override val handle: VkSurfaceKHR
+    override val handle: VkSurfaceKHR,
 ) : VulkanObject {
 
     /**

@@ -14,7 +14,7 @@ import kotlinx.cinterop.invoke
  */
 class Event internal constructor(
     private val device: VkDevice,
-    override val handle: VkEvent
+    override val handle: VkEvent,
 ) : VulkanObject {
 
     /**

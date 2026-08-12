@@ -140,7 +140,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDevice.html">VkDevice Manual Page</a>
  */
 class Device internal constructor(
-    override val handle: VkDevice
+    override val handle: VkDevice,
 ) : VulkanObject {
 
     init {
@@ -232,7 +232,7 @@ class Device internal constructor(
         shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit = {},
         flags: VkPipelineCreateFlags = 0u,
         basePipeline: Pipeline? = null,
-        cache: PipelineCache? = null
+        cache: PipelineCache? = null,
     ): Pipeline {
         val computePipelineCreateInfo = allocator.alloc<VkComputePipelineCreateInfo> {
             sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
@@ -251,7 +251,7 @@ class Device internal constructor(
             1u,
             computePipelineCreateInfo.ptr,
             null,
-            pipelineVar.ptr
+            pipelineVar.ptr,
         ).checkResult("Failed to create compute pipeline")
         return Pipeline(handle, pipelineVar.value!!)
     }
@@ -381,7 +381,7 @@ class Device internal constructor(
         renderingCreateInfo: VkPipelineRenderingCreateInfo.() -> Unit = {},
         flags: VkPipelineCreateFlags = 0u,
         basePipeline: Pipeline? = null,
-        cache: PipelineCache? = null
+        cache: PipelineCache? = null,
     ): Pipeline {
         val shaderStageCreateInfo = allocator.allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
             sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
@@ -452,7 +452,7 @@ class Device internal constructor(
             1u,
             graphicsPipelineCreateInfo.ptr,
             null,
-            pipelineVar.ptr
+            pipelineVar.ptr,
         ).checkResult("Failed to create graphics pipeline")
         return Pipeline(handle, pipelineVar.value!!)
     }
@@ -605,7 +605,7 @@ class Device internal constructor(
         image: Image,
         aspectMask: VkImageAspectFlags,
         mipLevel: UInt = 0u,
-        arrayLayer: UInt = 0u
+        arrayLayer: UInt = 0u,
     ): VkSubresourceLayout2 {
         val subresource = allocator.alloc<VkImageSubresource2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
@@ -664,7 +664,7 @@ class Device internal constructor(
             writes.size.toUInt(),
             writesArray,
             copies.size.toUInt(),
-            copiesArray
+            copiesArray,
         )
     }
 

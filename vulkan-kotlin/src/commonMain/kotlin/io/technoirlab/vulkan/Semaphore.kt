@@ -32,7 +32,7 @@ import kotlin.time.Duration
 class Semaphore internal constructor(
     private val device: VkDevice,
     override val handle: VkSemaphore,
-    val semaphoreType: VkSemaphoreType
+    val semaphoreType: VkSemaphoreType,
 ) : VulkanObject {
 
     /**

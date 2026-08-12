@@ -1,5 +1,5 @@
 package io.technoirlab.vulkan
 
 class VulkanException(
-    message: String
+    message: String,
 ) : Exception(message)

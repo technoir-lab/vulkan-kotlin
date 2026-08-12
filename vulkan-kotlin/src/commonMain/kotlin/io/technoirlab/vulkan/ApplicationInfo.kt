@@ -25,5 +25,5 @@ data class ApplicationInfo(
     /**
      * The developer-supplied version number of the engine used to create the application.
      */
-    val engineVersion: UInt = 0u
+    val engineVersion: UInt = 0u,
 )

@@ -14,7 +14,7 @@ import kotlinx.cinterop.invoke
  */
 class ImageView internal constructor(
     private val device: VkDevice,
-    override val handle: VkImageView
+    override val handle: VkImageView,
 ) : VulkanObject {
 
     /**

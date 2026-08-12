@@ -27,7 +27,7 @@ import kotlinx.cinterop.ptr
 class Buffer internal constructor(
     private val device: VkDevice,
     override val handle: VkBuffer,
-    val size: ULong
+    val size: ULong,
 ) : VulkanObject {
 
     /**

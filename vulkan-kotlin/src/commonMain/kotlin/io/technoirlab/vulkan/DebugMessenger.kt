@@ -30,7 +30,7 @@ import kotlinx.cinterop.ptr
 class DebugMessenger internal constructor(
     private val instance: VkInstance,
     override val handle: VkDebugUtilsMessengerEXT,
-    private val callbackRef: StableRef<Callback>
+    private val callbackRef: StableRef<Callback>,
 ) : VulkanObject {
 
     /**
@@ -47,7 +47,7 @@ class DebugMessenger internal constructor(
     fun submitMessage(
         messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
         messageTypes: VkDebugUtilsMessageTypeFlagsEXT,
-        callbackData: VkDebugUtilsMessengerCallbackDataEXT.() -> Unit
+        callbackData: VkDebugUtilsMessengerCallbackDataEXT.() -> Unit,
     ) {
         val callbackDataStruct = allocator.alloc<VkDebugUtilsMessengerCallbackDataEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
@@ -80,7 +80,7 @@ class DebugMessenger internal constructor(
         fun onEvent(
             messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
             messageTypes: VkDebugUtilsMessageTypeFlagBitsEXT,
-            callbackData: VkDebugUtilsMessengerCallbackDataEXT
+            callbackData: VkDebugUtilsMessengerCallbackDataEXT,
         )
     }
 }
@@ -89,7 +89,7 @@ internal fun debugMessengerCallback(
     messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
     messageType: VkDebugUtilsMessageTypeFlagsEXT,
     callbackData: CPointer<VkDebugUtilsMessengerCallbackDataEXT>?,
-    userData: COpaquePointer?
+    userData: COpaquePointer?,
 ): UInt {
     val callbackData = callbackData?.pointed ?: return VK_FALSE
     val callback = userData?.asStableRef<DebugMessenger.Callback>()?.get()

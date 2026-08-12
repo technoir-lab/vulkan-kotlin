@@ -7,7 +7,7 @@ import kotlinx.cinterop.toKString
 
 data class VulkanResult<T> internal constructor(
     val payload: T,
-    val status: VkResult
+    val status: VkResult,
 )
 
 @Suppress("NOTHING_TO_INLINE")

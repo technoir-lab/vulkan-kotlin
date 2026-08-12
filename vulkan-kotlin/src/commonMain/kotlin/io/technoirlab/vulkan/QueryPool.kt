@@ -19,7 +19,7 @@ import kotlinx.cinterop.usePinned
  */
 class QueryPool internal constructor(
     private val device: VkDevice,
-    override val handle: VkQueryPool
+    override val handle: VkQueryPool,
 ) : VulkanObject {
 
     /**
@@ -43,7 +43,7 @@ class QueryPool internal constructor(
                 resultArray.size.toULong() * 8uL,
                 pinned.addressOf(0),
                 8uL,
-                flags or VK_QUERY_RESULT_64_BIT
+                flags or VK_QUERY_RESULT_64_BIT,
             )
         }
         return VulkanResult(resultArray, result)

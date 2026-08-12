@@ -60,7 +60,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPhysicalDevice.html">VkPhysicalDevice Manual Page</a>
  */
 class PhysicalDevice internal constructor(
-    override val handle: VkPhysicalDevice
+    override val handle: VkPhysicalDevice,
 ) : VulkanObject {
 
     /**
@@ -78,7 +78,7 @@ class PhysicalDevice internal constructor(
         createInfo: VkDeviceCreateInfo.() -> Unit = {},
         features: VkPhysicalDeviceFeatures.() -> Unit = {},
         features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {},
-        features14: VkPhysicalDeviceVulkan14Features.() -> Unit = {}
+        features14: VkPhysicalDeviceVulkan14Features.() -> Unit = {},
     ): Device {
         val features14 = allocator.alloc<VkPhysicalDeviceVulkan14Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES
@@ -312,6 +312,6 @@ class PhysicalDevice internal constructor(
     data class Features(
         val features: VkPhysicalDeviceFeatures2,
         val features13: VkPhysicalDeviceVulkan13Features,
-        val features14: VkPhysicalDeviceVulkan14Features
+        val features14: VkPhysicalDeviceVulkan14Features,
     )
 }

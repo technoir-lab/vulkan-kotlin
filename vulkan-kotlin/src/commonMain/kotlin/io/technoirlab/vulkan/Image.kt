@@ -27,7 +27,7 @@ import kotlinx.cinterop.ptr
 class Image internal constructor(
     private val device: VkDevice,
     override val handle: VkImage,
-    val destroyable: Boolean = true
+    val destroyable: Boolean = true,
 ) : VulkanObject {
 
     /**

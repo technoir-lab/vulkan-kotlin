@@ -37,6 +37,6 @@ vfsOverlay {
         },
         target = providers.environmentVariable("VULKAN_SDK").map {
             File(it, "${if (HostManager.hostIsMingw) "Include" else "include"}/vulkan")
-        }
+        },
     )
 }

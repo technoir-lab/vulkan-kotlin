@@ -16,7 +16,7 @@ internal fun <T> nCopies(size: Int, element: T): List<T> = NCopiesList(size, ele
 
 private class NCopiesList<T>(
     override val size: Int,
-    private val element: T
+    private val element: T,
 ) : AbstractList<T>(),
     RandomAccess {
 

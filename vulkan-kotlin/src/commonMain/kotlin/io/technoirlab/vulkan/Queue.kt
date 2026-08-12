@@ -29,7 +29,7 @@ import kotlinx.cinterop.value
  */
 class Queue internal constructor(
     override val handle: VkQueue,
-    val familyIndex: UInt
+    val familyIndex: UInt,
 ) : VulkanObject {
 
     /**

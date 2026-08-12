@@ -109,7 +109,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandBuffer.html">VkCommandBuffer Manual Page</a>
  */
 class CommandBuffer internal constructor(
-    override val handle: VkCommandBuffer
+    override val handle: VkCommandBuffer,
 ) : VulkanObject {
 
     /**
@@ -166,7 +166,7 @@ class CommandBuffer internal constructor(
         layout: PipelineLayout,
         firstSet: UInt,
         descriptorSets: List<DescriptorSet>,
-        dynamicOffsets: List<UInt> = emptyList()
+        dynamicOffsets: List<UInt> = emptyList(),
     ) {
         val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         val dynamicOffsetArray = if (dynamicOffsets.isNotEmpty()) {
@@ -185,7 +185,7 @@ class CommandBuffer internal constructor(
             descriptorSets.size.toUInt(),
             descriptorSetHandles,
             dynamicOffsets.size.toUInt(),
-            dynamicOffsetArray
+            dynamicOffsetArray,
         )
     }
 
@@ -226,7 +226,7 @@ class CommandBuffer internal constructor(
             vertexBufferVar.ptr,
             offsetVar.ptr,
             sizeVar?.ptr,
-            strideVar?.ptr
+            strideVar?.ptr,
         )
     }
 
@@ -241,7 +241,7 @@ class CommandBuffer internal constructor(
         firstBinding: UInt = 0u,
         offsets: List<ULong> = nCopies(vertexBuffers.size, 0uL),
         sizes: List<ULong>? = null,
-        strides: List<ULong>? = null
+        strides: List<ULong>? = null,
     ) {
         val vertexBufferHandles = allocator.allocArrayOf(vertexBuffers.map { it.handle })
         val offsetsArray = allocator.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
@@ -254,7 +254,7 @@ class CommandBuffer internal constructor(
             vertexBufferHandles,
             offsetsArray,
             sizesArray,
-            stridesArray
+            stridesArray,
         )
     }
 
@@ -288,7 +288,7 @@ class CommandBuffer internal constructor(
         dstBuffer: Buffer,
         dstOffset: ULong,
         stride: ULong,
-        flags: VkQueryResultFlags = 0u
+        flags: VkQueryResultFlags = 0u,
     ) {
         vkCmdCopyQueryPoolResults!!(
             handle,
@@ -298,7 +298,7 @@ class CommandBuffer internal constructor(
             dstBuffer.handle,
             dstOffset,
             stride,
-            flags
+            flags,
         )
     }
 
@@ -362,7 +362,7 @@ class CommandBuffer internal constructor(
         baseGroupZ: UInt = 0u,
         groupCountX: UInt,
         groupCountY: UInt = 1u,
-        groupCountZ: UInt = 1u
+        groupCountZ: UInt = 1u,
     ) {
         vkCmdDispatchBase!!(
             handle,
@@ -371,7 +371,7 @@ class CommandBuffer internal constructor(
             baseGroupZ,
             groupCountX,
             groupCountY,
-            groupCountZ
+            groupCountZ,
         )
     }
 
@@ -423,7 +423,7 @@ class CommandBuffer internal constructor(
         countBuffer: Buffer,
         countBufferOffset: ULong,
         maxDrawCount: UInt,
-        stride: UInt
+        stride: UInt,
     ) {
         vkCmdDrawIndexedIndirectCount!!(
             handle,
@@ -432,7 +432,7 @@ class CommandBuffer internal constructor(
             countBuffer.handle,
             countBufferOffset,
             maxDrawCount,
-            stride
+            stride,
         )
     }
 
@@ -459,7 +459,7 @@ class CommandBuffer internal constructor(
             countBuffer.handle,
             countBufferOffset,
             maxDrawCount,
-            stride
+            stride,
         )
     }
 
@@ -507,7 +507,7 @@ class CommandBuffer internal constructor(
                 stageFlags,
                 offset,
                 values.size.toUInt(),
-                it.addressOf(0)
+                it.addressOf(0),
             )
         }
     }
@@ -740,7 +740,7 @@ class CommandBuffer internal constructor(
         failOp: VkStencilOp,
         passOp: VkStencilOp,
         depthFailOp: VkStencilOp,
-        compareOp: VkCompareOp
+        compareOp: VkCompareOp,
     ) {
         vkCmdSetStencilOp!!(handle, faceMask, failOp, passOp, depthFailOp, compareOp)
     }

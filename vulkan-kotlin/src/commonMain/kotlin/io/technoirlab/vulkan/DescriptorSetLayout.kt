@@ -14,7 +14,7 @@ import kotlinx.cinterop.invoke
  */
 class DescriptorSetLayout internal constructor(
     private val device: VkDevice,
-    override val handle: VkDescriptorSetLayout
+    override val handle: VkDescriptorSetLayout,
 ) : VulkanObject {
 
     /**

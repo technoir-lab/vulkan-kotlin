@@ -33,7 +33,7 @@ import kotlin.math.min
 class DeviceMemory internal constructor(
     private val device: VkDevice,
     override val handle: VkDeviceMemory,
-    val size: ULong
+    val size: ULong,
 ) : VulkanObject {
 
     /**

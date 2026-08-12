@@ -34,7 +34,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkInstance.html">VkInstance Manual Page</a>
  */
 class Instance internal constructor(
-    override val handle: VkInstance
+    override val handle: VkInstance,
 ) : VulkanObject {
 
     init {
@@ -56,7 +56,7 @@ class Instance internal constructor(
     fun createDebugMessenger(
         messageSeverity: VkDebugUtilsMessageSeverityFlagsEXT,
         messageType: VkDebugUtilsMessageTypeFlagsEXT,
-        callback: DebugMessenger.Callback
+        callback: DebugMessenger.Callback,
     ): DebugMessenger {
         val callbackRef = StableRef.create(callback)
         val debugUtilsMessengerCreateInfo = allocator.alloc<VkDebugUtilsMessengerCreateInfoEXT> {

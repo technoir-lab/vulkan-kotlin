@@ -14,7 +14,7 @@ import kotlinx.cinterop.invoke
  */
 class PipelineLayout internal constructor(
     private val device: VkDevice,
-    override val handle: VkPipelineLayout
+    override val handle: VkPipelineLayout,
 ) : VulkanObject {
 
     /**
