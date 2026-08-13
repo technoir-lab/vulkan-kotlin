@@ -1,9 +1,11 @@
 package io.technoirlab.vulkan
 
+import cnames.structs.ANativeWindow
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR
 import io.technoirlab.volk.VkAndroidSurfaceCreateInfoKHR
 import io.technoirlab.volk.VkSurfaceKHRVar
 import io.technoirlab.volk.vkCreateAndroidSurfaceKHR
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
@@ -16,10 +18,10 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateAndroidSurfaceKHR.html">vkCreateAndroidSurfaceKHR Manual Page</a>
  */
 context(allocator: NativePlacement)
-fun Instance.createAndroidSurface(createInfo: VkAndroidSurfaceCreateInfoKHR.() -> Unit): Surface {
+fun Instance.createAndroidSurface(nativeWindow: CPointer<ANativeWindow>): Surface {
     val surfaceCreateInfo = allocator.alloc<VkAndroidSurfaceCreateInfoKHR> {
         sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR
-        createInfo()
+        window = nativeWindow
     }
     val surfaceVar = allocator.alloc<VkSurfaceKHRVar>()
     vkCreateAndroidSurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
