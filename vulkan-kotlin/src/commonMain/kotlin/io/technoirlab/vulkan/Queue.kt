@@ -14,6 +14,9 @@ import io.technoirlab.volk.VkSwapchainKHRVar
 import io.technoirlab.volk.vkQueuePresentKHR
 import io.technoirlab.volk.vkQueueSubmit2
 import io.technoirlab.volk.vkQueueWaitIdle
+import io.technoirlab.vulkan.presentation.Swapchain
+import io.technoirlab.vulkan.sync.Fence
+import io.technoirlab.vulkan.sync.Semaphore
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc

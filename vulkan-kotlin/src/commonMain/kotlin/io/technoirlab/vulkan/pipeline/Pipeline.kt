@@ -1,0 +1,31 @@
+package io.technoirlab.vulkan.pipeline
+
+import io.technoirlab.volk.VK_OBJECT_TYPE_PIPELINE
+import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkObjectType
+import io.technoirlab.volk.VkPipeline
+import io.technoirlab.volk.vkDestroyPipeline
+import io.technoirlab.vulkan.VulkanObject
+import kotlinx.cinterop.invoke
+
+/**
+ * Wrapper for [VkPipeline].
+ *
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipeline.html">VkPipeline Manual Page</a>
+ */
+class Pipeline internal constructor(
+    private val device: VkDevice,
+    override val handle: VkPipeline,
+) : VulkanObject {
+
+    override val type: VkObjectType get() = VK_OBJECT_TYPE_PIPELINE
+
+    /**
+     * Destroy the pipeline.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyPipeline.html">vkDestroyPipeline Manual Page</a>
+     */
+    override fun close() {
+        vkDestroyPipeline!!(device, handle, null)
+    }
+}
