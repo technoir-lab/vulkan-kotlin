@@ -45,6 +45,7 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
+import io.technoirlab.vulkan.presentation.Surface
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
