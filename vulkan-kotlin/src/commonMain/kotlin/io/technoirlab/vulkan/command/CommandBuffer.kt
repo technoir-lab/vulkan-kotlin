@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan.command
 
+import io.technoirlab.volk.VK_ATTACHMENT_UNUSED
 import io.technoirlab.volk.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT16
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT32
@@ -13,7 +14,9 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEPENDENCY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PUSH_DESCRIPTOR_SET_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
 import io.technoirlab.volk.VK_WHOLE_SIZE
 import io.technoirlab.volk.VkBufferMemoryBarrier2
@@ -40,7 +43,9 @@ import io.technoirlab.volk.VkPushDescriptorSetInfo
 import io.technoirlab.volk.VkQueryControlFlags
 import io.technoirlab.volk.VkQueryResultFlags
 import io.technoirlab.volk.VkRect2D
+import io.technoirlab.volk.VkRenderingAttachmentLocationInfo
 import io.technoirlab.volk.VkRenderingInfo
+import io.technoirlab.volk.VkRenderingInputAttachmentIndexInfo
 import io.technoirlab.volk.VkSampleCountFlagBits
 import io.technoirlab.volk.VkSampleLocationEXT
 import io.technoirlab.volk.VkSampleLocationsInfoEXT
@@ -91,6 +96,8 @@ import io.technoirlab.volk.vkCmdSetPolygonModeEXT
 import io.technoirlab.volk.vkCmdSetPrimitiveRestartEnable
 import io.technoirlab.volk.vkCmdSetPrimitiveTopology
 import io.technoirlab.volk.vkCmdSetRasterizerDiscardEnable
+import io.technoirlab.volk.vkCmdSetRenderingAttachmentLocations
+import io.technoirlab.volk.vkCmdSetRenderingInputAttachmentIndices
 import io.technoirlab.volk.vkCmdSetSampleLocationsEXT
 import io.technoirlab.volk.vkCmdSetScissor
 import io.technoirlab.volk.vkCmdSetScissorWithCount
@@ -837,6 +844,80 @@ class CommandBuffer internal constructor(
      */
     fun setRasterizerDiscardEnable(enable: Boolean) {
         vkCmdSetRasterizerDiscardEnable!!(handle, enable.toVkBool32())
+    }
+
+    /**
+     * Set the fragment output locations used by color attachments in the current dynamic rendering instance.
+     *
+     * [colorAttachmentLocations] must have the same number of entries as the color attachments passed to
+     * [beginRendering]. Non-[VK_ATTACHMENT_UNUSED] locations must be unique. Vulkan 1.4 and the
+     * `dynamicRenderingLocalRead` feature are required.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetRenderingAttachmentLocations.html">vkCmdSetRenderingAttachmentLocations Manual Page</a>
+     */
+    fun setRenderingAttachmentLocations(colorAttachmentLocations: List<UInt>): Unit = memScoped {
+        val locations = if (colorAttachmentLocations.isNotEmpty()) {
+            allocArray<UIntVar>(colorAttachmentLocations.size) { index ->
+                value = colorAttachmentLocations[index]
+            }
+        } else {
+            null
+        }
+        val locationInfo = alloc<VkRenderingAttachmentLocationInfo> {
+            sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO
+            colorAttachmentCount = colorAttachmentLocations.size.toUInt()
+            pColorAttachmentLocations = locations
+        }
+        vkCmdSetRenderingAttachmentLocations!!(handle, locationInfo.ptr)
+    }
+
+    /**
+     * Set the shader input attachment indices used in the current dynamic rendering instance.
+     *
+     * [colorAttachmentInputIndices] must have the same number of entries as the color attachments passed to
+     * [beginRendering]. Non-[VK_ATTACHMENT_UNUSED] color indices must be unique and must differ from either
+     * optional depth or stencil index. Vulkan 1.4 and the `dynamicRenderingLocalRead` feature are required.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetRenderingInputAttachmentIndices.html">vkCmdSetRenderingInputAttachmentIndices Manual Page</a>
+     */
+    fun setRenderingInputAttachmentIndices(
+        colorAttachmentInputIndices: List<UInt>,
+        depthInputAttachmentIndex: UInt? = null,
+        stencilInputAttachmentIndex: UInt? = null,
+    ): Unit = memScoped {
+        val mappedColorIndices = colorAttachmentInputIndices.filter { it != VK_ATTACHMENT_UNUSED }
+        assert(
+            depthInputAttachmentIndex == null ||
+                depthInputAttachmentIndex == VK_ATTACHMENT_UNUSED ||
+                depthInputAttachmentIndex !in mappedColorIndices,
+        ) {
+            "The depth input attachment index must differ from all mapped color attachment indices"
+        }
+        assert(
+            stencilInputAttachmentIndex == null ||
+                stencilInputAttachmentIndex == VK_ATTACHMENT_UNUSED ||
+                stencilInputAttachmentIndex !in mappedColorIndices,
+        ) {
+            "The stencil input attachment index must differ from all mapped color attachment indices"
+        }
+
+        val colorIndices = if (colorAttachmentInputIndices.isNotEmpty()) {
+            allocArray<UIntVar>(colorAttachmentInputIndices.size) { index ->
+                value = colorAttachmentInputIndices[index]
+            }
+        } else {
+            null
+        }
+        val depthIndex = depthInputAttachmentIndex?.let { alloc<UIntVar> { value = it } }
+        val stencilIndex = stencilInputAttachmentIndex?.let { alloc<UIntVar> { value = it } }
+        val inputAttachmentIndexInfo = alloc<VkRenderingInputAttachmentIndexInfo> {
+            sType = VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO
+            colorAttachmentCount = colorAttachmentInputIndices.size.toUInt()
+            pColorAttachmentInputIndices = colorIndices
+            pDepthInputAttachmentIndex = depthIndex?.ptr
+            pStencilInputAttachmentIndex = stencilIndex?.ptr
+        }
+        vkCmdSetRenderingInputAttachmentIndices!!(handle, inputAttachmentIndexInfo.ptr)
     }
 
     /**
