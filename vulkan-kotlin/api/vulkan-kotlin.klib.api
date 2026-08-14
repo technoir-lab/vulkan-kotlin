@@ -229,7 +229,9 @@ final class io.technoirlab.vulkan.memory/DeviceMemory : io.technoirlab.vulkan/Vu
 
     final fun close() // io.technoirlab.vulkan.memory/DeviceMemory.close|close(){}[0]
     final fun copyData(kotlinx.io/Source, kotlin/ULong, kotlin/ULong = ...) // io.technoirlab.vulkan.memory/DeviceMemory.copyData|copyData(kotlinx.io.Source;kotlin.ULong;kotlin.ULong){}[0]
+    final fun flush(kotlin/ULong = ..., kotlin/ULong = ...) // io.technoirlab.vulkan.memory/DeviceMemory.flush|flush(kotlin.ULong;kotlin.ULong){}[0]
     final fun getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.memory/DeviceMemory.getOpaqueCaptureAddress|getOpaqueCaptureAddress(){}[0]
+    final fun invalidate(kotlin/ULong = ..., kotlin/ULong = ...) // io.technoirlab.vulkan.memory/DeviceMemory.invalidate|invalidate(kotlin.ULong;kotlin.ULong){}[0]
     final fun map(kotlin/ULong, kotlin/ULong = ...): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.memory/DeviceMemory.map|map(kotlin.ULong;kotlin.ULong){}[0]
     final fun unmap() // io.technoirlab.vulkan.memory/DeviceMemory.unmap|unmap(){}[0]
 
