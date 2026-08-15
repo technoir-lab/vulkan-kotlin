@@ -39,7 +39,8 @@ class DeviceMemory internal constructor(
     private val device: VkDevice,
     override val handle: VkDeviceMemory,
     val size: ULong,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

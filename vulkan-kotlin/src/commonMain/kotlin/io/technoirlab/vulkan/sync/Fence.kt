@@ -30,7 +30,8 @@ import kotlin.time.Duration
 class Fence internal constructor(
     private val device: VkDevice,
     override val handle: VkFence,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

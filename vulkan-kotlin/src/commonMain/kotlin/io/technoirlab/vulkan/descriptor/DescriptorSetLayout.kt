@@ -16,7 +16,8 @@ import kotlinx.cinterop.invoke
 class DescriptorSetLayout internal constructor(
     private val device: VkDevice,
     override val handle: VkDescriptorSetLayout,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

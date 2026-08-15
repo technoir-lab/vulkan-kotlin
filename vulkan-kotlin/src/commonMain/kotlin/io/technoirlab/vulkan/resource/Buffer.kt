@@ -34,7 +34,8 @@ class Buffer internal constructor(
     private val device: VkDevice,
     override val handle: VkBuffer,
     val size: ULong,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

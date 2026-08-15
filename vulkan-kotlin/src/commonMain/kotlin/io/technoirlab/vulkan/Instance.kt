@@ -33,7 +33,8 @@ import kotlinx.cinterop.value
  */
 class Instance internal constructor(
     override val handle: VkInstance,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     init {
         volkLoadInstanceOnly(handle)

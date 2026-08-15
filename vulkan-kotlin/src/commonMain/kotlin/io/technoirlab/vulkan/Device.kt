@@ -159,7 +159,8 @@ import kotlinx.cinterop.value
  */
 class Device internal constructor(
     override val handle: VkDevice,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     init {
         volkLoadDevice(handle)

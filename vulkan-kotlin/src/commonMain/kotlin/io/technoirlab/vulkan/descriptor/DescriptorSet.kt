@@ -18,9 +18,4 @@ class DescriptorSet internal constructor(
      * @inheritDoc
      */
     override val type: VkObjectType get() = VK_OBJECT_TYPE_DESCRIPTOR_SET
-
-    /**
-     * No-op. Use [DescriptorPool.freeDescriptorSets] to free descriptor sets.
-     */
-    override fun close() = Unit
 }

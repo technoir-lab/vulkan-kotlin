@@ -35,7 +35,8 @@ class Semaphore internal constructor(
     private val device: VkDevice,
     override val handle: VkSemaphore,
     val semaphoreType: VkSemaphoreType,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

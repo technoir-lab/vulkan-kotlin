@@ -28,7 +28,8 @@ import kotlinx.cinterop.value
 class PipelineCache internal constructor(
     private val device: VkDevice,
     override val handle: VkPipelineCache,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

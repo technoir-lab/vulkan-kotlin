@@ -825,9 +825,4 @@ class CommandBuffer internal constructor(
     fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
         vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
     }
-
-    /**
-     * No-op. Use [CommandPool.freeCommandBuffers] to free command buffers.
-     */
-    override fun close() = Unit
 }

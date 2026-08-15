@@ -26,7 +26,8 @@ import kotlinx.cinterop.value
 class Surface internal constructor(
     private val instance: VkInstance,
     override val handle: VkSurfaceKHR,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc
