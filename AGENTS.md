@@ -42,13 +42,15 @@ Intentionally unsupported functionality:
 ## Hardware requirements
 
 The wrapper targets the modern desktop and mobile GPUs.
-Vulkan 1.3 is the minimum required driver version.
+Vulkan 1.4 is the minimum required driver version.
 
-Required capabilities (use the core API when the capability was promoted, otherwise use the extension):
-* `VK_KHR_dynamic_rendering`
-* `VK_KHR_dynamic_rendering_local_read`
-* `VK_EXT_extended_dynamic_state2`
-* `VK_KHR_synchronization2`
+Required core features (enabled by default when creating a device):
+* `dynamicRendering`
+* `synchronization2`
+* `dynamicRenderingLocalRead`
+
+The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension or feature enablement is needed for
+`vkCmdSetDepthBiasEnable`, `vkCmdSetPrimitiveRestartEnable`, or `vkCmdSetRasterizerDiscardEnable`.
 
 ## Coding conventions
 

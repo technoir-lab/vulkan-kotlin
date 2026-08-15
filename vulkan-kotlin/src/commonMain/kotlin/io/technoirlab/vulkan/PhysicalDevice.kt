@@ -90,8 +90,9 @@ class PhysicalDevice internal constructor(
      * @param features Configures enabled Vulkan 1.0 features.
      * @param features11 Configures enabled Vulkan 1.1 features.
      * @param features12 Configures enabled Vulkan 1.2 features.
-     * @param features13 Configures enabled Vulkan 1.3 features.
-     * @param features14 Configures enabled Vulkan 1.4 features.
+     * @param features13 Configures enabled Vulkan 1.3 features. Dynamic rendering and synchronization 2 are enabled
+     * by default.
+     * @param features14 Configures enabled Vulkan 1.4 features. Dynamic rendering local read is enabled by default.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDevice.html">vkCreateDevice Manual Page</a>
      */
     context(allocator: NativePlacement)
@@ -105,10 +106,13 @@ class PhysicalDevice internal constructor(
     ): Device {
         val features14 = allocator.alloc<VkPhysicalDeviceVulkan14Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES
+            dynamicRenderingLocalRead = VK_TRUE
             features14()
         }
         val features13 = allocator.alloc<VkPhysicalDeviceVulkan13Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
+            dynamicRendering = VK_TRUE
+            synchronization2 = VK_TRUE
             features13()
             pNext = features14.ptr
         }

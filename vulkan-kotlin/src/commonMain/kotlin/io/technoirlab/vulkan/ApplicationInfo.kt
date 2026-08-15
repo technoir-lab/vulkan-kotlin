@@ -1,6 +1,6 @@
 package io.technoirlab.vulkan
 
-import io.technoirlab.volk.VK_API_VERSION_1_3
+import io.technoirlab.volk.VK_API_VERSION_1_4
 
 /**
  * Specifies application information.
@@ -8,10 +8,11 @@ import io.technoirlab.volk.VK_API_VERSION_1_3
 data class ApplicationInfo(
     /**
      * The highest version of Vulkan that the application is designed to use.
+     * Defaults to the minimum supported Vulkan API version, 1.4.
      * The patch version number specified in [apiVersion] is ignored when creating an instance object.
      * The variant version of the instance must match that requested in [apiVersion].
      */
-    val apiVersion: UInt = VK_API_VERSION_1_3,
+    val apiVersion: UInt = VK_API_VERSION_1_4,
     /**
      * The name of the application.
      */
