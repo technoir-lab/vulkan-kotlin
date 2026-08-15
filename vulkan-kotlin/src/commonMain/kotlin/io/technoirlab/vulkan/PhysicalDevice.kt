@@ -7,8 +7,14 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_PROPERTIES
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBool32Var
 import io.technoirlab.volk.VkDeviceCreateInfo
@@ -17,6 +23,7 @@ import io.technoirlab.volk.VkExtensionProperties
 import io.technoirlab.volk.VkFormat
 import io.technoirlab.volk.VkFormatProperties2
 import io.technoirlab.volk.VkImageFormatProperties2
+import io.technoirlab.volk.VkImageLayoutVar
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDevice
 import io.technoirlab.volk.VkPhysicalDeviceFeatures
@@ -25,8 +32,14 @@ import io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2
 import io.technoirlab.volk.VkPhysicalDeviceMemoryProperties
 import io.technoirlab.volk.VkPhysicalDeviceProperties
 import io.technoirlab.volk.VkPhysicalDeviceProperties2
+import io.technoirlab.volk.VkPhysicalDeviceVulkan11Features
+import io.technoirlab.volk.VkPhysicalDeviceVulkan11Properties
+import io.technoirlab.volk.VkPhysicalDeviceVulkan12Features
+import io.technoirlab.volk.VkPhysicalDeviceVulkan12Properties
 import io.technoirlab.volk.VkPhysicalDeviceVulkan13Features
+import io.technoirlab.volk.VkPhysicalDeviceVulkan13Properties
 import io.technoirlab.volk.VkPhysicalDeviceVulkan14Features
+import io.technoirlab.volk.VkPhysicalDeviceVulkan14Properties
 import io.technoirlab.volk.VkPresentModeKHR
 import io.technoirlab.volk.VkPresentModeKHRVar
 import io.technoirlab.volk.VkQueueFamilyProperties
@@ -46,6 +59,7 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
 import io.technoirlab.vulkan.presentation.Surface
+import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
@@ -72,12 +86,20 @@ class PhysicalDevice internal constructor(
     /**
      * Create a new device instance.
      *
+     * @param createInfo Configures device creation.
+     * @param features Configures enabled Vulkan 1.0 features.
+     * @param features11 Configures enabled Vulkan 1.1 features.
+     * @param features12 Configures enabled Vulkan 1.2 features.
+     * @param features13 Configures enabled Vulkan 1.3 features.
+     * @param features14 Configures enabled Vulkan 1.4 features.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDevice.html">vkCreateDevice Manual Page</a>
      */
     context(allocator: NativePlacement)
     fun createDevice(
         createInfo: VkDeviceCreateInfo.() -> Unit = {},
         features: VkPhysicalDeviceFeatures.() -> Unit = {},
+        features11: VkPhysicalDeviceVulkan11Features.() -> Unit = {},
+        features12: VkPhysicalDeviceVulkan12Features.() -> Unit = {},
         features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {},
         features14: VkPhysicalDeviceVulkan14Features.() -> Unit = {},
     ): Device {
@@ -87,18 +109,28 @@ class PhysicalDevice internal constructor(
         }
         val features13 = allocator.alloc<VkPhysicalDeviceVulkan13Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
-            pNext = features14.ptr
             features13()
+            pNext = features14.ptr
+        }
+        val features12 = allocator.alloc<VkPhysicalDeviceVulkan12Features> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES
+            features12()
+            pNext = features13.ptr
+        }
+        val features11 = allocator.alloc<VkPhysicalDeviceVulkan11Features> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES
+            features11()
+            pNext = features12.ptr
         }
         val features = allocator.alloc<VkPhysicalDeviceFeatures2> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
-            pNext = features13.ptr
             this.features.features()
+            pNext = features11.ptr
         }
         val deviceCreateInfo = allocator.alloc<VkDeviceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
-            pNext = features.ptr
             createInfo()
+            pNext = features.ptr
         }
         val deviceVar = allocator.alloc<VkDeviceVar>()
         vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
@@ -131,20 +163,29 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceFeatures2.html">vkGetPhysicalDeviceFeatures2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getFeatures(): Features {
+    fun getFeatures(extensionFeatures: COpaquePointer? = null): Features {
         val features14 = allocator.alloc<VkPhysicalDeviceVulkan14Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES
+            pNext = extensionFeatures
         }
         val features13 = allocator.alloc<VkPhysicalDeviceVulkan13Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
             pNext = features14.ptr
         }
-        val features = allocator.alloc<VkPhysicalDeviceFeatures2> {
-            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
+        val features12 = allocator.alloc<VkPhysicalDeviceVulkan12Features> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES
             pNext = features13.ptr
         }
+        val features11 = allocator.alloc<VkPhysicalDeviceVulkan11Features> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES
+            pNext = features12.ptr
+        }
+        val features = allocator.alloc<VkPhysicalDeviceFeatures2> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
+            pNext = features11.ptr
+        }
         vkGetPhysicalDeviceFeatures2!!(handle, features.ptr)
-        return Features(features, features13, features14)
+        return Features(features, features11, features12, features13, features14)
     }
 
     /**
@@ -210,12 +251,36 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceProperties2.html">vkGetPhysicalDeviceProperties2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getProperties2(): VkPhysicalDeviceProperties2 {
+    fun getProperties2(extensionProperties: COpaquePointer? = null): Properties {
+        val properties14 = allocator.alloc<VkPhysicalDeviceVulkan14Properties> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_PROPERTIES
+            pNext = extensionProperties
+        }
+        val properties13 = allocator.alloc<VkPhysicalDeviceVulkan13Properties> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_PROPERTIES
+            pNext = properties14.ptr
+        }
+        val properties12 = allocator.alloc<VkPhysicalDeviceVulkan12Properties> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_PROPERTIES
+            pNext = properties13.ptr
+        }
+        val properties11 = allocator.alloc<VkPhysicalDeviceVulkan11Properties> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES
+            pNext = properties12.ptr
+        }
         val properties = allocator.alloc<VkPhysicalDeviceProperties2> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
+            pNext = properties11.ptr
         }
         vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
-        return properties
+        if (properties14.copySrcLayoutCount > 0u) {
+            properties14.pCopySrcLayouts = allocator.allocArray<VkImageLayoutVar>(properties14.copySrcLayoutCount.toLong())
+        }
+        if (properties14.copyDstLayoutCount > 0u) {
+            properties14.pCopyDstLayouts = allocator.allocArray<VkImageLayoutVar>(properties14.copyDstLayoutCount.toLong())
+        }
+        vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
+        return Properties(properties, properties11, properties12, properties13, properties14)
     }
 
     /**
@@ -310,9 +375,37 @@ class PhysicalDevice internal constructor(
      */
     override fun close() = Unit
 
+    /**
+     * Core physical-device features returned by [getFeatures].
+     *
+     * @property features Vulkan 1.0 features.
+     * @property features11 Vulkan 1.1 features.
+     * @property features12 Vulkan 1.2 features.
+     * @property features13 Vulkan 1.3 features.
+     * @property features14 Vulkan 1.4 features.
+     */
     data class Features(
         val features: VkPhysicalDeviceFeatures2,
+        val features11: VkPhysicalDeviceVulkan11Features,
+        val features12: VkPhysicalDeviceVulkan12Features,
         val features13: VkPhysicalDeviceVulkan13Features,
         val features14: VkPhysicalDeviceVulkan14Features,
+    )
+
+    /**
+     * Core physical-device properties returned by [getProperties2].
+     *
+     * @property properties Vulkan 1.0 properties.
+     * @property properties11 Vulkan 1.1 properties.
+     * @property properties12 Vulkan 1.2 properties.
+     * @property properties13 Vulkan 1.3 properties.
+     * @property properties14 Vulkan 1.4 properties.
+     */
+    data class Properties(
+        val properties: VkPhysicalDeviceProperties2,
+        val properties11: VkPhysicalDeviceVulkan11Properties,
+        val properties12: VkPhysicalDeviceVulkan12Properties,
+        val properties13: VkPhysicalDeviceVulkan13Properties,
+        val properties14: VkPhysicalDeviceVulkan14Properties,
     )
 }
