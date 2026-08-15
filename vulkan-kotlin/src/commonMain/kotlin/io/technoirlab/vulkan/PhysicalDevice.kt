@@ -59,6 +59,7 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
 import io.technoirlab.vulkan.presentation.Surface
+import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
@@ -67,6 +68,7 @@ import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.value
 
 /**
@@ -86,6 +88,7 @@ class PhysicalDevice internal constructor(
     /**
      * Create a new device instance.
      *
+     * @param enabledExtensions Names of the device extensions to enable.
      * @param createInfo Configures device creation.
      * @param features Configures enabled Vulkan 1.0 features.
      * @param features11 Configures enabled Vulkan 1.1 features.
@@ -95,8 +98,9 @@ class PhysicalDevice internal constructor(
      * @param features14 Configures enabled Vulkan 1.4 features. Dynamic rendering local read is enabled by default.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDevice.html">vkCreateDevice Manual Page</a>
      */
-    context(allocator: NativePlacement)
+    context(allocator: AutofreeScope)
     fun createDevice(
+        enabledExtensions: List<String> = emptyList(),
         createInfo: VkDeviceCreateInfo.() -> Unit = {},
         features: VkPhysicalDeviceFeatures.() -> Unit = {},
         features11: VkPhysicalDeviceVulkan11Features.() -> Unit = {},
@@ -135,6 +139,10 @@ class PhysicalDevice internal constructor(
             sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
             createInfo()
             pNext = features.ptr
+            if (enabledExtensions.isNotEmpty()) {
+                enabledExtensionCount = enabledExtensions.size.toUInt()
+                ppEnabledExtensionNames = enabledExtensions.toCStringArray(allocator)
+            }
         }
         val deviceVar = allocator.alloc<VkDeviceVar>()
         vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
