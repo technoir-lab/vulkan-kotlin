@@ -44,6 +44,23 @@ val instance = vulkan.createInstance()
 
 For more information, please see the [API reference](https://technoir-lab.github.io/vulkan-kotlin/) and the [sample](sample) project.
 
+### Debug assertions
+
+Kotlin wrappers use assertions to check for invalid API usage. By default, assertions are disabled and get stripped by the Kotlin compiler.
+To enable assertions for debug binaries, add the following to the application module:
+
+```kotlin
+kotlin {
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.configureEach {
+            if (buildType == NativeBuildType.DEBUG) {
+                freeCompilerArgs += "-ea"
+            }
+        }
+    }
+}
+```
+
 ## Supported targets
 
 * androidNativeArm64

@@ -22,6 +22,7 @@ import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
+import kotlin.assert
 
 /**
  * Wrapper for [VkDebugUtilsMessengerEXT].
@@ -51,6 +52,7 @@ class DebugMessenger internal constructor(
         messageTypes: VkDebugUtilsMessageTypeFlagsEXT,
         callbackData: VkDebugUtilsMessengerCallbackDataEXT.() -> Unit,
     ) {
+        assert(messageTypes != 0u) { "messageTypes must not be 0" }
         val callbackDataStruct = allocator.alloc<VkDebugUtilsMessengerCallbackDataEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
             callbackData()

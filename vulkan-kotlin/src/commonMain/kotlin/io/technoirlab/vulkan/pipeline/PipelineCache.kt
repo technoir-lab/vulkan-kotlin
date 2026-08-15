@@ -19,6 +19,7 @@ import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
+import kotlin.assert
 
 /**
  * Wrapper for [VkPipelineCache].
@@ -72,6 +73,8 @@ class PipelineCache internal constructor(
      */
     context(allocator: NativePlacement)
     fun merge(srcCaches: List<PipelineCache>) {
+        assert(srcCaches.isNotEmpty()) { "srcCaches must not be empty" }
+
         val srcCacheHandles = allocator.allocArrayOf(srcCaches.map { it.handle })
         vkMergePipelineCaches!!(device, handle, srcCaches.size.toUInt(), srcCacheHandles)
             .checkResult("Failed to merge pipeline caches")

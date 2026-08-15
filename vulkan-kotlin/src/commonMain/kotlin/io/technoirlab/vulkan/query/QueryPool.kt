@@ -13,6 +13,7 @@ import io.technoirlab.vulkan.VulkanResult
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.usePinned
+import kotlin.assert
 
 /**
  * Wrapper for [VkQueryPool].
@@ -36,6 +37,7 @@ class QueryPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetQueryPoolResults.html">vkGetQueryPoolResults Manual Page</a>
      */
     fun getResults(firstQuery: UInt, queryCount: UInt, flags: VkQueryResultFlags = 0u): VulkanResult<ULongArray> {
+        assert(queryCount > 0u) { "queryCount must be greater than 0" }
         val resultArray = ULongArray(queryCount.toInt())
         val result = resultArray.usePinned { pinned ->
             vkGetQueryPoolResults!!(
