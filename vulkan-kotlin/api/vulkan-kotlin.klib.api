@@ -227,7 +227,9 @@ final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/Vulkan
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/Buffer.type.<get-type>|<get-type>(){}[0]
 
     final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.resource/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Buffer.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.resource.DeviceMemory;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getDeviceAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getDeviceAddress|getDeviceAddress(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.resource/Buffer.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan.resource/Buffer.close|close(){}[0]
 }
 
@@ -249,6 +251,7 @@ final class io.technoirlab.vulkan.resource/DeviceMemory : io.technoirlab.vulkan/
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/DeviceMemory.type.<get-type>|<get-type>(){}[0]
 
     final fun (context(kotlinx.cinterop/NativePlacement)).copyData(kotlinx.io/Source, kotlin/ULong, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/DeviceMemory.copyData|copyData(kotlinx.cinterop.NativePlacement)(kotlinx.io.Source;kotlin.ULong;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/DeviceMemory.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).map(kotlin/ULong, kotlin/ULong = ...): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.resource/DeviceMemory.map|map(kotlinx.cinterop.NativePlacement)(kotlin.ULong;kotlin.ULong){}[0]
     final fun close() // io.technoirlab.vulkan.resource/DeviceMemory.close|close(){}[0]
     final fun unmap() // io.technoirlab.vulkan.resource/DeviceMemory.unmap|unmap(){}[0]

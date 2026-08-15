@@ -1,10 +1,13 @@
 package io.technoirlab.vulkan.resource
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE_MEMORY
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemory
+import io.technoirlab.volk.VkDeviceMemoryOpaqueCaptureAddressInfo
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkFreeMemory
+import io.technoirlab.volk.vkGetDeviceMemoryOpaqueCaptureAddress
 import io.technoirlab.volk.vkMapMemory
 import io.technoirlab.volk.vkUnmapMemory
 import io.technoirlab.vulkan.VulkanObject
@@ -69,6 +72,25 @@ class DeviceMemory internal constructor(
         } finally {
             unmap()
         }
+    }
+
+    /**
+     * Retrieve the opaque capture address of this allocation for trace capture and replay.
+     *
+     * The `bufferDeviceAddress` and `bufferDeviceAddressCaptureReplay` features must be enabled.
+     * The memory must have been allocated with `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`.
+     * If the logical device represents more than one physical device, the
+     * `bufferDeviceAddressMultiDevice` feature must also be enabled.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceMemoryOpaqueCaptureAddress.html">vkGetDeviceMemoryOpaqueCaptureAddress Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun getOpaqueCaptureAddress(): ULong {
+        val addressInfo = allocator.alloc<VkDeviceMemoryOpaqueCaptureAddressInfo> {
+            sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
+            memory = handle
+        }
+        return vkGetDeviceMemoryOpaqueCaptureAddress!!(device, addressInfo.ptr)
     }
 
     /**
