@@ -16,7 +16,8 @@ import kotlinx.cinterop.invoke
 class Pipeline internal constructor(
     private val device: VkDevice,
     override val handle: VkPipeline,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     override val type: VkObjectType get() = VK_OBJECT_TYPE_PIPELINE
 

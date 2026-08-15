@@ -33,7 +33,8 @@ import kotlinx.cinterop.ptr
 class CommandPool internal constructor(
     private val device: VkDevice,
     override val handle: VkCommandPool,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

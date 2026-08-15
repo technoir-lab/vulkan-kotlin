@@ -32,7 +32,8 @@ class DebugMessenger internal constructor(
     private val instance: VkInstance,
     override val handle: VkDebugUtilsMessengerEXT,
     private val callbackRef: StableRef<Callback>,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

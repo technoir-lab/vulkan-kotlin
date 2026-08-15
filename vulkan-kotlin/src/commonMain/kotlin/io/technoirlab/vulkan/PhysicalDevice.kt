@@ -371,11 +371,6 @@ class PhysicalDevice internal constructor(
     }
 
     /**
-     * No-op.
-     */
-    override fun close() = Unit
-
-    /**
      * Core physical-device features returned by [getFeatures].
      *
      * @property features Vulkan 1.0 features.

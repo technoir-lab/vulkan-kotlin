@@ -5,7 +5,7 @@ import io.technoirlab.volk.VkObjectType
 /**
  * Represents a Vulkan object.
  */
-interface VulkanObject : AutoCloseable {
+interface VulkanObject {
     /**
      * The native handle to the Vulkan object.
      */

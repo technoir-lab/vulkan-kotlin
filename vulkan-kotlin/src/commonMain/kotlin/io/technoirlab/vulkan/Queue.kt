@@ -93,9 +93,4 @@ class Queue internal constructor(
     fun waitIdle() {
         vkQueueWaitIdle!!(handle).checkResult("Failed to wait for queue idle")
     }
-
-    /**
-     * No-op.
-     */
-    override fun close() = Unit
 }

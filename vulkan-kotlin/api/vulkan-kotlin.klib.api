@@ -8,7 +8,7 @@
 // - Show declarations: true
 
 // Library unique name: <io.technoirlab.vulkan:vulkan-kotlin>
-abstract interface io.technoirlab.vulkan/VulkanObject : kotlin/AutoCloseable { // io.technoirlab.vulkan/VulkanObject|null[0]
+abstract interface io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan/VulkanObject|null[0]
     abstract val handle // io.technoirlab.vulkan/VulkanObject.handle|{}handle[0]
         abstract fun <get-handle>(): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan/VulkanObject.handle.<get-handle>|<get-handle>(){}[0]
     abstract val type // io.technoirlab.vulkan/VulkanObject.type|{}type[0]
@@ -53,7 +53,6 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun beginQuery(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.beginQuery|beginQuery(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt){}[0]
     final fun bindIndexBuffer(io.technoirlab.vulkan.resource/Buffer, kotlin/UInt, kotlin/ULong = ..., kotlin/ULong = ...) // io.technoirlab.vulkan.command/CommandBuffer.bindIndexBuffer|bindIndexBuffer(io.technoirlab.vulkan.resource.Buffer;kotlin.UInt;kotlin.ULong;kotlin.ULong){}[0]
     final fun bindPipeline(kotlin/UInt, io.technoirlab.vulkan.pipeline/Pipeline) // io.technoirlab.vulkan.command/CommandBuffer.bindPipeline|bindPipeline(kotlin.UInt;io.technoirlab.vulkan.pipeline.Pipeline){}[0]
-    final fun close() // io.technoirlab.vulkan.command/CommandBuffer.close|close(){}[0]
     final fun copyQueryPoolResults(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt, io.technoirlab.vulkan.resource/Buffer, kotlin/ULong, kotlin/ULong, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.copyQueryPoolResults|copyQueryPoolResults(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.resource.Buffer;kotlin.ULong;kotlin.ULong;kotlin.UInt){}[0]
     final fun dispatch(kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.dispatch|dispatch(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun dispatchBase(kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.dispatchBase|dispatchBase(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
@@ -93,7 +92,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun writeTimestamp(kotlin/ULong, io.technoirlab.vulkan.query/QueryPool, kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.writeTimestamp|writeTimestamp(kotlin.ULong;io.technoirlab.vulkan.query.QueryPool;kotlin.UInt){}[0]
 }
 
-final class io.technoirlab.vulkan.command/CommandPool : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.command/CommandPool|null[0]
+final class io.technoirlab.vulkan.command/CommandPool : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.command/CommandPool|null[0]
     final val handle // io.technoirlab.vulkan.command/CommandPool.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkCommandPool_T> // io.technoirlab.vulkan.command/CommandPool.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.command/CommandPool.type|{}type[0]
@@ -106,7 +105,7 @@ final class io.technoirlab.vulkan.command/CommandPool : io.technoirlab.vulkan/Vu
     final fun trim(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandPool.trim|trim(kotlin.UInt){}[0]
 }
 
-final class io.technoirlab.vulkan.debug/DebugMessenger : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.debug/DebugMessenger|null[0]
+final class io.technoirlab.vulkan.debug/DebugMessenger : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.debug/DebugMessenger|null[0]
     final val handle // io.technoirlab.vulkan.debug/DebugMessenger.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDebugUtilsMessengerEXT_T> // io.technoirlab.vulkan.debug/DebugMessenger.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.debug/DebugMessenger.type|{}type[0]
@@ -120,7 +119,7 @@ final class io.technoirlab.vulkan.debug/DebugMessenger : io.technoirlab.vulkan/V
     }
 }
 
-final class io.technoirlab.vulkan.descriptor/DescriptorPool : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.descriptor/DescriptorPool|null[0]
+final class io.technoirlab.vulkan.descriptor/DescriptorPool : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.descriptor/DescriptorPool|null[0]
     final val handle // io.technoirlab.vulkan.descriptor/DescriptorPool.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDescriptorPool_T> // io.technoirlab.vulkan.descriptor/DescriptorPool.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.descriptor/DescriptorPool.type|{}type[0]
@@ -137,11 +136,9 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSet : io.technoirlab.vulk
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDescriptorSet_T> // io.technoirlab.vulkan.descriptor/DescriptorSet.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.descriptor/DescriptorSet.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.descriptor/DescriptorSet.type.<get-type>|<get-type>(){}[0]
-
-    final fun close() // io.technoirlab.vulkan.descriptor/DescriptorSet.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.descriptor/DescriptorSetLayout|null[0]
+final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.descriptor/DescriptorSetLayout|null[0]
     final val handle // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDescriptorSetLayout_T> // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.type|{}type[0]
@@ -150,7 +147,7 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirla
     final fun close() // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.pipeline/Pipeline : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.pipeline/Pipeline|null[0]
+final class io.technoirlab.vulkan.pipeline/Pipeline : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.pipeline/Pipeline|null[0]
     final val handle // io.technoirlab.vulkan.pipeline/Pipeline.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkPipeline_T> // io.technoirlab.vulkan.pipeline/Pipeline.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.pipeline/Pipeline.type|{}type[0]
@@ -159,7 +156,7 @@ final class io.technoirlab.vulkan.pipeline/Pipeline : io.technoirlab.vulkan/Vulk
     final fun close() // io.technoirlab.vulkan.pipeline/Pipeline.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.pipeline/PipelineCache : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.pipeline/PipelineCache|null[0]
+final class io.technoirlab.vulkan.pipeline/PipelineCache : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.pipeline/PipelineCache|null[0]
     final val handle // io.technoirlab.vulkan.pipeline/PipelineCache.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkPipelineCache_T> // io.technoirlab.vulkan.pipeline/PipelineCache.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.pipeline/PipelineCache.type|{}type[0]
@@ -170,7 +167,7 @@ final class io.technoirlab.vulkan.pipeline/PipelineCache : io.technoirlab.vulkan
     final fun close() // io.technoirlab.vulkan.pipeline/PipelineCache.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.pipeline/PipelineLayout : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.pipeline/PipelineLayout|null[0]
+final class io.technoirlab.vulkan.pipeline/PipelineLayout : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.pipeline/PipelineLayout|null[0]
     final val handle // io.technoirlab.vulkan.pipeline/PipelineLayout.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkPipelineLayout_T> // io.technoirlab.vulkan.pipeline/PipelineLayout.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.pipeline/PipelineLayout.type|{}type[0]
@@ -179,7 +176,7 @@ final class io.technoirlab.vulkan.pipeline/PipelineLayout : io.technoirlab.vulka
     final fun close() // io.technoirlab.vulkan.pipeline/PipelineLayout.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.pipeline/ShaderModule : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.pipeline/ShaderModule|null[0]
+final class io.technoirlab.vulkan.pipeline/ShaderModule : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.pipeline/ShaderModule|null[0]
     final val handle // io.technoirlab.vulkan.pipeline/ShaderModule.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkShaderModule_T> // io.technoirlab.vulkan.pipeline/ShaderModule.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.pipeline/ShaderModule.type|{}type[0]
@@ -188,7 +185,7 @@ final class io.technoirlab.vulkan.pipeline/ShaderModule : io.technoirlab.vulkan/
     final fun close() // io.technoirlab.vulkan.pipeline/ShaderModule.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.presentation/Surface : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.presentation/Surface|null[0]
+final class io.technoirlab.vulkan.presentation/Surface : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.presentation/Surface|null[0]
     final val handle // io.technoirlab.vulkan.presentation/Surface.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkSurfaceKHR_T> // io.technoirlab.vulkan.presentation/Surface.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.presentation/Surface.type|{}type[0]
@@ -197,7 +194,7 @@ final class io.technoirlab.vulkan.presentation/Surface : io.technoirlab.vulkan/V
     final fun close() // io.technoirlab.vulkan.presentation/Surface.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.presentation/Swapchain : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.presentation/Swapchain|null[0]
+final class io.technoirlab.vulkan.presentation/Swapchain : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.presentation/Swapchain|null[0]
     final val handle // io.technoirlab.vulkan.presentation/Swapchain.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkSwapchainKHR_T> // io.technoirlab.vulkan.presentation/Swapchain.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.presentation/Swapchain.type|{}type[0]
@@ -208,7 +205,7 @@ final class io.technoirlab.vulkan.presentation/Swapchain : io.technoirlab.vulkan
     final fun close() // io.technoirlab.vulkan.presentation/Swapchain.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.query/QueryPool : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.query/QueryPool|null[0]
+final class io.technoirlab.vulkan.query/QueryPool : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.query/QueryPool|null[0]
     final val handle // io.technoirlab.vulkan.query/QueryPool.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkQueryPool_T> // io.technoirlab.vulkan.query/QueryPool.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.query/QueryPool.type|{}type[0]
@@ -218,7 +215,7 @@ final class io.technoirlab.vulkan.query/QueryPool : io.technoirlab.vulkan/Vulkan
     final fun getResults(kotlin/UInt, kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan/VulkanResult<kotlin/ULongArray> // io.technoirlab.vulkan.query/QueryPool.getResults|getResults(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/Buffer|null[0]
+final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Buffer|null[0]
     final val handle // io.technoirlab.vulkan.resource/Buffer.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkBuffer_T> // io.technoirlab.vulkan.resource/Buffer.handle.<get-handle>|<get-handle>(){}[0]
     final val size // io.technoirlab.vulkan.resource/Buffer.size|{}size[0]
@@ -233,7 +230,7 @@ final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/Vulkan
     final fun close() // io.technoirlab.vulkan.resource/Buffer.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/BufferView : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/BufferView|null[0]
+final class io.technoirlab.vulkan.resource/BufferView : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/BufferView|null[0]
     final val handle // io.technoirlab.vulkan.resource/BufferView.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkBufferView_T> // io.technoirlab.vulkan.resource/BufferView.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.resource/BufferView.type|{}type[0]
@@ -242,7 +239,7 @@ final class io.technoirlab.vulkan.resource/BufferView : io.technoirlab.vulkan/Vu
     final fun close() // io.technoirlab.vulkan.resource/BufferView.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/DeviceMemory : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/DeviceMemory|null[0]
+final class io.technoirlab.vulkan.resource/DeviceMemory : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/DeviceMemory|null[0]
     final val handle // io.technoirlab.vulkan.resource/DeviceMemory.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDeviceMemory_T> // io.technoirlab.vulkan.resource/DeviceMemory.handle.<get-handle>|<get-handle>(){}[0]
     final val size // io.technoirlab.vulkan.resource/DeviceMemory.size|{}size[0]
@@ -259,7 +256,7 @@ final class io.technoirlab.vulkan.resource/DeviceMemory : io.technoirlab.vulkan/
     final object Companion // io.technoirlab.vulkan.resource/DeviceMemory.Companion|null[0]
 }
 
-final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/Image|null[0]
+final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Image|null[0]
     final val destroyable // io.technoirlab.vulkan.resource/Image.destroyable|{}destroyable[0]
         final fun <get-destroyable>(): kotlin/Boolean // io.technoirlab.vulkan.resource/Image.destroyable.<get-destroyable>|<get-destroyable>(){}[0]
     final val handle // io.technoirlab.vulkan.resource/Image.handle|{}handle[0]
@@ -272,7 +269,7 @@ final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanO
     final fun close() // io.technoirlab.vulkan.resource/Image.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/ImageView : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/ImageView|null[0]
+final class io.technoirlab.vulkan.resource/ImageView : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/ImageView|null[0]
     final val handle // io.technoirlab.vulkan.resource/ImageView.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkImageView_T> // io.technoirlab.vulkan.resource/ImageView.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.resource/ImageView.type|{}type[0]
@@ -281,7 +278,7 @@ final class io.technoirlab.vulkan.resource/ImageView : io.technoirlab.vulkan/Vul
     final fun close() // io.technoirlab.vulkan.resource/ImageView.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/Sampler : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.resource/Sampler|null[0]
+final class io.technoirlab.vulkan.resource/Sampler : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Sampler|null[0]
     final val handle // io.technoirlab.vulkan.resource/Sampler.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkSampler_T> // io.technoirlab.vulkan.resource/Sampler.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.resource/Sampler.type|{}type[0]
@@ -290,7 +287,7 @@ final class io.technoirlab.vulkan.resource/Sampler : io.technoirlab.vulkan/Vulka
     final fun close() // io.technoirlab.vulkan.resource/Sampler.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.sync/Event : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.sync/Event|null[0]
+final class io.technoirlab.vulkan.sync/Event : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.sync/Event|null[0]
     final val handle // io.technoirlab.vulkan.sync/Event.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkEvent_T> // io.technoirlab.vulkan.sync/Event.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan.sync/Event.type|{}type[0]
@@ -299,7 +296,7 @@ final class io.technoirlab.vulkan.sync/Event : io.technoirlab.vulkan/VulkanObjec
     final fun close() // io.technoirlab.vulkan.sync/Event.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.sync/Fence : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.sync/Fence|null[0]
+final class io.technoirlab.vulkan.sync/Fence : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.sync/Fence|null[0]
     final val handle // io.technoirlab.vulkan.sync/Fence.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkFence_T> // io.technoirlab.vulkan.sync/Fence.handle.<get-handle>|<get-handle>(){}[0]
     final val isSignaled // io.technoirlab.vulkan.sync/Fence.isSignaled|{}isSignaled[0]
@@ -312,7 +309,7 @@ final class io.technoirlab.vulkan.sync/Fence : io.technoirlab.vulkan/VulkanObjec
     final fun close() // io.technoirlab.vulkan.sync/Fence.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.sync/Semaphore : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.sync/Semaphore|null[0]
+final class io.technoirlab.vulkan.sync/Semaphore : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.sync/Semaphore|null[0]
     final val handle // io.technoirlab.vulkan.sync/Semaphore.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkSemaphore_T> // io.technoirlab.vulkan.sync/Semaphore.handle.<get-handle>|<get-handle>(){}[0]
     final val semaphoreType // io.technoirlab.vulkan.sync/Semaphore.semaphoreType|{}semaphoreType[0]
@@ -351,7 +348,7 @@ final class io.technoirlab.vulkan/ApplicationInfo { // io.technoirlab.vulkan/App
     final fun toString(): kotlin/String // io.technoirlab.vulkan/ApplicationInfo.toString|toString(){}[0]
 }
 
-final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan/Device|null[0]
+final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Device|null[0]
     final val handle // io.technoirlab.vulkan/Device.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDevice_T> // io.technoirlab.vulkan/Device.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan/Device.type|{}type[0]
@@ -384,7 +381,7 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject { 
     final fun waitIdle() // io.technoirlab.vulkan/Device.waitIdle|waitIdle(){}[0]
 }
 
-final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan/Instance|null[0]
+final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Instance|null[0]
     final val handle // io.technoirlab.vulkan/Instance.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkInstance_T> // io.technoirlab.vulkan/Instance.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan/Instance.type|{}type[0]
@@ -414,7 +411,6 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceFormats(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/List<io.technoirlab.volk/VkSurfaceFormatKHR> // io.technoirlab.vulkan/PhysicalDevice.getSurfaceFormats|getSurfaceFormats(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfacePresentModes(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/Set<kotlin/UInt> // io.technoirlab.vulkan/PhysicalDevice.getSurfacePresentModes|getSurfacePresentModes(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceSupport(io.technoirlab.vulkan.presentation/Surface, kotlin/UInt): kotlin/Boolean // io.technoirlab.vulkan/PhysicalDevice.getSurfaceSupport|getSurfaceSupport(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface;kotlin.UInt){}[0]
-    final fun close() // io.technoirlab.vulkan/PhysicalDevice.close|close(){}[0]
 
     final class Features { // io.technoirlab.vulkan/PhysicalDevice.Features|null[0]
         constructor <init>(io.technoirlab.volk/VkPhysicalDeviceFeatures2, io.technoirlab.volk/VkPhysicalDeviceVulkan11Features, io.technoirlab.volk/VkPhysicalDeviceVulkan12Features, io.technoirlab.volk/VkPhysicalDeviceVulkan13Features, io.technoirlab.volk/VkPhysicalDeviceVulkan14Features) // io.technoirlab.vulkan/PhysicalDevice.Features.<init>|<init>(io.technoirlab.volk.VkPhysicalDeviceFeatures2;io.technoirlab.volk.VkPhysicalDeviceVulkan11Features;io.technoirlab.volk.VkPhysicalDeviceVulkan12Features;io.technoirlab.volk.VkPhysicalDeviceVulkan13Features;io.technoirlab.volk.VkPhysicalDeviceVulkan14Features){}[0]
@@ -477,7 +473,6 @@ final class io.technoirlab.vulkan/Queue : io.technoirlab.vulkan/VulkanObject { /
 
     final fun (context(kotlinx.cinterop/NativePlacement)).present(io.technoirlab.vulkan.presentation/Swapchain, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.sync/Semaphore> = ...): kotlin/Int // io.technoirlab.vulkan/Queue.present|present(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Swapchain;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.sync.Semaphore>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).submit(io.technoirlab.vulkan.sync/Fence? = ..., kotlin/Function1<io.technoirlab.volk/VkSubmitInfo2, kotlin/Unit>) // io.technoirlab.vulkan/Queue.submit|submit(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.sync.Fence?;kotlin.Function1<io.technoirlab.volk.VkSubmitInfo2,kotlin.Unit>){}[0]
-    final fun close() // io.technoirlab.vulkan/Queue.close|close(){}[0]
     final fun waitIdle() // io.technoirlab.vulkan/Queue.waitIdle|waitIdle(){}[0]
 }
 

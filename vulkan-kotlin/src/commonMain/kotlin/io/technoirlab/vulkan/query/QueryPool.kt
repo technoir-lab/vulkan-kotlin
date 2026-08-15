@@ -22,7 +22,8 @@ import kotlinx.cinterop.usePinned
 class QueryPool internal constructor(
     private val device: VkDevice,
     override val handle: VkQueryPool,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc

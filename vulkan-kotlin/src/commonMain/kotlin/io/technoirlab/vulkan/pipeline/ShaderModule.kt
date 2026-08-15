@@ -16,7 +16,8 @@ import kotlinx.cinterop.invoke
 class ShaderModule internal constructor(
     private val device: VkDevice,
     override val handle: VkShaderModule,
-) : VulkanObject {
+) : VulkanObject,
+    AutoCloseable {
 
     /**
      * @inheritDoc
