@@ -1,8 +1,10 @@
 package io.technoirlab.vulkan.descriptor
 
+import io.technoirlab.volk.VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT
 import io.technoirlab.volk.VK_OBJECT_TYPE_DESCRIPTOR_POOL
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
 import io.technoirlab.volk.VkDescriptorPool
+import io.technoirlab.volk.VkDescriptorPoolCreateFlags
 import io.technoirlab.volk.VkDescriptorPoolResetFlags
 import io.technoirlab.volk.VkDescriptorSetAllocateInfo
 import io.technoirlab.volk.VkDescriptorSetVar
@@ -31,6 +33,7 @@ import kotlin.assert
 class DescriptorPool internal constructor(
     private val device: VkDevice,
     override val handle: VkDescriptorPool,
+    private val flags: VkDescriptorPoolCreateFlags,
 ) : VulkanObject,
     AutoCloseable {
 
@@ -70,9 +73,13 @@ class DescriptorPool internal constructor(
     context(allocator: NativePlacement)
     fun freeDescriptorSets(descriptorSets: List<DescriptorSet>) {
         assert(descriptorSets.isNotEmpty()) { "descriptorSets must not be empty" }
+        assert((flags and VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT) != 0u) {
+            "descriptor pool must be created with VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT"
+        }
 
         val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         vkFreeDescriptorSets!!(device, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
+            .checkResult("Failed to free descriptor sets")
     }
 
     /**

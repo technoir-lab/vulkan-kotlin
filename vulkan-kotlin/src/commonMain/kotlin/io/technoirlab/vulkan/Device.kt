@@ -291,7 +291,7 @@ class Device internal constructor(
         val poolVar = allocator.alloc<VkDescriptorPoolVar>()
         vkCreateDescriptorPool!!(handle, descriptorPoolCreateInfo.ptr, null, poolVar.ptr)
             .checkResult("Failed to create descriptor pool")
-        return DescriptorPool(handle, poolVar.value!!)
+        return DescriptorPool(handle, poolVar.value!!, descriptorPoolCreateInfo.flags)
     }
 
     /**
