@@ -24,6 +24,7 @@ import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlin.assert
 
 /**
  * Wrapper for [VkCommandPool].
@@ -48,6 +49,7 @@ class CommandPool internal constructor(
      */
     context(allocator: NativePlacement)
     fun allocateCommandBuffers(count: Int): List<CommandBuffer> {
+        assert(count > 0) { "count must be greater than 0" }
         val allocateInfo = allocator.alloc<VkCommandBufferAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
             commandPool = handle
@@ -67,6 +69,7 @@ class CommandPool internal constructor(
      */
     context(allocator: NativePlacement)
     fun freeCommandBuffers(commandBuffers: List<CommandBuffer>) {
+        assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
         val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
         vkFreeCommandBuffers!!(device, handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }

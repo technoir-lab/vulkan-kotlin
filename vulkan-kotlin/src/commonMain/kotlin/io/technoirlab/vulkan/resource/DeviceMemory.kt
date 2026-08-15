@@ -2,6 +2,7 @@ package io.technoirlab.vulkan.resource
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE_MEMORY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
+import io.technoirlab.volk.VK_WHOLE_SIZE
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemory
 import io.technoirlab.volk.VkDeviceMemoryOpaqueCaptureAddressInfo
@@ -28,6 +29,7 @@ import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
 import kotlinx.io.Source
 import platform.posix.memcpy
+import kotlin.assert
 import kotlin.math.min
 
 /**
@@ -67,7 +69,7 @@ class DeviceMemory internal constructor(
                 }
                 totalRead += read.toULong()
             }
-            check(totalRead == expectedSize) {
+            assert(totalRead == expectedSize) {
                 "Not enough data in source: expected $expectedSize bytes, but read $totalRead bytes"
             }
         } finally {
@@ -101,8 +103,11 @@ class DeviceMemory internal constructor(
      */
     context(allocator: NativePlacement)
     fun map(size: ULong, offset: ULong = 0uL): CPointer<out CPointed> {
-        require(size > 0uL) { "Size must be greater than 0" }
-        require(offset + size <= this.size) { "Offset $offset + $size exceeds total memory size ${this.size}" }
+        assert(offset < this.size) { "offset must be less than ${this.size}" }
+        assert(size == VK_WHOLE_SIZE || size > 0uL) { "size must be greater than 0" }
+        assert(size == VK_WHOLE_SIZE || size <= this.size - offset) {
+            "size must be less than or equal to ${this.size} - offset"
+        }
 
         val mappedPtr = allocator.alloc<CPointerVar<out CPointed>>()
         vkMapMemory!!(device, handle, offset, size, 0u, mappedPtr.ptr)

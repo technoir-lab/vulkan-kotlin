@@ -20,7 +20,10 @@ kotlin {
     mingwX64()
 
     compilerOptions {
-        optIn.add("kotlinx.cinterop.ExperimentalForeignApi")
+        optIn.addAll(
+            "kotlin.experimental.ExperimentalNativeApi",
+            "kotlinx.cinterop.ExperimentalForeignApi",
+        )
     }
 
     sourceSets {

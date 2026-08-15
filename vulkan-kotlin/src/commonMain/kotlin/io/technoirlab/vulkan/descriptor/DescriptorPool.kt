@@ -21,6 +21,7 @@ import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlin.assert
 
 /**
  * Wrapper for [VkDescriptorPool].
@@ -45,6 +46,8 @@ class DescriptorPool internal constructor(
      */
     context(allocator: NativePlacement)
     fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>): List<DescriptorSet> {
+        assert(setLayouts.isNotEmpty()) { "setLayouts must not be empty" }
+
         val layoutsNative = allocator.allocArrayOf(setLayouts.map { it.handle })
         val allocInfo = allocator.alloc<VkDescriptorSetAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
@@ -66,6 +69,8 @@ class DescriptorPool internal constructor(
      */
     context(allocator: NativePlacement)
     fun freeDescriptorSets(descriptorSets: List<DescriptorSet>) {
+        assert(descriptorSets.isNotEmpty()) { "descriptorSets must not be empty" }
+
         val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         vkFreeDescriptorSets!!(device, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
     }

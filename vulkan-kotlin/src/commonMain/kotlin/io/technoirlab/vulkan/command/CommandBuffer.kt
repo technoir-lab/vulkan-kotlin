@@ -1,7 +1,12 @@
 package io.technoirlab.vulkan.command
 
+import io.technoirlab.volk.VK_INDEX_TYPE_UINT16
+import io.technoirlab.volk.VK_INDEX_TYPE_UINT32
+import io.technoirlab.volk.VK_INDEX_TYPE_UINT8
 import io.technoirlab.volk.VK_OBJECT_TYPE_COMMAND_BUFFER
 import io.technoirlab.volk.VK_PIPELINE_BIND_POINT_GRAPHICS
+import io.technoirlab.volk.VK_PIPELINE_STAGE_2_HOST_BIT
+import io.technoirlab.volk.VK_QUERY_RESULT_64_BIT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEPENDENCY_INFO
@@ -110,6 +115,7 @@ import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
+import kotlin.assert
 
 /**
  * Wrapper for [VkCommandBuffer].
@@ -176,6 +182,7 @@ class CommandBuffer internal constructor(
         descriptorSets: List<DescriptorSet>,
         dynamicOffsets: List<UInt> = emptyList(),
     ) {
+        assert(descriptorSets.isNotEmpty()) { "descriptorSets must not be empty" }
         val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
         val dynamicOffsetArray = if (dynamicOffsets.isNotEmpty()) {
             allocator.allocArray<UIntVar>(dynamicOffsets.size) { index ->
@@ -203,6 +210,22 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer2.html">vkCmdBindIndexBuffer2 Manual Page</a>
      */
     fun bindIndexBuffer(indexBuffer: Buffer, indexType: VkIndexType, offset: ULong = 0uL, size: ULong = VK_WHOLE_SIZE) {
+        val indexSize = when (indexType) {
+            VK_INDEX_TYPE_UINT8 -> 1uL
+            VK_INDEX_TYPE_UINT16 -> 2uL
+            VK_INDEX_TYPE_UINT32 -> 4uL
+            else -> 1uL
+        }
+        assert(indexType == VK_INDEX_TYPE_UINT8 || indexType == VK_INDEX_TYPE_UINT16 || indexType == VK_INDEX_TYPE_UINT32) {
+            "indexType must be a valid VkIndexType value and must not be VK_INDEX_TYPE_NONE_KHR"
+        }
+        assert(offset < indexBuffer.size) { "offset must be less than ${indexBuffer.size}" }
+        assert(size == VK_WHOLE_SIZE || size % indexSize == 0uL) {
+            "size must be a multiple of the size of the type indicated by indexType"
+        }
+        assert(size == VK_WHOLE_SIZE || size <= indexBuffer.size - offset) {
+            "offset + size must be less than or equal to ${indexBuffer.size}"
+        }
         vkCmdBindIndexBuffer2?.invoke(handle, indexBuffer.handle, offset, size, indexType)
             ?: vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
     }
@@ -223,6 +246,12 @@ class CommandBuffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun bindVertexBuffer(vertexBuffer: Buffer, bindingIndex: UInt = 0u, offset: ULong = 0uL, size: ULong? = null, stride: ULong? = null) {
+        assert(size == null || offset < vertexBuffer.size) {
+            "offset must be less than ${vertexBuffer.size}"
+        }
+        assert(size == null || size == VK_WHOLE_SIZE || size <= vertexBuffer.size - offset) {
+            "offset + size must be less than or equal to ${vertexBuffer.size}"
+        }
         val vertexBufferVar = allocator.alloc<VkBufferVar> { value = vertexBuffer.handle }
         val offsetVar = allocator.alloc<ULongVar> { value = offset }
         val sizeVar = size?.let { allocator.alloc<ULongVar> { value = it } }
@@ -251,6 +280,7 @@ class CommandBuffer internal constructor(
         sizes: List<ULong>? = null,
         strides: List<ULong>? = null,
     ) {
+        assert(sizes == null && strides == null || vertexBuffers.isNotEmpty()) { "vertexBuffers must not be empty" }
         val vertexBufferHandles = allocator.allocArrayOf(vertexBuffers.map { it.handle })
         val offsetsArray = allocator.allocArray<ULongVar>(offsets.size) { value = offsets[it] }
         val sizesArray = sizes?.let { allocator.allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
@@ -297,6 +327,20 @@ class CommandBuffer internal constructor(
         stride: ULong,
         flags: VkQueryResultFlags = 0u,
     ) {
+        assert(dstOffset < dstBuffer.size) { "dstOffset must be less than ${dstBuffer.size}" }
+        assert(queryCount <= 1u || stride != 0uL) { "stride must not be zero" }
+        assert((flags and VK_QUERY_RESULT_64_BIT) != 0u || dstOffset % 4uL == 0uL) {
+            "dstOffset must be a multiple of 4"
+        }
+        assert((flags and VK_QUERY_RESULT_64_BIT) != 0u || queryCount <= 1u || stride % 4uL == 0uL) {
+            "stride must be a multiple of 4"
+        }
+        assert((flags and VK_QUERY_RESULT_64_BIT) == 0u || dstOffset % 8uL == 0uL) {
+            "dstOffset must be a multiple of 8"
+        }
+        assert((flags and VK_QUERY_RESULT_64_BIT) == 0u || queryCount <= 1u || stride % 8uL == 0uL) {
+            "stride must be a multiple of 8"
+        }
         vkCmdCopyQueryPoolResults!!(
             handle,
             queryPool.handle,
@@ -344,6 +388,7 @@ class CommandBuffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun executeCommands(commandBuffers: List<CommandBuffer>) {
+        assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
         val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
         vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
@@ -387,6 +432,10 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatchIndirect.html">vkCmdDispatchIndirect Manual Page</a>
      */
     fun dispatchIndirect(buffer: Buffer, offset: ULong = 0uL) {
+        assert(offset % 4uL == 0uL) { "offset must be a multiple of 4" }
+        assert(buffer.size >= DISPATCH_INDIRECT_COMMAND_SIZE && offset <= buffer.size - DISPATCH_INDIRECT_COMMAND_SIZE) {
+            "offset + sizeof(VkDispatchIndirectCommand) must be less than or equal to ${buffer.size}"
+        }
         vkCmdDispatchIndirect!!(handle, buffer.handle, offset)
     }
 
@@ -414,6 +463,10 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirect.html">vkCmdDrawIndexedIndirect Manual Page</a>
      */
     fun drawIndexedIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
+        assert(offset % 4uL == 0uL) { "offset must be a multiple of 4" }
+        assert(drawCount <= 1u || stride % 4u == 0u && stride >= 20u) {
+            "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndexedIndirectCommand)"
+        }
         vkCmdDrawIndexedIndirect!!(handle, buffer.handle, offset, drawCount, stride)
     }
 
@@ -430,6 +483,14 @@ class CommandBuffer internal constructor(
         maxDrawCount: UInt,
         stride: UInt,
     ) {
+        assert(offset % 4uL == 0uL) { "offset must be a multiple of 4" }
+        assert(countBufferOffset % 4uL == 0uL) { "countBufferOffset must be a multiple of 4" }
+        assert(stride % 4u == 0u && stride >= 20u) {
+            "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndexedIndirectCommand)"
+        }
+        assert(countBuffer.size >= DRAW_COUNT_SIZE && countBufferOffset <= countBuffer.size - DRAW_COUNT_SIZE) {
+            "countBufferOffset + sizeof(uint32_t) must be less than or equal to ${countBuffer.size}"
+        }
         vkCmdDrawIndexedIndirectCount!!(
             handle,
             buffer.handle,
@@ -447,6 +508,10 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirect.html">vkCmdDrawIndirect Manual Page</a>
      */
     fun drawIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
+        assert(offset % 4uL == 0uL) { "offset must be a multiple of 4" }
+        assert(drawCount <= 1u || stride % 4u == 0u && stride >= 16u) {
+            "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndirectCommand)"
+        }
         vkCmdDrawIndirect!!(handle, buffer.handle, offset, drawCount, stride)
     }
 
@@ -456,6 +521,14 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirectCount.html">vkCmdDrawIndirectCount Manual Page</a>
      */
     fun drawIndirectCount(buffer: Buffer, offset: ULong, countBuffer: Buffer, countBufferOffset: ULong, maxDrawCount: UInt, stride: UInt) {
+        assert(offset % 4uL == 0uL) { "offset must be a multiple of 4" }
+        assert(countBufferOffset % 4uL == 0uL) { "countBufferOffset must be a multiple of 4" }
+        assert(stride % 4u == 0u && stride >= 16u) {
+            "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndirectCommand)"
+        }
+        assert(countBuffer.size >= DRAW_COUNT_SIZE && countBufferOffset <= countBuffer.size - DRAW_COUNT_SIZE) {
+            "countBufferOffset + sizeof(uint32_t) must be less than or equal to ${countBuffer.size}"
+        }
         vkCmdDrawIndirectCount!!(
             handle,
             buffer.handle,
@@ -504,6 +577,10 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPushConstants.html">vkCmdPushConstants Manual Page</a>
      */
     fun pushConstants(layout: PipelineLayout, stageFlags: VkShaderStageFlags, values: ByteArray, offset: UInt = 0u) {
+        assert(offset % 4u == 0u) { "offset must be a multiple of 4" }
+        assert(values.size > 0) { "values must not be empty" }
+        assert(values.size % 4 == 0) { "values.size must be a multiple of 4" }
+        assert(stageFlags != 0u) { "stageFlags must not be 0" }
         values.usePinned {
             vkCmdPushConstants!!(
                 handle,
@@ -546,6 +623,9 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetEvent2.html">vkCmdResetEvent2 Manual Page</a>
      */
     fun resetEvent(event: Event, stageMask: VkPipelineStageFlags2) {
+        assert((stageMask and VK_PIPELINE_STAGE_2_HOST_BIT) == 0uL) {
+            "stageMask must not include VK_PIPELINE_STAGE_2_HOST_BIT"
+        }
         vkCmdResetEvent2!!(handle, event.handle, stageMask)
     }
 
@@ -721,6 +801,7 @@ class CommandBuffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun setScissorWithCount(count: UInt, scissors: VkRect2D.(UInt) -> Unit) {
+        assert(count > 0u) { "count must be greater than 0" }
         val scissors = allocator.allocArray<VkRect2D>(count.toLong()) { scissors(it.toUInt()) }
         vkCmdSetScissorWithCount!!(handle, count, scissors)
     }
@@ -731,6 +812,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetStencilCompareMask.html">vkCmdSetStencilCompareMask Manual Page</a>
      */
     fun setStencilCompareMask(faceMask: VkStencilFaceFlags, compareMask: UInt) {
+        assert(faceMask != 0u) { "faceMask must not be 0" }
         vkCmdSetStencilCompareMask!!(handle, faceMask, compareMask)
     }
 
@@ -746,6 +828,7 @@ class CommandBuffer internal constructor(
         depthFailOp: VkStencilOp,
         compareOp: VkCompareOp,
     ) {
+        assert(faceMask != 0u) { "faceMask must not be 0" }
         vkCmdSetStencilOp!!(handle, faceMask, failOp, passOp, depthFailOp, compareOp)
     }
 
@@ -755,6 +838,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetStencilReference.html">vkCmdSetStencilReference Manual Page</a>
      */
     fun setStencilReference(faceMask: VkStencilFaceFlags, reference: UInt) {
+        assert(faceMask != 0u) { "faceMask must not be 0" }
         vkCmdSetStencilReference!!(handle, faceMask, reference)
     }
 
@@ -773,6 +857,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetStencilWriteMask.html">vkCmdSetStencilWriteMask Manual Page</a>
      */
     fun setStencilWriteMask(faceMask: VkStencilFaceFlags, writeMask: UInt) {
+        assert(faceMask != 0u) { "faceMask must not be 0" }
         vkCmdSetStencilWriteMask!!(handle, faceMask, writeMask)
     }
 
@@ -794,6 +879,7 @@ class CommandBuffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun setViewportWithCount(count: UInt, viewports: VkViewport.(UInt) -> Unit) {
+        assert(count > 0u) { "count must be greater than 0" }
         val viewports = allocator.allocArray<VkViewport>(count.toLong()) { viewports(it.toUInt()) }
         vkCmdSetViewportWithCount!!(handle, count, viewports)
     }
@@ -805,6 +891,7 @@ class CommandBuffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun waitEvents(events: List<Event>, dependencyInfos: VkDependencyInfo.(UInt) -> Unit) {
+        assert(events.isNotEmpty()) { "events must not be empty" }
         val eventsArray = allocator.allocArrayOf(events.map { it.handle })
         val deps = allocator.allocArray<VkDependencyInfo>(events.size) { index: Int ->
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
@@ -819,6 +906,12 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWriteTimestamp2.html">vkCmdWriteTimestamp2 Manual Page</a>
      */
     fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
+        assert(stage.countOneBits() == 1) { "stage must only include a single pipeline stage" }
         vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
+    }
+
+    private companion object {
+        const val DISPATCH_INDIRECT_COMMAND_SIZE = 12uL
+        const val DRAW_COUNT_SIZE = 4uL
     }
 }

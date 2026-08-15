@@ -25,6 +25,7 @@ import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.value
+import kotlin.assert
 
 /**
  * Wrapper for [VkInstance].
@@ -57,6 +58,8 @@ class Instance internal constructor(
         messageType: VkDebugUtilsMessageTypeFlagsEXT,
         callback: DebugMessenger.Callback,
     ): DebugMessenger {
+        assert(messageSeverity != 0u) { "messageSeverity must not be 0" }
+        assert(messageType != 0u) { "messageType must not be 0" }
         val callbackRef = StableRef.create(callback)
         val debugUtilsMessengerCreateInfo = allocator.alloc<VkDebugUtilsMessengerCreateInfoEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT

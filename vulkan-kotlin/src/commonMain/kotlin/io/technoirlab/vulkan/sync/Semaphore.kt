@@ -24,6 +24,7 @@ import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
+import kotlin.assert
 import kotlin.time.Duration
 
 /**
@@ -50,7 +51,9 @@ class Semaphore internal constructor(
      */
     context(allocator: NativePlacement)
     fun counterValue(): ULong {
-        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
+            "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
+        }
 
         val valueVar = allocator.alloc<ULongVar>()
         vkGetSemaphoreCounterValue!!(device, handle, valueVar.ptr)
@@ -65,7 +68,9 @@ class Semaphore internal constructor(
      */
     context(allocator: NativePlacement)
     fun signal(value: ULong) {
-        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
+            "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
+        }
 
         val signalInfo = allocator.alloc<VkSemaphoreSignalInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
@@ -83,7 +88,9 @@ class Semaphore internal constructor(
      */
     context(allocator: NativePlacement)
     fun wait(value: ULong, timeout: Duration = Duration.INFINITE) {
-        require(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) { "Not a timeline semaphore" }
+        assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
+            "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
+        }
 
         val valueVar = allocator.alloc<ULongVar> { this.value = value }
         val waitInfo = allocator.alloc<VkSemaphoreWaitInfo> {

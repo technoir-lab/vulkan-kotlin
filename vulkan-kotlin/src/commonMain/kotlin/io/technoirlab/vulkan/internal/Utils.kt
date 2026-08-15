@@ -5,6 +5,7 @@ package io.technoirlab.vulkan.internal
 import io.technoirlab.volk.VK_FALSE
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBool32
+import kotlin.assert
 import kotlin.time.Duration
 
 internal inline fun Boolean.toVkBool32(): VkBool32 = if (this) VK_TRUE else VK_FALSE
@@ -21,7 +22,7 @@ private class NCopiesList<T>(
     RandomAccess {
 
     init {
-        require(size >= 0) { "size must be non-negative" }
+        assert(size >= 0) { "size must be non-negative" }
     }
 
     override fun get(index: Int): T {

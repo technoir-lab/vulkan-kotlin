@@ -2,6 +2,7 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
+import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO
@@ -151,6 +152,7 @@ import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
+import kotlin.assert
 
 /**
  * Wrapper for [VkDevice].
@@ -401,9 +403,13 @@ class Device internal constructor(
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
     ): Pipeline {
-        val shaderStageCreateInfo = allocator.allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
-            stages(it.toUInt())
+        val shaderStageCreateInfo = if (stageCount > 0u) {
+            allocator.allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
+                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+                stages(it.toUInt())
+            }
+        } else {
+            null
         }
         val vertexInputStateCreateInfo = allocator.alloc<VkPipelineVertexInputStateCreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
@@ -550,6 +556,12 @@ class Device internal constructor(
      */
     context(allocator: NativePlacement)
     fun createSemaphore(semaphoreType: VkSemaphoreType = VK_SEMAPHORE_TYPE_BINARY, initialValue: ULong = 0uL): Semaphore {
+        assert(semaphoreType == VK_SEMAPHORE_TYPE_BINARY || semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
+            "semaphoreType must be a valid VkSemaphoreType value"
+        }
+        assert(semaphoreType != VK_SEMAPHORE_TYPE_BINARY || initialValue == 0uL) {
+            "If semaphoreType is VK_SEMAPHORE_TYPE_BINARY, initialValue must be zero"
+        }
         val typeInfo = allocator.alloc<VkSemaphoreTypeCreateInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
             this.semaphoreType = semaphoreType
@@ -625,6 +637,7 @@ class Device internal constructor(
         mipLevel: UInt = 0u,
         arrayLayer: UInt = 0u,
     ): VkSubresourceLayout2 {
+        assert(aspectMask != 0u) { "aspectMask must not be 0" }
         val subresource = allocator.alloc<VkImageSubresource2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
             imageSubresource.aspectMask = aspectMask

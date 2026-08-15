@@ -24,6 +24,7 @@ import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
+import kotlin.assert
 
 /**
  * Wrapper for [VkBuffer].
@@ -49,6 +50,8 @@ class Buffer internal constructor(
      */
     context(allocator: NativePlacement)
     fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
+        assert(offset < memory.size) { "offset must be less than ${memory.size}" }
+
         val bindImageMemoryInfo = allocator.alloc<VkBindBufferMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO
             buffer = handle
