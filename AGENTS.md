@@ -1,8 +1,9 @@
 Vulkan Kotlin
 =============
 
-This library is a thin object-oriented Kotlin Multiplatform wrapper for Vulkan API 1.4.
-Each Vulkan's handle type has a corresponding RAII wrapper, e.g. `VkDevice` is wrapped by `Device`, `VkInstance` - `Instance`.
+This library provides thin object-oriented Kotlin Multiplatform bindings for Vulkan API 1.4.
+Wrapped Vulkan handle types use `AutoCloseable` RAII objects; for example, `VkDevice` is wrapped by `Device` and
+`VkInstance` by `Instance`.
 
 The project leverages exceptions for error handling, and context parameters for scoped memory allocations.
 The goal of the wrapper is to provide full coverage of Vulkan API and extensions, except for
@@ -14,13 +15,15 @@ Intentionally unsupported functionality:
 * Raytracing (will be added in the future)
 * Multiview
 
-## Supported platforms
+## Supported targets
 
-* Android
-* Linux
-* macOS
-* iOS
-* Windows
+* androidNativeArm64
+* iosArm64
+* iosSimulatorArm64
+* linuxArm64
+* linuxX64
+* macosArm64
+* mingwX64
 
 ## Dependencies
 
@@ -31,15 +34,17 @@ Intentionally unsupported functionality:
 ## Project structure
 
 * `volk-kotlin` - Kotlin/Native C-interop wrapper for Vulkan API and Volk.
-* `vulkan-kotlin` - Kotlin Multiplatform wrapper for Vulkan API.
-* `sample` - sample application.
+* `vulkan-kotlin` - Kotlin Multiplatform bindings. Core objects remain in `io.technoirlab.vulkan`; other
+  object families live in the `command`, `debug`, `descriptor`, `pipeline`, `presentation`, `query`, `resource`,
+  and `sync` subpackages.
+* `sample` - Kotlin Multiplatform sample application.
 
 ## Hardware requirements
 
 The wrapper targets the modern desktop and mobile GPUs.
 Vulkan 1.3 is the minimum required driver version.
 
-Required extensions:
+Required capabilities (use the core API when the capability was promoted, otherwise use the extension):
 * `VK_KHR_dynamic_rendering`
 * `VK_KHR_dynamic_rendering_local_read`
 * `VK_EXT_extended_dynamic_state2`
@@ -52,8 +57,13 @@ Required extensions:
 * When native memory allocation is required inside a function, `NativePlacement` should be passed as a context parameter.
   The caller is responsible for handling the allocation and freeing the memory.
 * When the same functionality is available both in core and as an extension, the core functionality must be used.
-* Every `public` class, function and property must have a KDoc.
+* Use only `kotlin.assert` for input and constraint validation; never use `require`, `requireNotNull`, `check`, or `checkNotNull`.
+* Every `public` class, function, and property must have a KDoc.
 
 ## Building and testing
 
-* Run tests and static analysis: `./gradlew check`
+* A Vulkan SDK providing the headers and loader library is required. CI currently builds against Vulkan SDK
+  1.4.357.0; keep `.github/workflows/ci.yaml` and `.github/workflows/release.yaml` in sync when changing it.
+* Run build, tests, ABI validation, and static analysis: `./gradlew check`.
+* Run `./gradlew` commands outside the filesystem sandbox so Gradle can access its cache.
+* CI builds on macOS 26 and Ubuntu 24.04. macOS Vulkan loader tests use `VULKAN_SDK` to set `DYLD_LIBRARY_PATH`.
