@@ -288,7 +288,6 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyQueryPoolResults.html">vkCmdCopyQueryPoolResults Manual Page</a>
      */
-    @Suppress("LongParameterList")
     fun copyQueryPoolResults(
         queryPool: QueryPool,
         firstQuery: UInt,
@@ -363,7 +362,6 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatchBase.html">vkCmdDispatchBase Manual Page</a>
      */
-    @Suppress("LongParameterList")
     fun dispatchBase(
         baseGroupX: UInt,
         baseGroupY: UInt = 0u,
@@ -424,7 +422,6 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirectCount.html">vkCmdDrawIndexedIndirectCount Manual Page</a>
      */
-    @Suppress("LongParameterList")
     fun drawIndexedIndirectCount(
         buffer: Buffer,
         offset: ULong,
@@ -458,7 +455,6 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirectCount.html">vkCmdDrawIndirectCount Manual Page</a>
      */
-    @Suppress("LongParameterList")
     fun drawIndirectCount(buffer: Buffer, offset: ULong, countBuffer: Buffer, countBufferOffset: ULong, maxDrawCount: UInt, stride: UInt) {
         vkCmdDrawIndirectCount!!(
             handle,

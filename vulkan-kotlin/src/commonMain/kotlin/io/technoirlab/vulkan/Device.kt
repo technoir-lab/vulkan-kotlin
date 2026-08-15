@@ -382,7 +382,6 @@ class Device internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
      */
-    @Suppress("LongParameterList", "LongMethod")
     context(allocator: NativePlacement)
     fun createGraphicsPipeline(
         layout: PipelineLayout,
