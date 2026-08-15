@@ -27,6 +27,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
+import kotlinx.io.EOFException
 import kotlinx.io.Source
 import platform.posix.memcpy
 import kotlin.assert
@@ -69,8 +70,8 @@ class DeviceMemory internal constructor(
                 }
                 totalRead += read.toULong()
             }
-            assert(totalRead == expectedSize) {
-                "Not enough data in source: expected $expectedSize bytes, but read $totalRead bytes"
+            if (totalRead != expectedSize) {
+                throw EOFException("Not enough data in source: expected $expectedSize bytes, but read $totalRead bytes")
             }
         } finally {
             unmap()
