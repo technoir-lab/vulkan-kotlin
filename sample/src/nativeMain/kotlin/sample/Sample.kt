@@ -1,6 +1,5 @@
 package sample
 
-import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
@@ -36,7 +35,7 @@ class Sample : AutoCloseable {
                 }
             }
 
-            val applicationInfo = ApplicationInfo(apiVersion = minOf(vulkanVersion, VK_API_VERSION_1_4))
+            val applicationInfo = ApplicationInfo()
             val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions).also { instance = it }
             println("Created Vulkan instance")
 

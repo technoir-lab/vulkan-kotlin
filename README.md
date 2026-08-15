@@ -10,6 +10,7 @@ exceptions and integration with the Kotlin ecosystem.
 ## Requirements
 
 * Kotlin 2.4.0 or later
+* Vulkan 1.4 or later
 
 ## Getting Started
 
@@ -43,6 +44,15 @@ val instance = vulkan.createInstance()
 ```
 
 For more information, please see the [API reference](https://technoir-lab.github.io/vulkan-kotlin/) and the [sample](sample) project.
+
+On Android, add the following as a direct child of the `<manifest>` element in `AndroidManifest.xml`:
+
+```xml
+<uses-feature
+    android:name="android.hardware.vulkan.version"
+    android:version="0x00404000"
+    android:required="true" />
+```
 
 ### Debug assertions
 

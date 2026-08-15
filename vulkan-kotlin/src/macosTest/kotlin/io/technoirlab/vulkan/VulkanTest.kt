@@ -2,8 +2,6 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-import io.technoirlab.volk.VK_VERSION_MAJOR
-import io.technoirlab.volk.VK_VERSION_MINOR
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.toKString
 import kotlin.test.AfterTest
@@ -28,7 +26,7 @@ class VulkanTest {
         } else {
             emptyList()
         }
-        val applicationInfo = ApplicationInfo(apiVersion = minOf(vulkan.instanceVersion, VK_API_VERSION_1_4))
+        val applicationInfo = ApplicationInfo()
         val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions)
         instance.close()
     }
@@ -37,8 +35,7 @@ class VulkanTest {
     fun `get instance version`() = memScoped {
         val instanceVersion = vulkan.instanceVersion
 
-        assertTrue(VK_VERSION_MAJOR(instanceVersion) >= 1u)
-        assertTrue(VK_VERSION_MINOR(instanceVersion) >= 3u)
+        assertTrue(instanceVersion >= VK_API_VERSION_1_4)
     }
 
     @Test
