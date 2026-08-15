@@ -324,7 +324,7 @@ final class io.technoirlab.vulkan.sync/Semaphore : io.technoirlab.vulkan/VulkanO
 }
 
 final class io.technoirlab.vulkan/ApplicationInfo { // io.technoirlab.vulkan/ApplicationInfo|null[0]
-    constructor <init>(kotlin/UInt, kotlin/String? = ..., kotlin/UInt = ..., kotlin/String? = ..., kotlin/UInt = ...) // io.technoirlab.vulkan/ApplicationInfo.<init>|<init>(kotlin.UInt;kotlin.String?;kotlin.UInt;kotlin.String?;kotlin.UInt){}[0]
+    constructor <init>(kotlin/UInt = ..., kotlin/String? = ..., kotlin/UInt = ..., kotlin/String? = ..., kotlin/UInt = ...) // io.technoirlab.vulkan/ApplicationInfo.<init>|<init>(kotlin.UInt;kotlin.String?;kotlin.UInt;kotlin.String?;kotlin.UInt){}[0]
 
     final val apiVersion // io.technoirlab.vulkan/ApplicationInfo.apiVersion|{}apiVersion[0]
         final fun <get-apiVersion>(): kotlin/UInt // io.technoirlab.vulkan/ApplicationInfo.apiVersion.<get-apiVersion>|<get-apiVersion>(){}[0]
@@ -482,7 +482,7 @@ final class io.technoirlab.vulkan/Vulkan : kotlin/AutoCloseable { // io.technoir
     final val instanceVersion // io.technoirlab.vulkan/Vulkan.instanceVersion|{}instanceVersion[0]
         final fun <get-instanceVersion>(): kotlin/UInt // io.technoirlab.vulkan/Vulkan.instanceVersion.<get-instanceVersion>|<get-instanceVersion>(){}[0]
 
-    final fun (context(kotlinx.cinterop/AutofreeScope)).createInstance(kotlin.collections/List<kotlin/String> = ..., kotlin.collections/List<kotlin/String> = ..., io.technoirlab.vulkan/ApplicationInfo? = ...): io.technoirlab.vulkan/Instance // io.technoirlab.vulkan/Vulkan.createInstance|createInstance(kotlinx.cinterop.AutofreeScope)(kotlin.collections.List<kotlin.String>;kotlin.collections.List<kotlin.String>;io.technoirlab.vulkan.ApplicationInfo?){}[0]
+    final fun (context(kotlinx.cinterop/AutofreeScope)).createInstance(io.technoirlab.vulkan/ApplicationInfo, kotlin.collections/List<kotlin/String> = ..., kotlin.collections/List<kotlin/String> = ...): io.technoirlab.vulkan/Instance // io.technoirlab.vulkan/Vulkan.createInstance|createInstance(kotlinx.cinterop.AutofreeScope)(io.technoirlab.vulkan.ApplicationInfo;kotlin.collections.List<kotlin.String>;kotlin.collections.List<kotlin.String>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).enumerateInstanceExtensionProperties(): kotlin.collections/List<io.technoirlab.volk/VkExtensionProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceExtensionProperties|enumerateInstanceExtensionProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).enumerateInstanceLayerProperties(): kotlin.collections/List<io.technoirlab.volk/VkLayerProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceLayerProperties|enumerateInstanceLayerProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan/Vulkan.close|close(){}[0]

@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
@@ -27,7 +28,8 @@ class VulkanTest {
         } else {
             emptyList()
         }
-        val instance = vulkan.createInstance(enabledExtensions = extensions)
+        val applicationInfo = ApplicationInfo(apiVersion = minOf(vulkan.instanceVersion, VK_API_VERSION_1_4))
+        val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions)
         instance.close()
     }
 

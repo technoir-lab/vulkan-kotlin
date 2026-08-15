@@ -55,13 +55,13 @@ class Vulkan : AutoCloseable {
      */
     context(allocator: AutofreeScope)
     fun createInstance(
+        applicationInfo: ApplicationInfo,
         enabledLayers: List<String> = emptyList(),
         enabledExtensions: List<String> = emptyList(),
-        applicationInfo: ApplicationInfo? = null,
     ): Instance {
         val instanceCreateInfo = allocator.alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
-            pApplicationInfo = applicationInfo?.toVkApplicationInfo()?.ptr
+            pApplicationInfo = applicationInfo.toVkApplicationInfo().ptr
             flags = if (VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME in enabledExtensions) {
                 VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
             } else {

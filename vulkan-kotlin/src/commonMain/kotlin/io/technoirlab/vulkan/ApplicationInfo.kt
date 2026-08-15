@@ -1,5 +1,7 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_API_VERSION_1_3
+
 /**
  * Specifies application information.
  */
@@ -9,7 +11,7 @@ data class ApplicationInfo(
      * The patch version number specified in [apiVersion] is ignored when creating an instance object.
      * The variant version of the instance must match that requested in [apiVersion].
      */
-    val apiVersion: UInt,
+    val apiVersion: UInt = VK_API_VERSION_1_3,
     /**
      * The name of the application.
      */

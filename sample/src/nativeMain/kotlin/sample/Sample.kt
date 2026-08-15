@@ -1,9 +1,11 @@
 package sample
 
+import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
 import io.technoirlab.volk.VK_VERSION_PATCH
+import io.technoirlab.vulkan.ApplicationInfo
 import io.technoirlab.vulkan.Device
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.Vulkan
@@ -34,7 +36,8 @@ class Sample : AutoCloseable {
                 }
             }
 
-            val instance = vulkan.createInstance(enabledExtensions = extensions).also { instance = it }
+            val applicationInfo = ApplicationInfo(apiVersion = minOf(vulkanVersion, VK_API_VERSION_1_4))
+            val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions).also { instance = it }
             println("Created Vulkan instance")
 
             val physicalDevices = instance.enumeratePhysicalDevices().map { it to it.getProperties().deviceName.toKString() }
