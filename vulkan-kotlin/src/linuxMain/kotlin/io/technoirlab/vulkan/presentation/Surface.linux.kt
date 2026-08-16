@@ -2,6 +2,8 @@ package io.technoirlab.vulkan.presentation
 
 import cnames.structs.wl_display
 import cnames.structs.wl_surface
+import io.technoirlab.volk.VK_KHR_SURFACE_EXTENSION_NAME
+import io.technoirlab.volk.VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR
 import io.technoirlab.volk.VkSurfaceKHRVar
 import io.technoirlab.volk.VkWaylandSurfaceCreateInfoKHR
@@ -17,11 +19,15 @@ import kotlinx.cinterop.value
 
 /**
  * Create a surface for a Wayland window.
+ * Requires `VK_KHR_surface` and `VK_KHR_wayland_surface` to be enabled on the instance.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateWaylandSurfaceKHR.html">vkCreateWaylandSurfaceKHR Manual Page</a>
  */
 context(allocator: NativePlacement)
 fun Instance.createWaylandSurface(display: CPointer<wl_display>, surface: CPointer<wl_surface>): Surface {
+    assert(VK_KHR_SURFACE_EXTENSION_NAME in enabledExtensions && VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME in enabledExtensions) {
+        "Creating a Wayland surface requires VK_KHR_surface and VK_KHR_wayland_surface"
+    }
     val surfaceCreateInfo = allocator.alloc<VkWaylandSurfaceCreateInfoKHR> {
         sType = VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR
         this.display = display

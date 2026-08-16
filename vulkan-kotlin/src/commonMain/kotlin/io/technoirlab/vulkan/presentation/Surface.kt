@@ -1,5 +1,7 @@
 package io.technoirlab.vulkan.presentation
 
+import io.technoirlab.volk.VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME
+import io.technoirlab.volk.VK_KHR_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_SURFACE_KHR
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
 import io.technoirlab.volk.VkHeadlessSurfaceCreateInfoEXT
@@ -46,11 +48,15 @@ class Surface internal constructor(
 
 /**
  * Create a headless surface.
+ * Requires `VK_KHR_surface` and `VK_EXT_headless_surface` to be enabled on the instance.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateHeadlessSurfaceEXT.html">vkCreateHeadlessSurfaceEXT Manual Page</a>
  */
 context(allocator: NativePlacement)
 fun Instance.createHeadlessSurface(): Surface {
+    assert(VK_KHR_SURFACE_EXTENSION_NAME in enabledExtensions && VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME in enabledExtensions) {
+        "Creating a headless surface requires VK_KHR_surface and VK_EXT_headless_surface"
+    }
     val surfaceCreateInfo = allocator.alloc<VkHeadlessSurfaceCreateInfoEXT> {
         sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
     }

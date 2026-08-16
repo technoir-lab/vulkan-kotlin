@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan.presentation
 
 import cnames.structs.ANativeWindow
+import io.technoirlab.volk.VK_KHR_ANDROID_SURFACE_EXTENSION_NAME
+import io.technoirlab.volk.VK_KHR_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR
 import io.technoirlab.volk.VkAndroidSurfaceCreateInfoKHR
 import io.technoirlab.volk.VkSurfaceKHRVar
@@ -16,11 +18,15 @@ import kotlinx.cinterop.value
 
 /**
  * Create a surface for an Android native window.
+ * Requires `VK_KHR_surface` and `VK_KHR_android_surface` to be enabled on the instance.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateAndroidSurfaceKHR.html">vkCreateAndroidSurfaceKHR Manual Page</a>
  */
 context(allocator: NativePlacement)
 fun Instance.createAndroidSurface(nativeWindow: CPointer<ANativeWindow>): Surface {
+    assert(VK_KHR_SURFACE_EXTENSION_NAME in enabledExtensions && VK_KHR_ANDROID_SURFACE_EXTENSION_NAME in enabledExtensions) {
+        "Creating an Android surface requires VK_KHR_surface and VK_KHR_android_surface"
+    }
     val surfaceCreateInfo = allocator.alloc<VkAndroidSurfaceCreateInfoKHR> {
         sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR
         window = nativeWindow
