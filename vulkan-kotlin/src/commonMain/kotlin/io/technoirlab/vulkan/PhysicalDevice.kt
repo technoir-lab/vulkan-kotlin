@@ -147,7 +147,7 @@ class PhysicalDevice internal constructor(
         val deviceVar = allocator.alloc<VkDeviceVar>()
         vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
             .checkResult("Failed to create a device")
-        return Device(deviceVar.value!!)
+        return Device(deviceVar.value!!, enabledExtensions.toSet())
     }
 
     /**

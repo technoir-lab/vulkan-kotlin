@@ -34,6 +34,7 @@ import kotlin.assert
  */
 class Instance internal constructor(
     override val handle: VkInstance,
+    val enabledExtensions: Set<String>,
 ) : VulkanObject,
     AutoCloseable {
 

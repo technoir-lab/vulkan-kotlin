@@ -79,7 +79,7 @@ class Vulkan : AutoCloseable {
         val instanceVar = allocator.alloc<VkInstanceVar>()
         vkCreateInstance!!(instanceCreateInfo.ptr, null, instanceVar.ptr)
             .checkResult("Failed to create a Vulkan instance")
-        return Instance(instanceVar.value!!)
+        return Instance(instanceVar.value!!, enabledExtensions.toSet())
     }
 
     /**

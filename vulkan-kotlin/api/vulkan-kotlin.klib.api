@@ -349,6 +349,8 @@ final class io.technoirlab.vulkan/ApplicationInfo { // io.technoirlab.vulkan/App
 }
 
 final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Device|null[0]
+    final val enabledExtensions // io.technoirlab.vulkan/Device.enabledExtensions|{}enabledExtensions[0]
+        final fun <get-enabledExtensions>(): kotlin.collections/Set<kotlin/String> // io.technoirlab.vulkan/Device.enabledExtensions.<get-enabledExtensions>|<get-enabledExtensions>(){}[0]
     final val handle // io.technoirlab.vulkan/Device.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDevice_T> // io.technoirlab.vulkan/Device.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan/Device.type|{}type[0]
@@ -382,6 +384,8 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
 }
 
 final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Instance|null[0]
+    final val enabledExtensions // io.technoirlab.vulkan/Instance.enabledExtensions|{}enabledExtensions[0]
+        final fun <get-enabledExtensions>(): kotlin.collections/Set<kotlin/String> // io.technoirlab.vulkan/Instance.enabledExtensions.<get-enabledExtensions>|<get-enabledExtensions>(){}[0]
     final val handle // io.technoirlab.vulkan/Instance.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkInstance_T> // io.technoirlab.vulkan/Instance.handle.<get-handle>|<get-handle>(){}[0]
     final val type // io.technoirlab.vulkan/Instance.type|{}type[0]

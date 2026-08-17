@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_KHR_SWAPCHAIN_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
@@ -161,6 +162,7 @@ import kotlin.assert
  */
 class Device internal constructor(
     override val handle: VkDevice,
+    val enabledExtensions: Set<String>,
 ) : VulkanObject,
     AutoCloseable {
 
@@ -596,11 +598,15 @@ class Device internal constructor(
 
     /**
      * Create a swapchain.
+     * Requires `VK_KHR_swapchain` to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSwapchainKHR.html">vkCreateSwapchainKHR Manual Page</a>
      */
     context(allocator: NativePlacement)
     fun createSwapchain(createInfo: VkSwapchainCreateInfoKHR.() -> Unit): Swapchain {
+        assert(VK_KHR_SWAPCHAIN_EXTENSION_NAME in enabledExtensions) {
+            "Creating a swapchain requires VK_KHR_swapchain"
+        }
         val swapChainCreateInfo = allocator.alloc<VkSwapchainCreateInfoKHR> {
             sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
             createInfo()
