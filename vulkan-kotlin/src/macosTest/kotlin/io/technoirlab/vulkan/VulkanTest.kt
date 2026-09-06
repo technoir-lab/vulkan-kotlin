@@ -46,9 +46,10 @@ class VulkanTest {
     }
 
     @Test
-    fun `enumerate instance layers`() = memScoped {
-        val extensions = vulkan.enumerateInstanceLayerProperties().toList()
+    fun `enumerate instance layers`() {
+        val layers = memScoped { vulkan.enumerateInstanceLayerProperties() }
 
-        assertTrue(extensions.isNotEmpty())
+        assertTrue(layers.isNotEmpty())
+        assertTrue(layers.all { it.name.startsWith("VK_LAYER_") && it.specVersion > 0u })
     }
 }
