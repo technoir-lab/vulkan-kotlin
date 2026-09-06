@@ -8,7 +8,6 @@ import io.technoirlab.volk.VkBindImageMemoryInfo
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImage
 import io.technoirlab.volk.VkImageMemoryRequirementsInfo2
-import io.technoirlab.volk.VkMemoryRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindImageMemory2
@@ -17,6 +16,8 @@ import io.technoirlab.volk.vkGetImageMemoryRequirements2
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.memory.DeviceMemory
+import io.technoirlab.vulkan.memory.MemoryRequirements
+import io.technoirlab.vulkan.memory.toMemoryRequirements
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
@@ -46,7 +47,7 @@ class Image internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageMemoryRequirements2.html">vkGetImageMemoryRequirements2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getMemoryRequirements(): VkMemoryRequirements {
+    fun getMemoryRequirements(): MemoryRequirements {
         val memoryRequirementsInfo = allocator.alloc<VkImageMemoryRequirementsInfo2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
             image = handle
@@ -55,7 +56,7 @@ class Image internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
         }
         vkGetImageMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
-        return memoryRequirements.memoryRequirements
+        return memoryRequirements.memoryRequirements.toMemoryRequirements()
     }
 
     /**
