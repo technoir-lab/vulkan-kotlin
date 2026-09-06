@@ -9,7 +9,7 @@ import io.technoirlab.volk.VkExtent3D
  * @property height The height of the region.
  * @property depth The depth of the region.
  */
-data class Extent3D internal constructor(
+data class Extent3D(
     val width: UInt,
     val height: UInt,
     val depth: UInt,
