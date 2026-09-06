@@ -35,7 +35,7 @@ data class SurfaceCapabilities internal constructor(
     val supportedUsageFlags: VkImageUsageFlags,
 )
 
-internal fun VkSurfaceCapabilitiesKHR.toSurfaceCapabilities(): SurfaceCapabilities = SurfaceCapabilities(
+internal inline fun VkSurfaceCapabilitiesKHR.toSurfaceCapabilities(): SurfaceCapabilities = SurfaceCapabilities(
     minImageCount = minImageCount,
     maxImageCount = maxImageCount.takeUnless { it == 0u },
     currentExtent = if (currentExtent.width == UInt.MAX_VALUE && currentExtent.height == UInt.MAX_VALUE) {

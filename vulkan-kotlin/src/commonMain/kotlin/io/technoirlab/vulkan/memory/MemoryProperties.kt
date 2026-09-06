@@ -14,7 +14,7 @@ data class MemoryProperties internal constructor(
     val memoryHeaps: List<MemoryHeap>,
 )
 
-internal fun VkPhysicalDeviceMemoryProperties.toMemoryProperties(): MemoryProperties = MemoryProperties(
+internal inline fun VkPhysicalDeviceMemoryProperties.toMemoryProperties(): MemoryProperties = MemoryProperties(
     memoryTypes = List(memoryTypeCount.toInt()) { index ->
         memoryTypes[index].toMemoryType()
     },

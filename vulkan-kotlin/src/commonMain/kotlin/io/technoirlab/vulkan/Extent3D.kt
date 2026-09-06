@@ -15,7 +15,7 @@ data class Extent3D(
     val depth: UInt,
 )
 
-internal fun VkExtent3D.toExtent3D(): Extent3D = Extent3D(
+internal inline fun VkExtent3D.toExtent3D(): Extent3D = Extent3D(
     width = width,
     height = height,
     depth = depth,

@@ -18,7 +18,7 @@ data class QueueFamilyProperties internal constructor(
     val minImageTransferGranularity: Extent3D,
 )
 
-internal fun VkQueueFamilyProperties.toQueueFamilyProperties(): QueueFamilyProperties = QueueFamilyProperties(
+internal inline fun VkQueueFamilyProperties.toQueueFamilyProperties(): QueueFamilyProperties = QueueFamilyProperties(
     queueFlags = queueFlags,
     queueCount = queueCount,
     timestampValidBits = timestampValidBits,

@@ -13,7 +13,7 @@ data class Extent2D(
     val height: UInt,
 )
 
-internal fun VkExtent2D.toExtent2D(): Extent2D = Extent2D(
+internal inline fun VkExtent2D.toExtent2D(): Extent2D = Extent2D(
     width = width,
     height = height,
 )

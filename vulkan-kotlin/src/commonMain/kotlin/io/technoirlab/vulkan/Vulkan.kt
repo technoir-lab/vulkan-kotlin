@@ -137,7 +137,7 @@ class Vulkan : AutoCloseable {
     }
 
     context(allocator: AutofreeScope)
-    private fun ApplicationInfo.toVkApplicationInfo(): VkApplicationInfo = allocator.alloc {
+    private inline fun ApplicationInfo.toVkApplicationInfo(): VkApplicationInfo = allocator.alloc {
         sType = VK_STRUCTURE_TYPE_APPLICATION_INFO
         apiVersion = this@toVkApplicationInfo.apiVersion
         pApplicationName = this@toVkApplicationInfo.applicationName?.cstr?.getPointer(allocator)

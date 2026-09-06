@@ -15,7 +15,7 @@ data class SurfaceFormat internal constructor(
     val colorSpace: VkColorSpaceKHR,
 )
 
-internal fun VkSurfaceFormatKHR.toSurfaceFormat(): SurfaceFormat = SurfaceFormat(
+internal inline fun VkSurfaceFormatKHR.toSurfaceFormat(): SurfaceFormat = SurfaceFormat(
     format = format,
     colorSpace = colorSpace,
 )

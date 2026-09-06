@@ -15,7 +15,7 @@ data class MemoryRequirements internal constructor(
     val memoryTypeBits: UInt,
 )
 
-internal fun VkMemoryRequirements.toMemoryRequirements(): MemoryRequirements = MemoryRequirements(
+internal inline fun VkMemoryRequirements.toMemoryRequirements(): MemoryRequirements = MemoryRequirements(
     size = size,
     alignment = alignment,
     memoryTypeBits = memoryTypeBits,

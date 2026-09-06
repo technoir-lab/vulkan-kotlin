@@ -22,7 +22,7 @@ data class ImageFormatProperties internal constructor(
     val maxResourceSize: ULong,
 )
 
-internal fun VkImageFormatProperties.toImageFormatProperties(): ImageFormatProperties = ImageFormatProperties(
+internal inline fun VkImageFormatProperties.toImageFormatProperties(): ImageFormatProperties = ImageFormatProperties(
     maxExtent = maxExtent.toExtent3D(),
     maxMipLevels = maxMipLevels,
     maxArrayLayers = maxArrayLayers,

@@ -14,7 +14,7 @@ data class MemoryHeap internal constructor(
     val flags: VkMemoryHeapFlags,
 )
 
-internal fun VkMemoryHeap.toMemoryHeap(): MemoryHeap = MemoryHeap(
+internal inline fun VkMemoryHeap.toMemoryHeap(): MemoryHeap = MemoryHeap(
     size = size,
     flags = flags,
 )

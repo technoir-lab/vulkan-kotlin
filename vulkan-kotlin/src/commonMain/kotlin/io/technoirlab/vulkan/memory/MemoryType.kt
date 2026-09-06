@@ -14,7 +14,7 @@ data class MemoryType internal constructor(
     val heapIndex: UInt,
 )
 
-internal fun VkMemoryType.toMemoryType(): MemoryType = MemoryType(
+internal inline fun VkMemoryType.toMemoryType(): MemoryType = MemoryType(
     propertyFlags = propertyFlags,
     heapIndex = heapIndex,
 )

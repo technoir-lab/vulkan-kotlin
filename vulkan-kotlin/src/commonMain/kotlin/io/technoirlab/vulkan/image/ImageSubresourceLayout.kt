@@ -21,7 +21,7 @@ data class ImageSubresourceLayout internal constructor(
     val hostMemcpySize: ULong,
 )
 
-internal fun VkSubresourceLayout.toImageSubresourceLayout(hostMemcpySize: ULong): ImageSubresourceLayout = ImageSubresourceLayout(
+internal inline fun VkSubresourceLayout.toImageSubresourceLayout(hostMemcpySize: ULong): ImageSubresourceLayout = ImageSubresourceLayout(
     offset = offset,
     size = size,
     rowPitch = rowPitch,
