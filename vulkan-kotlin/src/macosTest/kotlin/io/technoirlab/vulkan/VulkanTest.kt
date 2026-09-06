@@ -2,7 +2,6 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-import kotlinx.cinterop.memScoped
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -16,7 +15,7 @@ class VulkanTest {
     }
 
     @Test
-    fun `create instance`() = memScoped {
+    fun `create instance`() {
         val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
             it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
         }
@@ -31,7 +30,7 @@ class VulkanTest {
     }
 
     @Test
-    fun `get instance version`() = memScoped {
+    fun `get instance version`() {
         val instanceVersion = vulkan.instanceVersion
 
         assertTrue(instanceVersion >= VK_API_VERSION_1_4)
@@ -39,7 +38,7 @@ class VulkanTest {
 
     @Test
     fun `enumerate instance extensions`() {
-        val extensions = memScoped { vulkan.enumerateInstanceExtensionProperties() }
+        val extensions = vulkan.enumerateInstanceExtensionProperties()
 
         assertTrue(extensions.isNotEmpty())
         assertTrue(extensions.all { it.name.startsWith("VK_") && it.specVersion > 0u })
@@ -47,7 +46,7 @@ class VulkanTest {
 
     @Test
     fun `enumerate instance layers`() {
-        val layers = memScoped { vulkan.enumerateInstanceLayerProperties() }
+        val layers = vulkan.enumerateInstanceLayerProperties()
 
         assertTrue(layers.isNotEmpty())
         assertTrue(layers.all { it.name.startsWith("VK_LAYER_") && it.specVersion > 0u })

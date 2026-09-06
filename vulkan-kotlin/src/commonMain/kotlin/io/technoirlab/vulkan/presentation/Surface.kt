@@ -14,9 +14,9 @@ import io.technoirlab.volk.vkDestroySurfaceKHR
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 
@@ -52,15 +52,14 @@ class Surface internal constructor(
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateHeadlessSurfaceEXT.html">vkCreateHeadlessSurfaceEXT Manual Page</a>
  */
-context(allocator: NativePlacement)
-fun Instance.createHeadlessSurface(): Surface {
+fun Instance.createHeadlessSurface(): Surface = memScoped {
     assert(VK_KHR_SURFACE_EXTENSION_NAME in enabledExtensions && VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME in enabledExtensions) {
         "Creating a headless surface requires VK_KHR_surface and VK_EXT_headless_surface"
     }
-    val surfaceCreateInfo = allocator.alloc<VkHeadlessSurfaceCreateInfoEXT> {
+    val surfaceCreateInfo = alloc<VkHeadlessSurfaceCreateInfoEXT> {
         sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
     }
-    val surfaceVar = allocator.alloc<VkSurfaceKHRVar>()
+    val surfaceVar = alloc<VkSurfaceKHRVar>()
     vkCreateHeadlessSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create a headless surface")
     return Surface(handle, surfaceVar.value!!)

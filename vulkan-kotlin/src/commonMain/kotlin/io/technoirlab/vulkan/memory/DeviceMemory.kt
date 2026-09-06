@@ -17,11 +17,11 @@ import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.convert
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.plus
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.reinterpret
@@ -53,7 +53,6 @@ class DeviceMemory internal constructor(
     /**
      * Copy data from a source to the device memory.
      */
-    context(allocator: NativePlacement)
     fun copyData(source: Source, expectedSize: ULong, offset: ULong = 0uL) {
         val mappedPtr = map(expectedSize, offset).reinterpret<ByteVar>()
         try {
@@ -88,9 +87,8 @@ class DeviceMemory internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceMemoryOpaqueCaptureAddress.html">vkGetDeviceMemoryOpaqueCaptureAddress Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getOpaqueCaptureAddress(): ULong {
-        val addressInfo = allocator.alloc<VkDeviceMemoryOpaqueCaptureAddressInfo> {
+    fun getOpaqueCaptureAddress(): ULong = memScoped {
+        val addressInfo = alloc<VkDeviceMemoryOpaqueCaptureAddressInfo> {
             sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
             memory = handle
         }
@@ -102,15 +100,15 @@ class DeviceMemory internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkMapMemory.html">vkMapMemory Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun map(size: ULong, offset: ULong = 0uL): CPointer<out CPointed> {
-        assert(offset < this.size) { "offset must be less than ${this.size}" }
+    fun map(size: ULong, offset: ULong = 0uL): CPointer<out CPointed> = memScoped {
+        val totalSize = this@DeviceMemory.size
+        assert(offset < totalSize) { "offset must be less than $totalSize" }
         assert(size == VK_WHOLE_SIZE || size > 0uL) { "size must be greater than 0" }
-        assert(size == VK_WHOLE_SIZE || size <= this.size - offset) {
-            "size must be less than or equal to ${this.size} - offset"
+        assert(size == VK_WHOLE_SIZE || size <= totalSize - offset) {
+            "size must be less than or equal to $totalSize - offset"
         }
 
-        val mappedPtr = allocator.alloc<CPointerVar<out CPointed>>()
+        val mappedPtr = alloc<CPointerVar<out CPointed>>()
         vkMapMemory!!(device, handle, offset, size, 0u, mappedPtr.ptr)
             .checkResult("Failed to map memory")
         return mappedPtr.value!!

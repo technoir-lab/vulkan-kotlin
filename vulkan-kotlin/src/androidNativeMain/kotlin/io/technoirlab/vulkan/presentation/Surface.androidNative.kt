@@ -10,9 +10,9 @@ import io.technoirlab.volk.vkCreateAndroidSurfaceKHR
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.checkResult
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 
@@ -22,16 +22,15 @@ import kotlinx.cinterop.value
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateAndroidSurfaceKHR.html">vkCreateAndroidSurfaceKHR Manual Page</a>
  */
-context(allocator: NativePlacement)
-fun Instance.createAndroidSurface(nativeWindow: CPointer<ANativeWindow>): Surface {
+fun Instance.createAndroidSurface(nativeWindow: CPointer<ANativeWindow>): Surface = memScoped {
     assert(VK_KHR_SURFACE_EXTENSION_NAME in enabledExtensions && VK_KHR_ANDROID_SURFACE_EXTENSION_NAME in enabledExtensions) {
         "Creating an Android surface requires VK_KHR_surface and VK_KHR_android_surface"
     }
-    val surfaceCreateInfo = allocator.alloc<VkAndroidSurfaceCreateInfoKHR> {
+    val surfaceCreateInfo = alloc<VkAndroidSurfaceCreateInfoKHR> {
         sType = VK_STRUCTURE_TYPE_ANDROID_SURFACE_CREATE_INFO_KHR
         window = nativeWindow
     }
-    val surfaceVar = allocator.alloc<VkSurfaceKHRVar>()
+    val surfaceVar = alloc<VkSurfaceKHRVar>()
     vkCreateAndroidSurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create Android surface")
     return Surface(handle, surfaceVar.value!!)

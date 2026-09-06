@@ -16,12 +16,12 @@ import io.technoirlab.volk.vkFreeDescriptorSets
 import io.technoirlab.volk.vkResetDescriptorPool
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlin.assert
 
@@ -47,18 +47,17 @@ class DescriptorPool internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateDescriptorSets.html">vkAllocateDescriptorSets Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>): List<DescriptorSet> {
+    fun allocateDescriptorSets(setLayouts: List<DescriptorSetLayout>): List<DescriptorSet> = memScoped {
         assert(setLayouts.isNotEmpty()) { "setLayouts must not be empty" }
 
-        val layoutsNative = allocator.allocArrayOf(setLayouts.map { it.handle })
-        val allocInfo = allocator.alloc<VkDescriptorSetAllocateInfo> {
+        val layoutsNative = allocArrayOf(setLayouts.map { it.handle })
+        val allocInfo = alloc<VkDescriptorSetAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO
             descriptorPool = handle
             descriptorSetCount = setLayouts.size.toUInt()
             pSetLayouts = layoutsNative
         }
-        val sets = allocator.allocArray<VkDescriptorSetVar>(setLayouts.size)
+        val sets = allocArray<VkDescriptorSetVar>(setLayouts.size)
         vkAllocateDescriptorSets!!(device, allocInfo.ptr, sets)
             .checkResult("Failed to allocate descriptor sets")
 
@@ -70,14 +69,13 @@ class DescriptorPool internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkFreeDescriptorSets.html">vkFreeDescriptorSets Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun freeDescriptorSets(descriptorSets: List<DescriptorSet>) {
+    fun freeDescriptorSets(descriptorSets: List<DescriptorSet>): Unit = memScoped {
         assert(descriptorSets.isNotEmpty()) { "descriptorSets must not be empty" }
         assert((flags and VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT) != 0u) {
             "descriptor pool must be created with VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT"
         }
 
-        val descriptorSetHandles = allocator.allocArrayOf(descriptorSets.map { it.handle })
+        val descriptorSetHandles = allocArrayOf(descriptorSets.map { it.handle })
         vkFreeDescriptorSets!!(device, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
             .checkResult("Failed to free descriptor sets")
     }

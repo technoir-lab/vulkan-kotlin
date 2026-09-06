@@ -15,13 +15,13 @@ import io.technoirlab.volk.vkEnumeratePhysicalDevices
 import io.technoirlab.volk.volkLoadInstanceOnly
 import io.technoirlab.vulkan.debug.DebugMessenger
 import io.technoirlab.vulkan.debug.debugMessengerCallback
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.value
@@ -53,23 +53,22 @@ class Instance internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDebugUtilsMessengerEXT.html">vkCreateDebugUtilsMessengerEXT Manual Page</a>
      */
-    context(allocator: NativePlacement)
     fun createDebugMessenger(
         messageSeverity: VkDebugUtilsMessageSeverityFlagsEXT,
         messageType: VkDebugUtilsMessageTypeFlagsEXT,
         callback: DebugMessenger.Callback,
-    ): DebugMessenger {
+    ): DebugMessenger = memScoped {
         assert(messageSeverity != 0u) { "messageSeverity must not be 0" }
         assert(messageType != 0u) { "messageType must not be 0" }
         val callbackRef = StableRef.create(callback)
-        val debugUtilsMessengerCreateInfo = allocator.alloc<VkDebugUtilsMessengerCreateInfoEXT> {
+        val debugUtilsMessengerCreateInfo = alloc<VkDebugUtilsMessengerCreateInfoEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
             pfnUserCallback = staticCFunction(::debugMessengerCallback)
             pUserData = callbackRef.asCPointer()
             this.messageSeverity = messageSeverity
             this.messageType = messageType
         }
-        val messengerVar = allocator.alloc<VkDebugUtilsMessengerEXTVar>()
+        val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
         vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
             .checkResult("Failed to create a debug messenger")
         return DebugMessenger(handle, messengerVar.value!!, callbackRef)
@@ -80,16 +79,15 @@ class Instance internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumeratePhysicalDevices.html">vkEnumeratePhysicalDevices Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun enumeratePhysicalDevices(): List<PhysicalDevice> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun enumeratePhysicalDevices(): List<PhysicalDevice> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
             .checkResult("Failed to enumerate physical devices")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val physicalDevices = allocator.allocArray<VkPhysicalDeviceVar>(count)
+        val physicalDevices = allocArray<VkPhysicalDeviceVar>(count)
         vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
             .checkResult("Failed to enumerate physical devices")
 

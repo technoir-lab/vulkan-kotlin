@@ -19,12 +19,12 @@ import io.technoirlab.vulkan.image.Image
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlin.time.Duration
@@ -50,39 +50,38 @@ class Swapchain internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAcquireNextImage2KHR.html">vkAcquireNextImage2KHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun acquireNextImage(semaphore: Semaphore? = null, fence: Fence? = null, timeout: Duration = Duration.INFINITE): VulkanResult<UInt> {
-        val acquireInfo = allocator.alloc<VkAcquireNextImageInfoKHR> {
-            sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
-            deviceMask = 1u
-            swapchain = handle
-            this.semaphore = semaphore?.handle
-            this.fence = fence?.handle
-            this.timeout = timeout.inWholeNanosecondsULong
+    fun acquireNextImage(semaphore: Semaphore? = null, fence: Fence? = null, timeout: Duration = Duration.INFINITE): VulkanResult<UInt> =
+        memScoped {
+            val acquireInfo = alloc<VkAcquireNextImageInfoKHR> {
+                sType = VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
+                deviceMask = 1u
+                swapchain = handle
+                this.semaphore = semaphore?.handle
+                this.fence = fence?.handle
+                this.timeout = timeout.inWholeNanosecondsULong
+            }
+            val imageIndexVar = alloc<UIntVar>()
+            val result = vkAcquireNextImage2KHR!!(device, acquireInfo.ptr, imageIndexVar.ptr)
+            if (result != VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR) {
+                result.checkResult("Failed to acquire next swap chain image")
+            }
+            return VulkanResult(imageIndexVar.value, result)
         }
-        val imageIndexVar = allocator.alloc<UIntVar>()
-        val result = vkAcquireNextImage2KHR!!(device, acquireInfo.ptr, imageIndexVar.ptr)
-        if (result != VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR) {
-            result.checkResult("Failed to acquire next swap chain image")
-        }
-        return VulkanResult(imageIndexVar.value, result)
-    }
 
     /**
      * Retrieve the array of presentable images associated with the swapchain.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetSwapchainImagesKHR.html">vkGetSwapchainImagesKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getImages(): List<Image> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun getImages(): List<Image> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, null)
             .checkResult("Failed to get swap chain image count")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val images = allocator.allocArray<VkImageVar>(count)
+        val images = allocArray<VkImageVar>(count)
         vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, images)
             .checkResult("Failed to get swap chain images")
 

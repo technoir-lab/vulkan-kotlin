@@ -19,10 +19,10 @@ import io.technoirlab.vulkan.Queue
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.command.CommandBuffer
-import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toLong
 
@@ -32,11 +32,10 @@ import kotlinx.cinterop.toLong
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBeginDebugUtilsLabelEXT.html">vkCmdBeginDebugUtilsLabelEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun CommandBuffer.beginDebugLabel(label: String) {
-    val labelInfo = allocator.alloc<VkDebugUtilsLabelEXT> {
+fun CommandBuffer.beginDebugLabel(label: String): Unit = memScoped {
+    val labelInfo = alloc<VkDebugUtilsLabelEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
-        pLabelName = label.cstr.getPointer(allocator)
+        pLabelName = label.cstr.ptr
     }
     vkCmdBeginDebugUtilsLabelEXT!!(handle, labelInfo.ptr)
 }
@@ -57,11 +56,10 @@ fun CommandBuffer.endDebugLabel() {
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdInsertDebugUtilsLabelEXT.html">vkCmdInsertDebugUtilsLabelEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun CommandBuffer.insertDebugLabel(label: String) {
-    val labelInfo = allocator.alloc<VkDebugUtilsLabelEXT> {
+fun CommandBuffer.insertDebugLabel(label: String): Unit = memScoped {
+    val labelInfo = alloc<VkDebugUtilsLabelEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
-        pLabelName = label.cstr.getPointer(allocator)
+        pLabelName = label.cstr.ptr
     }
     vkCmdInsertDebugUtilsLabelEXT!!(handle, labelInfo.ptr)
 }
@@ -72,13 +70,12 @@ fun CommandBuffer.insertDebugLabel(label: String) {
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSetDebugUtilsObjectNameEXT.html">vkSetDebugUtilsObjectNameEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun Device.setObjectName(obj: VulkanObject, name: String) {
-    val objectNameInfo = allocator.alloc<VkDebugUtilsObjectNameInfoEXT> {
+fun Device.setObjectName(obj: VulkanObject, name: String): Unit = memScoped {
+    val objectNameInfo = alloc<VkDebugUtilsObjectNameInfoEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
         objectHandle = obj.handle.toLong().toULong()
         objectType = obj.type
-        pObjectName = name.cstr.getPointer(allocator)
+        pObjectName = name.cstr.ptr
     }
     vkSetDebugUtilsObjectNameEXT!!(handle, objectNameInfo.ptr).checkResult("Failed to set object name")
 }
@@ -89,9 +86,8 @@ fun Device.setObjectName(obj: VulkanObject, name: String) {
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSetDebugUtilsObjectTagEXT.html">vkSetDebugUtilsObjectTagEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun Device.setObjectTag(obj: VulkanObject, tagInfo: VkDebugUtilsObjectTagInfoEXT.() -> Unit) {
-    val objectTagInfo = allocator.alloc<VkDebugUtilsObjectTagInfoEXT> {
+fun Device.setObjectTag(obj: VulkanObject, tagInfo: VkDebugUtilsObjectTagInfoEXT.() -> Unit): Unit = memScoped {
+    val objectTagInfo = alloc<VkDebugUtilsObjectTagInfoEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT
         objectHandle = obj.handle.toLong().toULong()
         objectType = obj.type
@@ -106,11 +102,10 @@ fun Device.setObjectTag(obj: VulkanObject, tagInfo: VkDebugUtilsObjectTagInfoEXT
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueBeginDebugUtilsLabelEXT.html">vkQueueBeginDebugUtilsLabelEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun Queue.beginDebugLabel(label: String) {
-    val labelInfo = allocator.alloc<VkDebugUtilsLabelEXT> {
+fun Queue.beginDebugLabel(label: String): Unit = memScoped {
+    val labelInfo = alloc<VkDebugUtilsLabelEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
-        pLabelName = label.cstr.getPointer(allocator)
+        pLabelName = label.cstr.ptr
     }
     vkQueueBeginDebugUtilsLabelEXT!!(handle, labelInfo.ptr)
 }
@@ -131,11 +126,10 @@ fun Queue.endDebugLabel() {
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueInsertDebugUtilsLabelEXT.html">vkQueueInsertDebugUtilsLabelEXT Manual Page</a>
  */
-context(allocator: AutofreeScope)
-fun Queue.insertDebugLabel(label: String) {
-    val labelInfo = allocator.alloc<VkDebugUtilsLabelEXT> {
+fun Queue.insertDebugLabel(label: String): Unit = memScoped {
+    val labelInfo = alloc<VkDebugUtilsLabelEXT> {
         sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
-        pLabelName = label.cstr.getPointer(allocator)
+        pLabelName = label.cstr.ptr
     }
     vkQueueInsertDebugUtilsLabelEXT!!(handle, labelInfo.ptr)
 }

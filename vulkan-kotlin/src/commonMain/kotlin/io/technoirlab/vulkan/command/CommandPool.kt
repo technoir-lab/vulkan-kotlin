@@ -17,12 +17,12 @@ import io.technoirlab.volk.vkResetCommandPool
 import io.technoirlab.volk.vkTrimCommandPool
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlin.assert
 
@@ -47,16 +47,15 @@ class CommandPool internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateCommandBuffers.html">vkAllocateCommandBuffers Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun allocateCommandBuffers(count: Int): List<CommandBuffer> {
+    fun allocateCommandBuffers(count: Int): List<CommandBuffer> = memScoped {
         assert(count > 0) { "count must be greater than 0" }
-        val allocateInfo = allocator.alloc<VkCommandBufferAllocateInfo> {
+        val allocateInfo = alloc<VkCommandBufferAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
             commandPool = handle
             commandBufferCount = count.toUInt()
             level = VK_COMMAND_BUFFER_LEVEL_PRIMARY
         }
-        val commandBufferArray = allocator.allocArray<VkCommandBufferVar>(count)
+        val commandBufferArray = allocArray<VkCommandBufferVar>(count)
         vkAllocateCommandBuffers!!(device, allocateInfo.ptr, commandBufferArray)
             .checkResult("Failed to allocate command buffers")
         return (0 until count).map { CommandBuffer(commandBufferArray[it]!!) }
@@ -67,10 +66,9 @@ class CommandPool internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkFreeCommandBuffers.html">vkFreeCommandBuffers Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun freeCommandBuffers(commandBuffers: List<CommandBuffer>) {
+    fun freeCommandBuffers(commandBuffers: List<CommandBuffer>): Unit = memScoped {
         assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
-        val commandBufferHandles = allocator.allocArrayOf(commandBuffers.map { it.handle })
+        val commandBufferHandles = allocArrayOf(commandBuffers.map { it.handle })
         vkFreeCommandBuffers!!(device, handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
 

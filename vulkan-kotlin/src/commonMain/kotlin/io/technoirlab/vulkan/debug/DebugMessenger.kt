@@ -15,11 +15,11 @@ import io.technoirlab.volk.vkSubmitDebugUtilsMessageEXT
 import io.technoirlab.vulkan.VulkanObject
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.asStableRef
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.pointed
 import kotlinx.cinterop.ptr
 import kotlin.assert
@@ -46,14 +46,13 @@ class DebugMessenger internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSubmitDebugUtilsMessageEXT.html">vkSubmitDebugUtilsMessageEXT Manual Page</a>
      */
-    context(allocator: NativePlacement)
     fun submitMessage(
         messageSeverity: VkDebugUtilsMessageSeverityFlagBitsEXT,
         messageTypes: VkDebugUtilsMessageTypeFlagsEXT,
         callbackData: VkDebugUtilsMessengerCallbackDataEXT.() -> Unit,
-    ) {
+    ): Unit = memScoped {
         assert(messageTypes != 0u) { "messageTypes must not be 0" }
-        val callbackDataStruct = allocator.alloc<VkDebugUtilsMessengerCallbackDataEXT> {
+        val callbackDataStruct = alloc<VkDebugUtilsMessengerCallbackDataEXT> {
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
             callbackData()
         }
