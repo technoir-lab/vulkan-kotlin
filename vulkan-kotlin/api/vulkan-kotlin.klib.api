@@ -384,8 +384,6 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
 }
 
 final class io.technoirlab.vulkan/ExtensionProperties { // io.technoirlab.vulkan/ExtensionProperties|null[0]
-    constructor <init>(kotlin/String, kotlin/UInt) // io.technoirlab.vulkan/ExtensionProperties.<init>|<init>(kotlin.String;kotlin.UInt){}[0]
-
     final val name // io.technoirlab.vulkan/ExtensionProperties.name|{}name[0]
         final fun <get-name>(): kotlin/String // io.technoirlab.vulkan/ExtensionProperties.name.<get-name>|<get-name>(){}[0]
     final val specVersion // io.technoirlab.vulkan/ExtensionProperties.specVersion|{}specVersion[0]
@@ -393,10 +391,25 @@ final class io.technoirlab.vulkan/ExtensionProperties { // io.technoirlab.vulkan
 
     final fun component1(): kotlin/String // io.technoirlab.vulkan/ExtensionProperties.component1|component1(){}[0]
     final fun component2(): kotlin/UInt // io.technoirlab.vulkan/ExtensionProperties.component2|component2(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/UInt = ...): io.technoirlab.vulkan/ExtensionProperties // io.technoirlab.vulkan/ExtensionProperties.copy|copy(kotlin.String;kotlin.UInt){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/ExtensionProperties.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/ExtensionProperties.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan/ExtensionProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan/FormatProperties { // io.technoirlab.vulkan/FormatProperties|null[0]
+    final val bufferFeatures // io.technoirlab.vulkan/FormatProperties.bufferFeatures|{}bufferFeatures[0]
+        final fun <get-bufferFeatures>(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.bufferFeatures.<get-bufferFeatures>|<get-bufferFeatures>(){}[0]
+    final val linearTilingFeatures // io.technoirlab.vulkan/FormatProperties.linearTilingFeatures|{}linearTilingFeatures[0]
+        final fun <get-linearTilingFeatures>(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.linearTilingFeatures.<get-linearTilingFeatures>|<get-linearTilingFeatures>(){}[0]
+    final val optimalTilingFeatures // io.technoirlab.vulkan/FormatProperties.optimalTilingFeatures|{}optimalTilingFeatures[0]
+        final fun <get-optimalTilingFeatures>(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.optimalTilingFeatures.<get-optimalTilingFeatures>|<get-optimalTilingFeatures>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan/FormatProperties.component3|component3(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/FormatProperties.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/FormatProperties.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan/FormatProperties.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Instance|null[0]
@@ -413,8 +426,6 @@ final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject,
 }
 
 final class io.technoirlab.vulkan/LayerProperties { // io.technoirlab.vulkan/LayerProperties|null[0]
-    constructor <init>(kotlin/String, kotlin/UInt, kotlin/UInt, kotlin/String) // io.technoirlab.vulkan/LayerProperties.<init>|<init>(kotlin.String;kotlin.UInt;kotlin.UInt;kotlin.String){}[0]
-
     final val description // io.technoirlab.vulkan/LayerProperties.description|{}description[0]
         final fun <get-description>(): kotlin/String // io.technoirlab.vulkan/LayerProperties.description.<get-description>|<get-description>(){}[0]
     final val implementationVersion // io.technoirlab.vulkan/LayerProperties.implementationVersion|{}implementationVersion[0]
@@ -428,7 +439,6 @@ final class io.technoirlab.vulkan/LayerProperties { // io.technoirlab.vulkan/Lay
     final fun component2(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.component2|component2(){}[0]
     final fun component3(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.component3|component3(){}[0]
     final fun component4(): kotlin/String // io.technoirlab.vulkan/LayerProperties.component4|component4(){}[0]
-    final fun copy(kotlin/String = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/String = ...): io.technoirlab.vulkan/LayerProperties // io.technoirlab.vulkan/LayerProperties.copy|copy(kotlin.String;kotlin.UInt;kotlin.UInt;kotlin.String){}[0]
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/LayerProperties.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/LayerProperties.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan/LayerProperties.toString|toString(){}[0]
@@ -443,7 +453,7 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/AutofreeScope)).createDevice(kotlin.collections/List<kotlin/String> = ..., kotlin/Function1<io.technoirlab.volk/VkDeviceCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceFeatures, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceVulkan11Features, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceVulkan12Features, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceVulkan13Features, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceVulkan14Features, kotlin/Unit> = ...): io.technoirlab.vulkan/Device // io.technoirlab.vulkan/PhysicalDevice.createDevice|createDevice(kotlinx.cinterop.AutofreeScope)(kotlin.collections.List<kotlin.String>;kotlin.Function1<io.technoirlab.volk.VkDeviceCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceFeatures,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceVulkan11Features,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceVulkan12Features,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceVulkan13Features,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceVulkan14Features,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).enumerateDeviceExtensionProperties(): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan/PhysicalDevice.enumerateDeviceExtensionProperties|enumerateDeviceExtensionProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getFeatures(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Features // io.technoirlab.vulkan/PhysicalDevice.getFeatures|getFeatures(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getFormatProperties(kotlin/UInt): io.technoirlab.volk/VkFormatProperties2 // io.technoirlab.vulkan/PhysicalDevice.getFormatProperties|getFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.UInt){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getFormatProperties(kotlin/UInt): io.technoirlab.vulkan/FormatProperties // io.technoirlab.vulkan/PhysicalDevice.getFormatProperties|getFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.UInt){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getImageFormatProperties(kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceImageFormatInfo2, kotlin/Unit>): io.technoirlab.volk/VkImageFormatProperties2 // io.technoirlab.vulkan/PhysicalDevice.getImageFormatProperties|getImageFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryProperties(): io.technoirlab.volk/VkPhysicalDeviceMemoryProperties // io.technoirlab.vulkan/PhysicalDevice.getMemoryProperties|getMemoryProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties(): io.technoirlab.volk/VkPhysicalDeviceProperties // io.technoirlab.vulkan/PhysicalDevice.getProperties|getProperties(kotlinx.cinterop.NativePlacement)(){}[0]

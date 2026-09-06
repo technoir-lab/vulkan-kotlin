@@ -8,7 +8,7 @@ package io.technoirlab.vulkan
  * @property implementationVersion The implementation-specific version of the layer.
  * @property description The description of the layer.
  */
-data class LayerProperties(
+data class LayerProperties internal constructor(
     val name: String,
     val specVersion: UInt,
     val implementationVersion: UInt,

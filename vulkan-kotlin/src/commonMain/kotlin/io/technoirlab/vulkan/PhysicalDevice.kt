@@ -210,12 +210,16 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceFormatProperties2.html">vkGetPhysicalDeviceFormatProperties2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getFormatProperties(format: VkFormat): VkFormatProperties2 {
+    fun getFormatProperties(format: VkFormat): FormatProperties {
         val properties = allocator.alloc<VkFormatProperties2> {
             sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
         }
         vkGetPhysicalDeviceFormatProperties2!!(handle, format, properties.ptr)
-        return properties
+        return FormatProperties(
+            linearTilingFeatures = properties.formatProperties.linearTilingFeatures,
+            optimalTilingFeatures = properties.formatProperties.optimalTilingFeatures,
+            bufferFeatures = properties.formatProperties.bufferFeatures,
+        )
     }
 
     /**
