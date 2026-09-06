@@ -147,6 +147,50 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirla
     final fun close() // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.close|close(){}[0]
 }
 
+final class io.technoirlab.vulkan.image/Image : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.image/Image|null[0]
+    final val destroyable // io.technoirlab.vulkan.image/Image.destroyable|{}destroyable[0]
+        final fun <get-destroyable>(): kotlin/Boolean // io.technoirlab.vulkan.image/Image.destroyable.<get-destroyable>|<get-destroyable>(){}[0]
+    final val handle // io.technoirlab.vulkan.image/Image.handle|{}handle[0]
+        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkImage_T> // io.technoirlab.vulkan.image/Image.handle.<get-handle>|<get-handle>(){}[0]
+    final val type // io.technoirlab.vulkan.image/Image.type|{}type[0]
+        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.image/Image.type.<get-type>|<get-type>(){}[0]
+
+    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.image/Image.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.image/Image.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun close() // io.technoirlab.vulkan.image/Image.close|close(){}[0]
+}
+
+final class io.technoirlab.vulkan.image/ImageFormatProperties { // io.technoirlab.vulkan.image/ImageFormatProperties|null[0]
+    final val maxArrayLayers // io.technoirlab.vulkan.image/ImageFormatProperties.maxArrayLayers|{}maxArrayLayers[0]
+        final fun <get-maxArrayLayers>(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.maxArrayLayers.<get-maxArrayLayers>|<get-maxArrayLayers>(){}[0]
+    final val maxExtent // io.technoirlab.vulkan.image/ImageFormatProperties.maxExtent|{}maxExtent[0]
+        final fun <get-maxExtent>(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/ImageFormatProperties.maxExtent.<get-maxExtent>|<get-maxExtent>(){}[0]
+    final val maxMipLevels // io.technoirlab.vulkan.image/ImageFormatProperties.maxMipLevels|{}maxMipLevels[0]
+        final fun <get-maxMipLevels>(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.maxMipLevels.<get-maxMipLevels>|<get-maxMipLevels>(){}[0]
+    final val maxResourceSize // io.technoirlab.vulkan.image/ImageFormatProperties.maxResourceSize|{}maxResourceSize[0]
+        final fun <get-maxResourceSize>(): kotlin/ULong // io.technoirlab.vulkan.image/ImageFormatProperties.maxResourceSize.<get-maxResourceSize>|<get-maxResourceSize>(){}[0]
+    final val sampleCounts // io.technoirlab.vulkan.image/ImageFormatProperties.sampleCounts|{}sampleCounts[0]
+        final fun <get-sampleCounts>(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.sampleCounts.<get-sampleCounts>|<get-sampleCounts>(){}[0]
+
+    final fun component1(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/ImageFormatProperties.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.component3|component3(){}[0]
+    final fun component4(): kotlin/UInt // io.technoirlab.vulkan.image/ImageFormatProperties.component4|component4(){}[0]
+    final fun component5(): kotlin/ULong // io.technoirlab.vulkan.image/ImageFormatProperties.component5|component5(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/ImageFormatProperties.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/ImageFormatProperties.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.image/ImageFormatProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.image/ImageView : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.image/ImageView|null[0]
+    final val handle // io.technoirlab.vulkan.image/ImageView.handle|{}handle[0]
+        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkImageView_T> // io.technoirlab.vulkan.image/ImageView.handle.<get-handle>|<get-handle>(){}[0]
+    final val type // io.technoirlab.vulkan.image/ImageView.type|{}type[0]
+        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.image/ImageView.type.<get-type>|<get-type>(){}[0]
+
+    final fun close() // io.technoirlab.vulkan.image/ImageView.close|close(){}[0]
+}
+
 final class io.technoirlab.vulkan.memory/DeviceMemory : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.memory/DeviceMemory|null[0]
     final val handle // io.technoirlab.vulkan.memory/DeviceMemory.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDeviceMemory_T> // io.technoirlab.vulkan.memory/DeviceMemory.handle.<get-handle>|<get-handle>(){}[0]
@@ -257,7 +301,7 @@ final class io.technoirlab.vulkan.presentation/Swapchain : io.technoirlab.vulkan
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.presentation/Swapchain.type.<get-type>|<get-type>(){}[0]
 
     final fun (context(kotlinx.cinterop/NativePlacement)).acquireNextImage(io.technoirlab.vulkan.sync/Semaphore? = ..., io.technoirlab.vulkan.sync/Fence? = ..., kotlin.time/Duration = ...): io.technoirlab.vulkan/VulkanResult<kotlin/UInt> // io.technoirlab.vulkan.presentation/Swapchain.acquireNextImage|acquireNextImage(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.sync.Semaphore?;io.technoirlab.vulkan.sync.Fence?;kotlin.time.Duration){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getImages(): kotlin.collections/List<io.technoirlab.vulkan.resource/Image> // io.technoirlab.vulkan.presentation/Swapchain.getImages|getImages(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getImages(): kotlin.collections/List<io.technoirlab.vulkan.image/Image> // io.technoirlab.vulkan.presentation/Swapchain.getImages|getImages(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan.presentation/Swapchain.close|close(){}[0]
 }
 
@@ -293,28 +337,6 @@ final class io.technoirlab.vulkan.resource/BufferView : io.technoirlab.vulkan/Vu
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/BufferView.type.<get-type>|<get-type>(){}[0]
 
     final fun close() // io.technoirlab.vulkan.resource/BufferView.close|close(){}[0]
-}
-
-final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Image|null[0]
-    final val destroyable // io.technoirlab.vulkan.resource/Image.destroyable|{}destroyable[0]
-        final fun <get-destroyable>(): kotlin/Boolean // io.technoirlab.vulkan.resource/Image.destroyable.<get-destroyable>|<get-destroyable>(){}[0]
-    final val handle // io.technoirlab.vulkan.resource/Image.handle|{}handle[0]
-        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkImage_T> // io.technoirlab.vulkan.resource/Image.handle.<get-handle>|<get-handle>(){}[0]
-    final val type // io.technoirlab.vulkan.resource/Image.type|{}type[0]
-        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/Image.type.<get-type>|<get-type>(){}[0]
-
-    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Image.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.resource/Image.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
-    final fun close() // io.technoirlab.vulkan.resource/Image.close|close(){}[0]
-}
-
-final class io.technoirlab.vulkan.resource/ImageView : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/ImageView|null[0]
-    final val handle // io.technoirlab.vulkan.resource/ImageView.handle|{}handle[0]
-        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkImageView_T> // io.technoirlab.vulkan.resource/ImageView.handle.<get-handle>|<get-handle>(){}[0]
-    final val type // io.technoirlab.vulkan.resource/ImageView.type|{}type[0]
-        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/ImageView.type.<get-type>|<get-type>(){}[0]
-
-    final fun close() // io.technoirlab.vulkan.resource/ImageView.close|close(){}[0]
 }
 
 final class io.technoirlab.vulkan.resource/Sampler : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Sampler|null[0]
@@ -405,8 +427,8 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
     final fun (context(kotlinx.cinterop/NativePlacement)).createEvent(kotlin/UInt = ...): io.technoirlab.vulkan.sync/Event // io.technoirlab.vulkan/Device.createEvent|createEvent(kotlinx.cinterop.NativePlacement)(kotlin.UInt){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createFence(kotlin/Function1<io.technoirlab.volk/VkFenceCreateInfo, kotlin/Unit> = ...): io.technoirlab.vulkan.sync/Fence // io.technoirlab.vulkan/Device.createFence|createFence(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkFenceCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createGraphicsPipeline(io.technoirlab.vulkan.pipeline/PipelineLayout, kotlin/UInt, kotlin/Function2<io.technoirlab.volk/VkPipelineShaderStageCreateInfo, kotlin/UInt, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineVertexInputStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineInputAssemblyStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineTessellationStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineViewportStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineRasterizationStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineMultisampleStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineDepthStencilStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineColorBlendStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineDynamicStateCreateInfo, kotlin/Unit> = ..., kotlin/Function1<io.technoirlab.volk/VkPipelineRenderingCreateInfo, kotlin/Unit> = ..., kotlin/UInt = ..., io.technoirlab.vulkan.pipeline/Pipeline? = ..., io.technoirlab.vulkan.pipeline/PipelineCache? = ...): io.technoirlab.vulkan.pipeline/Pipeline // io.technoirlab.vulkan/Device.createGraphicsPipeline|createGraphicsPipeline(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.pipeline.PipelineLayout;kotlin.UInt;kotlin.Function2<io.technoirlab.volk.VkPipelineShaderStageCreateInfo,kotlin.UInt,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineVertexInputStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineInputAssemblyStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineTessellationStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineViewportStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineRasterizationStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineMultisampleStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineDepthStencilStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineColorBlendStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineDynamicStateCreateInfo,kotlin.Unit>;kotlin.Function1<io.technoirlab.volk.VkPipelineRenderingCreateInfo,kotlin.Unit>;kotlin.UInt;io.technoirlab.vulkan.pipeline.Pipeline?;io.technoirlab.vulkan.pipeline.PipelineCache?){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).createImage(kotlin/Function1<io.technoirlab.volk/VkImageCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/Image // io.technoirlab.vulkan/Device.createImage|createImage(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkImageCreateInfo,kotlin.Unit>){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).createImageView(kotlin/Function1<io.technoirlab.volk/VkImageViewCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/ImageView // io.technoirlab.vulkan/Device.createImageView|createImageView(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkImageViewCreateInfo,kotlin.Unit>){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).createImage(kotlin/Function1<io.technoirlab.volk/VkImageCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.image/Image // io.technoirlab.vulkan/Device.createImage|createImage(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkImageCreateInfo,kotlin.Unit>){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).createImageView(kotlin/Function1<io.technoirlab.volk/VkImageViewCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.image/ImageView // io.technoirlab.vulkan/Device.createImageView|createImageView(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkImageViewCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createPipelineCache(kotlin/Function1<io.technoirlab.volk/VkPipelineCacheCreateInfo, kotlin/Unit> = ...): io.technoirlab.vulkan.pipeline/PipelineCache // io.technoirlab.vulkan/Device.createPipelineCache|createPipelineCache(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPipelineCacheCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createPipelineLayout(kotlin/Function1<io.technoirlab.volk/VkPipelineLayoutCreateInfo, kotlin/Unit> = ...): io.technoirlab.vulkan.pipeline/PipelineLayout // io.technoirlab.vulkan/Device.createPipelineLayout|createPipelineLayout(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPipelineLayoutCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createQueryPool(kotlin/Function1<io.technoirlab.volk/VkQueryPoolCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.query/QueryPool // io.technoirlab.vulkan/Device.createQueryPool|createQueryPool(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkQueryPoolCreateInfo,kotlin.Unit>){}[0]
@@ -415,7 +437,7 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
     final fun (context(kotlinx.cinterop/NativePlacement)).createShaderModule(kotlin/Function1<io.technoirlab.volk/VkShaderModuleCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.pipeline/ShaderModule // io.technoirlab.vulkan/Device.createShaderModule|createShaderModule(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkShaderModuleCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createSwapchain(kotlin/Function1<io.technoirlab.volk/VkSwapchainCreateInfoKHR, kotlin/Unit>): io.technoirlab.vulkan.presentation/Swapchain // io.technoirlab.vulkan/Device.createSwapchain|createSwapchain(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkSwapchainCreateInfoKHR,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getDescriptorSetLayoutSupport(io.technoirlab.volk/VkDescriptorSetLayoutCreateInfo): kotlin/Boolean // io.technoirlab.vulkan/Device.getDescriptorSetLayoutSupport|getDescriptorSetLayoutSupport(kotlinx.cinterop.NativePlacement)(io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getImageSubresourceLayout(io.technoirlab.vulkan.resource/Image, kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.volk/VkSubresourceLayout2 // io.technoirlab.vulkan/Device.getImageSubresourceLayout|getImageSubresourceLayout(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.resource.Image;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getImageSubresourceLayout(io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.volk/VkSubresourceLayout2 // io.technoirlab.vulkan/Device.getImageSubresourceLayout|getImageSubresourceLayout(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getQueue(kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan/Queue // io.technoirlab.vulkan/Device.getQueue|getQueue(kotlinx.cinterop.NativePlacement)(kotlin.UInt;kotlin.UInt){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).updateDescriptorSets(kotlin.collections/List<io.technoirlab.volk/VkWriteDescriptorSet>, kotlin.collections/List<io.technoirlab.volk/VkCopyDescriptorSet> = ...) // io.technoirlab.vulkan/Device.updateDescriptorSets|updateDescriptorSets(kotlinx.cinterop.NativePlacement)(kotlin.collections.List<io.technoirlab.volk.VkWriteDescriptorSet>;kotlin.collections.List<io.technoirlab.volk.VkCopyDescriptorSet>){}[0]
     final fun close() // io.technoirlab.vulkan/Device.close|close(){}[0]
@@ -433,6 +455,22 @@ final class io.technoirlab.vulkan/ExtensionProperties { // io.technoirlab.vulkan
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/ExtensionProperties.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/ExtensionProperties.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan/ExtensionProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan/Extent3D { // io.technoirlab.vulkan/Extent3D|null[0]
+    final val depth // io.technoirlab.vulkan/Extent3D.depth|{}depth[0]
+        final fun <get-depth>(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.depth.<get-depth>|<get-depth>(){}[0]
+    final val height // io.technoirlab.vulkan/Extent3D.height|{}height[0]
+        final fun <get-height>(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.height.<get-height>|<get-height>(){}[0]
+    final val width // io.technoirlab.vulkan/Extent3D.width|{}width[0]
+        final fun <get-width>(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.width.<get-width>|<get-width>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan/Extent3D.component3|component3(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/Extent3D.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/Extent3D.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan/Extent3D.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan/FormatProperties { // io.technoirlab.vulkan/FormatProperties|null[0]
@@ -493,7 +531,7 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/NativePlacement)).enumerateDeviceExtensionProperties(): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan/PhysicalDevice.enumerateDeviceExtensionProperties|enumerateDeviceExtensionProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getFeatures(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Features // io.technoirlab.vulkan/PhysicalDevice.getFeatures|getFeatures(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getFormatProperties(kotlin/UInt): io.technoirlab.vulkan/FormatProperties // io.technoirlab.vulkan/PhysicalDevice.getFormatProperties|getFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.UInt){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getImageFormatProperties(kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceImageFormatInfo2, kotlin/Unit>): io.technoirlab.volk/VkImageFormatProperties2 // io.technoirlab.vulkan/PhysicalDevice.getImageFormatProperties|getImageFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2,kotlin.Unit>){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getImageFormatProperties(kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceImageFormatInfo2, kotlin/Unit>): io.technoirlab.vulkan.image/ImageFormatProperties // io.technoirlab.vulkan/PhysicalDevice.getImageFormatProperties|getImageFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryProperties(): io.technoirlab.vulkan.memory/MemoryProperties // io.technoirlab.vulkan/PhysicalDevice.getMemoryProperties|getMemoryProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties(): io.technoirlab.volk/VkPhysicalDeviceProperties // io.technoirlab.vulkan/PhysicalDevice.getProperties|getProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties2(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Properties // io.technoirlab.vulkan/PhysicalDevice.getProperties2|getProperties2(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]

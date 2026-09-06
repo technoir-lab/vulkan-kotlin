@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.resource
+package io.technoirlab.vulkan.image
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE_VIEW
 import io.technoirlab.volk.VkDevice

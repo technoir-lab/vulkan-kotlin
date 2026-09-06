@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.resource
+package io.technoirlab.vulkan.image
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
