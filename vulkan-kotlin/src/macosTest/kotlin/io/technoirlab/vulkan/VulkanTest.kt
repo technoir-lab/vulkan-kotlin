@@ -3,7 +3,6 @@ package io.technoirlab.vulkan
 import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.toKString
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -19,7 +18,7 @@ class VulkanTest {
     @Test
     fun `create instance`() = memScoped {
         val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
-            it.extensionName.toKString() == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+            it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
         }
         val extensions = if (hasPortabilityExtension) {
             listOf(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
@@ -39,10 +38,11 @@ class VulkanTest {
     }
 
     @Test
-    fun `enumerate instance extensions`() = memScoped {
-        val extensions = vulkan.enumerateInstanceExtensionProperties().toList()
+    fun `enumerate instance extensions`() {
+        val extensions = memScoped { vulkan.enumerateInstanceExtensionProperties() }
 
         assertTrue(extensions.isNotEmpty())
+        assertTrue(extensions.all { it.name.startsWith("VK_") && it.specVersion > 0u })
     }
 
     @Test
