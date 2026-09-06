@@ -551,7 +551,7 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryProperties(): io.technoirlab.vulkan.memory/MemoryProperties // io.technoirlab.vulkan/PhysicalDevice.getMemoryProperties|getMemoryProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties(): io.technoirlab.volk/VkPhysicalDeviceProperties // io.technoirlab.vulkan/PhysicalDevice.getProperties|getProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties2(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Properties // io.technoirlab.vulkan/PhysicalDevice.getProperties2|getProperties2(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getQueueFamilyProperties(): kotlin.collections/List<io.technoirlab.volk/VkQueueFamilyProperties> // io.technoirlab.vulkan/PhysicalDevice.getQueueFamilyProperties|getQueueFamilyProperties(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getQueueFamilyProperties(): kotlin.collections/List<io.technoirlab.vulkan/QueueFamilyProperties> // io.technoirlab.vulkan/PhysicalDevice.getQueueFamilyProperties|getQueueFamilyProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceCapabilities(io.technoirlab.vulkan.presentation/Surface): io.technoirlab.volk/VkSurfaceCapabilitiesKHR // io.technoirlab.vulkan/PhysicalDevice.getSurfaceCapabilities|getSurfaceCapabilities(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceFormats(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/List<io.technoirlab.volk/VkSurfaceFormatKHR> // io.technoirlab.vulkan/PhysicalDevice.getSurfaceFormats|getSurfaceFormats(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfacePresentModes(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/Set<kotlin/UInt> // io.technoirlab.vulkan/PhysicalDevice.getSurfacePresentModes|getSurfacePresentModes(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
@@ -619,6 +619,25 @@ final class io.technoirlab.vulkan/Queue : io.technoirlab.vulkan/VulkanObject { /
     final fun (context(kotlinx.cinterop/NativePlacement)).present(io.technoirlab.vulkan.presentation/Swapchain, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.sync/Semaphore> = ...): kotlin/Int // io.technoirlab.vulkan/Queue.present|present(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Swapchain;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.sync.Semaphore>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).submit(io.technoirlab.vulkan.sync/Fence? = ..., kotlin/Function1<io.technoirlab.volk/VkSubmitInfo2, kotlin/Unit>) // io.technoirlab.vulkan/Queue.submit|submit(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.sync.Fence?;kotlin.Function1<io.technoirlab.volk.VkSubmitInfo2,kotlin.Unit>){}[0]
     final fun waitIdle() // io.technoirlab.vulkan/Queue.waitIdle|waitIdle(){}[0]
+}
+
+final class io.technoirlab.vulkan/QueueFamilyProperties { // io.technoirlab.vulkan/QueueFamilyProperties|null[0]
+    final val minImageTransferGranularity // io.technoirlab.vulkan/QueueFamilyProperties.minImageTransferGranularity|{}minImageTransferGranularity[0]
+        final fun <get-minImageTransferGranularity>(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan/QueueFamilyProperties.minImageTransferGranularity.<get-minImageTransferGranularity>|<get-minImageTransferGranularity>(){}[0]
+    final val queueCount // io.technoirlab.vulkan/QueueFamilyProperties.queueCount|{}queueCount[0]
+        final fun <get-queueCount>(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.queueCount.<get-queueCount>|<get-queueCount>(){}[0]
+    final val queueFlags // io.technoirlab.vulkan/QueueFamilyProperties.queueFlags|{}queueFlags[0]
+        final fun <get-queueFlags>(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.queueFlags.<get-queueFlags>|<get-queueFlags>(){}[0]
+    final val timestampValidBits // io.technoirlab.vulkan/QueueFamilyProperties.timestampValidBits|{}timestampValidBits[0]
+        final fun <get-timestampValidBits>(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.timestampValidBits.<get-timestampValidBits>|<get-timestampValidBits>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan/QueueFamilyProperties.component3|component3(){}[0]
+    final fun component4(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan/QueueFamilyProperties.component4|component4(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/QueueFamilyProperties.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/QueueFamilyProperties.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan/QueueFamilyProperties.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan/Vulkan : kotlin/AutoCloseable { // io.technoirlab.vulkan/Vulkan|null[0]
