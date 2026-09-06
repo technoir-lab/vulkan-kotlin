@@ -58,6 +58,8 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
+import io.technoirlab.vulkan.image.ImageFormatProperties
+import io.technoirlab.vulkan.image.toImageFormatProperties
 import io.technoirlab.vulkan.memory.MemoryProperties
 import io.technoirlab.vulkan.memory.toMemoryProperties
 import io.technoirlab.vulkan.presentation.Surface
@@ -230,7 +232,7 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceImageFormatProperties2.html">vkGetPhysicalDeviceImageFormatProperties2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getImageFormatProperties(formatInfo: VkPhysicalDeviceImageFormatInfo2.() -> Unit): VkImageFormatProperties2 {
+    fun getImageFormatProperties(formatInfo: VkPhysicalDeviceImageFormatInfo2.() -> Unit): ImageFormatProperties {
         val imageFormatInfo = allocator.alloc<VkPhysicalDeviceImageFormatInfo2> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2
             formatInfo()
@@ -240,7 +242,7 @@ class PhysicalDevice internal constructor(
         }
         vkGetPhysicalDeviceImageFormatProperties2!!(handle, imageFormatInfo.ptr, properties.ptr)
             .checkResult("Failed to get image format properties")
-        return properties
+        return properties.imageFormatProperties.toImageFormatProperties()
     }
 
     /**

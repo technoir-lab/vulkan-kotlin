@@ -35,8 +35,8 @@ Intentionally unsupported functionality:
 
 * `volk-kotlin` - Kotlin/Native C-interop wrapper for Vulkan API and Volk.
 * `vulkan-kotlin` - Kotlin Multiplatform bindings. Core objects remain in `io.technoirlab.vulkan`; other
-  object families live in the `command`, `debug`, `descriptor`, `memory`, `pipeline`, `presentation`, `query`, `resource`,
-  and `sync` subpackages.
+  object families live in the `command`, `debug`, `descriptor`, `image`, `memory`, `pipeline`, `presentation`, `query`,
+  `resource`, and `sync` subpackages.
 * `sample` - Kotlin Multiplatform sample application.
 
 ## Hardware requirements

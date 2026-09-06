@@ -15,8 +15,8 @@ import io.technoirlab.volk.vkGetSwapchainImagesKHR
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.VulkanResult
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.image.Image
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
-import io.technoirlab.vulkan.resource.Image
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
 import kotlinx.cinterop.NativePlacement
