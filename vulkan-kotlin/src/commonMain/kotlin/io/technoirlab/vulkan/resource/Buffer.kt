@@ -10,7 +10,6 @@ import io.technoirlab.volk.VkBuffer
 import io.technoirlab.volk.VkBufferDeviceAddressInfo
 import io.technoirlab.volk.VkBufferMemoryRequirementsInfo2
 import io.technoirlab.volk.VkDevice
-import io.technoirlab.volk.VkMemoryRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindBufferMemory2
@@ -21,6 +20,8 @@ import io.technoirlab.volk.vkGetBufferOpaqueCaptureAddress
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.memory.DeviceMemory
+import io.technoirlab.vulkan.memory.MemoryRequirements
+import io.technoirlab.vulkan.memory.toMemoryRequirements
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
@@ -88,7 +89,7 @@ class Buffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetBufferMemoryRequirements2.html">vkGetBufferMemoryRequirements2 Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getMemoryRequirements(): VkMemoryRequirements {
+    fun getMemoryRequirements(): MemoryRequirements {
         val memoryRequirementsInfo = allocator.alloc<VkBufferMemoryRequirementsInfo2> {
             sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2
             buffer = handle
@@ -97,7 +98,7 @@ class Buffer internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
         }
         vkGetBufferMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
-        return memoryRequirements.memoryRequirements
+        return memoryRequirements.memoryRequirements.toMemoryRequirements()
     }
 
     /**

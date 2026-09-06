@@ -156,7 +156,7 @@ final class io.technoirlab.vulkan.image/Image : io.technoirlab.vulkan/VulkanObje
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.image/Image.type.<get-type>|<get-type>(){}[0]
 
     final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.image/Image.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.image/Image.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.vulkan.memory/MemoryRequirements // io.technoirlab.vulkan.image/Image.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan.image/Image.close|close(){}[0]
 }
 
@@ -232,6 +232,22 @@ final class io.technoirlab.vulkan.memory/MemoryProperties { // io.technoirlab.vu
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryProperties.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryProperties.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.memory/MemoryRequirements { // io.technoirlab.vulkan.memory/MemoryRequirements|null[0]
+    final val alignment // io.technoirlab.vulkan.memory/MemoryRequirements.alignment|{}alignment[0]
+        final fun <get-alignment>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRequirements.alignment.<get-alignment>|<get-alignment>(){}[0]
+    final val memoryTypeBits // io.technoirlab.vulkan.memory/MemoryRequirements.memoryTypeBits|{}memoryTypeBits[0]
+        final fun <get-memoryTypeBits>(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryRequirements.memoryTypeBits.<get-memoryTypeBits>|<get-memoryTypeBits>(){}[0]
+    final val size // io.technoirlab.vulkan.memory/MemoryRequirements.size|{}size[0]
+        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRequirements.size.<get-size>|<get-size>(){}[0]
+
+    final fun component1(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRequirements.component1|component1(){}[0]
+    final fun component2(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRequirements.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryRequirements.component3|component3(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryRequirements.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryRequirements.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryRequirements.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.memory/MemoryType { // io.technoirlab.vulkan.memory/MemoryType|null[0]
@@ -325,7 +341,7 @@ final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/Vulkan
 
     final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Buffer.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getDeviceAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getDeviceAddress|getDeviceAddress(kotlinx.cinterop.NativePlacement)(){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.resource/Buffer.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.vulkan.memory/MemoryRequirements // io.technoirlab.vulkan.resource/Buffer.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan.resource/Buffer.close|close(){}[0]
 }
