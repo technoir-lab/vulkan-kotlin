@@ -313,7 +313,7 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceQueueFamilyProperties.html">vkGetPhysicalDeviceQueueFamilyProperties Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getQueueFamilyProperties(): List<VkQueueFamilyProperties> {
+    fun getQueueFamilyProperties(): List<QueueFamilyProperties> {
         val countVar = allocator.alloc<UIntVar>()
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
 
@@ -323,7 +323,9 @@ class PhysicalDevice internal constructor(
         val queueFamilyProperties = allocator.allocArray<VkQueueFamilyProperties>(count)
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
 
-        return (0 until count).map { queueFamilyProperties[it] }
+        return List(countVar.value.toInt()) { index ->
+            queueFamilyProperties[index].toQueueFamilyProperties()
+        }
     }
 
     /**
