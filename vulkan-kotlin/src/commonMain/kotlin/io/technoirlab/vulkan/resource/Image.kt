@@ -16,6 +16,7 @@ import io.technoirlab.volk.vkDestroyImage
 import io.technoirlab.volk.vkGetImageMemoryRequirements2
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.memory.DeviceMemory
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke

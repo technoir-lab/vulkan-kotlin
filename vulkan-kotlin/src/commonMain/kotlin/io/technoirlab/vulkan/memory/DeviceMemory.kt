@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.resource
+package io.technoirlab.vulkan.memory
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE_MEMORY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO

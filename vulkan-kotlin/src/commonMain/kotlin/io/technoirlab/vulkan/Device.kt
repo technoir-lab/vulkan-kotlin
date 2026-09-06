@@ -132,6 +132,7 @@ import io.technoirlab.volk.volkLoadDevice
 import io.technoirlab.vulkan.command.CommandPool
 import io.technoirlab.vulkan.descriptor.DescriptorPool
 import io.technoirlab.vulkan.descriptor.DescriptorSetLayout
+import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCache
 import io.technoirlab.vulkan.pipeline.PipelineLayout
@@ -140,7 +141,6 @@ import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.query.QueryPool
 import io.technoirlab.vulkan.resource.Buffer
 import io.technoirlab.vulkan.resource.BufferView
-import io.technoirlab.vulkan.resource.DeviceMemory
 import io.technoirlab.vulkan.resource.Image
 import io.technoirlab.vulkan.resource.ImageView
 import io.technoirlab.vulkan.resource.Sampler
