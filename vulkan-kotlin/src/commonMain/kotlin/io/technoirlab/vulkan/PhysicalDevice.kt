@@ -63,7 +63,9 @@ import io.technoirlab.vulkan.image.toImageFormatProperties
 import io.technoirlab.vulkan.memory.MemoryProperties
 import io.technoirlab.vulkan.memory.toMemoryProperties
 import io.technoirlab.vulkan.presentation.Surface
+import io.technoirlab.vulkan.presentation.SurfaceCapabilities
 import io.technoirlab.vulkan.presentation.SurfaceFormat
+import io.technoirlab.vulkan.presentation.toSurfaceCapabilities
 import io.technoirlab.vulkan.presentation.toSurfaceFormat
 import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.COpaquePointer
@@ -336,11 +338,11 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html">vkGetPhysicalDeviceSurfaceCapabilitiesKHR Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getSurfaceCapabilities(surface: Surface): VkSurfaceCapabilitiesKHR {
+    fun getSurfaceCapabilities(surface: Surface): SurfaceCapabilities {
         val capabilities = allocator.alloc<VkSurfaceCapabilitiesKHR>()
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR!!(handle, surface.handle, capabilities.ptr)
             .checkResult("Failed to get surface capabilities")
-        return capabilities
+        return capabilities.toSurfaceCapabilities()
     }
 
     /**
