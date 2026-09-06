@@ -310,6 +310,19 @@ final class io.technoirlab.vulkan.presentation/Surface : io.technoirlab.vulkan/V
     final fun close() // io.technoirlab.vulkan.presentation/Surface.close|close(){}[0]
 }
 
+final class io.technoirlab.vulkan.presentation/SurfaceFormat { // io.technoirlab.vulkan.presentation/SurfaceFormat|null[0]
+    final val colorSpace // io.technoirlab.vulkan.presentation/SurfaceFormat.colorSpace|{}colorSpace[0]
+        final fun <get-colorSpace>(): kotlin/UInt // io.technoirlab.vulkan.presentation/SurfaceFormat.colorSpace.<get-colorSpace>|<get-colorSpace>(){}[0]
+    final val format // io.technoirlab.vulkan.presentation/SurfaceFormat.format|{}format[0]
+        final fun <get-format>(): kotlin/UInt // io.technoirlab.vulkan.presentation/SurfaceFormat.format.<get-format>|<get-format>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan.presentation/SurfaceFormat.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.presentation/SurfaceFormat.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.presentation/SurfaceFormat.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.presentation/SurfaceFormat.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.presentation/SurfaceFormat.toString|toString(){}[0]
+}
+
 final class io.technoirlab.vulkan.presentation/Swapchain : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.presentation/Swapchain|null[0]
     final val handle // io.technoirlab.vulkan.presentation/Swapchain.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkSwapchainKHR_T> // io.technoirlab.vulkan.presentation/Swapchain.handle.<get-handle>|<get-handle>(){}[0]
@@ -553,7 +566,7 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties2(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Properties // io.technoirlab.vulkan/PhysicalDevice.getProperties2|getProperties2(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getQueueFamilyProperties(): kotlin.collections/List<io.technoirlab.volk/VkQueueFamilyProperties> // io.technoirlab.vulkan/PhysicalDevice.getQueueFamilyProperties|getQueueFamilyProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceCapabilities(io.technoirlab.vulkan.presentation/Surface): io.technoirlab.volk/VkSurfaceCapabilitiesKHR // io.technoirlab.vulkan/PhysicalDevice.getSurfaceCapabilities|getSurfaceCapabilities(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceFormats(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/List<io.technoirlab.volk/VkSurfaceFormatKHR> // io.technoirlab.vulkan/PhysicalDevice.getSurfaceFormats|getSurfaceFormats(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceFormats(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/List<io.technoirlab.vulkan.presentation/SurfaceFormat> // io.technoirlab.vulkan/PhysicalDevice.getSurfaceFormats|getSurfaceFormats(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfacePresentModes(io.technoirlab.vulkan.presentation/Surface): kotlin.collections/Set<kotlin/UInt> // io.technoirlab.vulkan/PhysicalDevice.getSurfacePresentModes|getSurfacePresentModes(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getSurfaceSupport(io.technoirlab.vulkan.presentation/Surface, kotlin/UInt): kotlin/Boolean // io.technoirlab.vulkan/PhysicalDevice.getSurfaceSupport|getSurfaceSupport(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.presentation.Surface;kotlin.UInt){}[0]
 

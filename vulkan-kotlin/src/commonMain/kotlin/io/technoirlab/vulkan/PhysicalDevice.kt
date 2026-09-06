@@ -63,6 +63,8 @@ import io.technoirlab.vulkan.image.toImageFormatProperties
 import io.technoirlab.vulkan.memory.MemoryProperties
 import io.technoirlab.vulkan.memory.toMemoryProperties
 import io.technoirlab.vulkan.presentation.Surface
+import io.technoirlab.vulkan.presentation.SurfaceFormat
+import io.technoirlab.vulkan.presentation.toSurfaceFormat
 import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.NativePlacement
@@ -345,7 +347,7 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html">vkGetPhysicalDeviceSurfaceFormatsKHR Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getSurfaceFormats(surface: Surface): List<VkSurfaceFormatKHR> {
+    fun getSurfaceFormats(surface: Surface): List<SurfaceFormat> {
         val countVar = allocator.alloc<UIntVar>()
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
             .checkResult("Failed to get surface formats")
@@ -357,7 +359,9 @@ class PhysicalDevice internal constructor(
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
             .checkResult("Failed to get surface formats")
 
-        return (0 until count).map { surfaceFormats[it] }
+        return List(countVar.value.toInt()) { index ->
+            surfaceFormats[index].toSurfaceFormat()
+        }
     }
 
     /**
