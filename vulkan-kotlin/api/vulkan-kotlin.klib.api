@@ -147,6 +147,62 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirla
     final fun close() // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.close|close(){}[0]
 }
 
+final class io.technoirlab.vulkan.memory/DeviceMemory : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.memory/DeviceMemory|null[0]
+    final val handle // io.technoirlab.vulkan.memory/DeviceMemory.handle|{}handle[0]
+        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDeviceMemory_T> // io.technoirlab.vulkan.memory/DeviceMemory.handle.<get-handle>|<get-handle>(){}[0]
+    final val size // io.technoirlab.vulkan.memory/DeviceMemory.size|{}size[0]
+        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.memory/DeviceMemory.size.<get-size>|<get-size>(){}[0]
+    final val type // io.technoirlab.vulkan.memory/DeviceMemory.type|{}type[0]
+        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.memory/DeviceMemory.type.<get-type>|<get-type>(){}[0]
+
+    final fun (context(kotlinx.cinterop/NativePlacement)).copyData(kotlinx.io/Source, kotlin/ULong, kotlin/ULong = ...) // io.technoirlab.vulkan.memory/DeviceMemory.copyData|copyData(kotlinx.cinterop.NativePlacement)(kotlinx.io.Source;kotlin.ULong;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.memory/DeviceMemory.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).map(kotlin/ULong, kotlin/ULong = ...): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.memory/DeviceMemory.map|map(kotlinx.cinterop.NativePlacement)(kotlin.ULong;kotlin.ULong){}[0]
+    final fun close() // io.technoirlab.vulkan.memory/DeviceMemory.close|close(){}[0]
+    final fun unmap() // io.technoirlab.vulkan.memory/DeviceMemory.unmap|unmap(){}[0]
+
+    final object Companion // io.technoirlab.vulkan.memory/DeviceMemory.Companion|null[0]
+}
+
+final class io.technoirlab.vulkan.memory/MemoryHeap { // io.technoirlab.vulkan.memory/MemoryHeap|null[0]
+    final val flags // io.technoirlab.vulkan.memory/MemoryHeap.flags|{}flags[0]
+        final fun <get-flags>(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryHeap.flags.<get-flags>|<get-flags>(){}[0]
+    final val size // io.technoirlab.vulkan.memory/MemoryHeap.size|{}size[0]
+        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeap.size.<get-size>|<get-size>(){}[0]
+
+    final fun component1(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeap.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryHeap.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryHeap.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryHeap.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryHeap.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.memory/MemoryProperties { // io.technoirlab.vulkan.memory/MemoryProperties|null[0]
+    final val memoryHeaps // io.technoirlab.vulkan.memory/MemoryProperties.memoryHeaps|{}memoryHeaps[0]
+        final fun <get-memoryHeaps>(): kotlin.collections/List<io.technoirlab.vulkan.memory/MemoryHeap> // io.technoirlab.vulkan.memory/MemoryProperties.memoryHeaps.<get-memoryHeaps>|<get-memoryHeaps>(){}[0]
+    final val memoryTypes // io.technoirlab.vulkan.memory/MemoryProperties.memoryTypes|{}memoryTypes[0]
+        final fun <get-memoryTypes>(): kotlin.collections/List<io.technoirlab.vulkan.memory/MemoryType> // io.technoirlab.vulkan.memory/MemoryProperties.memoryTypes.<get-memoryTypes>|<get-memoryTypes>(){}[0]
+
+    final fun component1(): kotlin.collections/List<io.technoirlab.vulkan.memory/MemoryType> // io.technoirlab.vulkan.memory/MemoryProperties.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<io.technoirlab.vulkan.memory/MemoryHeap> // io.technoirlab.vulkan.memory/MemoryProperties.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryProperties.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryProperties.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.memory/MemoryType { // io.technoirlab.vulkan.memory/MemoryType|null[0]
+    final val heapIndex // io.technoirlab.vulkan.memory/MemoryType.heapIndex|{}heapIndex[0]
+        final fun <get-heapIndex>(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryType.heapIndex.<get-heapIndex>|<get-heapIndex>(){}[0]
+    final val propertyFlags // io.technoirlab.vulkan.memory/MemoryType.propertyFlags|{}propertyFlags[0]
+        final fun <get-propertyFlags>(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryType.propertyFlags.<get-propertyFlags>|<get-propertyFlags>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryType.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.memory/MemoryType.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryType.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryType.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryType.toString|toString(){}[0]
+}
+
 final class io.technoirlab.vulkan.pipeline/Pipeline : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.pipeline/Pipeline|null[0]
     final val handle // io.technoirlab.vulkan.pipeline/Pipeline.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkPipeline_T> // io.technoirlab.vulkan.pipeline/Pipeline.handle.<get-handle>|<get-handle>(){}[0]
@@ -223,7 +279,7 @@ final class io.technoirlab.vulkan.resource/Buffer : io.technoirlab.vulkan/Vulkan
     final val type // io.technoirlab.vulkan.resource/Buffer.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/Buffer.type.<get-type>|<get-type>(){}[0]
 
-    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.resource/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Buffer.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.resource.DeviceMemory;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Buffer.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getDeviceAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getDeviceAddress|getDeviceAddress(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.resource/Buffer.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/Buffer.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
@@ -239,23 +295,6 @@ final class io.technoirlab.vulkan.resource/BufferView : io.technoirlab.vulkan/Vu
     final fun close() // io.technoirlab.vulkan.resource/BufferView.close|close(){}[0]
 }
 
-final class io.technoirlab.vulkan.resource/DeviceMemory : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/DeviceMemory|null[0]
-    final val handle // io.technoirlab.vulkan.resource/DeviceMemory.handle|{}handle[0]
-        final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkDeviceMemory_T> // io.technoirlab.vulkan.resource/DeviceMemory.handle.<get-handle>|<get-handle>(){}[0]
-    final val size // io.technoirlab.vulkan.resource/DeviceMemory.size|{}size[0]
-        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.resource/DeviceMemory.size.<get-size>|<get-size>(){}[0]
-    final val type // io.technoirlab.vulkan.resource/DeviceMemory.type|{}type[0]
-        final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/DeviceMemory.type.<get-type>|<get-type>(){}[0]
-
-    final fun (context(kotlinx.cinterop/NativePlacement)).copyData(kotlinx.io/Source, kotlin/ULong, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/DeviceMemory.copyData|copyData(kotlinx.cinterop.NativePlacement)(kotlinx.io.Source;kotlin.ULong;kotlin.ULong){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getOpaqueCaptureAddress(): kotlin/ULong // io.technoirlab.vulkan.resource/DeviceMemory.getOpaqueCaptureAddress|getOpaqueCaptureAddress(kotlinx.cinterop.NativePlacement)(){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).map(kotlin/ULong, kotlin/ULong = ...): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.resource/DeviceMemory.map|map(kotlinx.cinterop.NativePlacement)(kotlin.ULong;kotlin.ULong){}[0]
-    final fun close() // io.technoirlab.vulkan.resource/DeviceMemory.close|close(){}[0]
-    final fun unmap() // io.technoirlab.vulkan.resource/DeviceMemory.unmap|unmap(){}[0]
-
-    final object Companion // io.technoirlab.vulkan.resource/DeviceMemory.Companion|null[0]
-}
-
 final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.resource/Image|null[0]
     final val destroyable // io.technoirlab.vulkan.resource/Image.destroyable|{}destroyable[0]
         final fun <get-destroyable>(): kotlin/Boolean // io.technoirlab.vulkan.resource/Image.destroyable.<get-destroyable>|<get-destroyable>(){}[0]
@@ -264,7 +303,7 @@ final class io.technoirlab.vulkan.resource/Image : io.technoirlab.vulkan/VulkanO
     final val type // io.technoirlab.vulkan.resource/Image.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.resource/Image.type.<get-type>|<get-type>(){}[0]
 
-    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.resource/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Image.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.resource.DeviceMemory;kotlin.ULong){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).bindMemory(io.technoirlab.vulkan.memory/DeviceMemory, kotlin/ULong = ...) // io.technoirlab.vulkan.resource/Image.bindMemory|bindMemory(kotlinx.cinterop.NativePlacement)(io.technoirlab.vulkan.memory.DeviceMemory;kotlin.ULong){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryRequirements(): io.technoirlab.volk/VkMemoryRequirements // io.technoirlab.vulkan.resource/Image.getMemoryRequirements|getMemoryRequirements(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan.resource/Image.close|close(){}[0]
 }
@@ -356,7 +395,7 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
     final val type // io.technoirlab.vulkan/Device.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/Device.type.<get-type>|<get-type>(){}[0]
 
-    final fun (context(kotlinx.cinterop/NativePlacement)).allocateMemory(kotlin/Function1<io.technoirlab.volk/VkMemoryAllocateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/DeviceMemory // io.technoirlab.vulkan/Device.allocateMemory|allocateMemory(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkMemoryAllocateInfo,kotlin.Unit>){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).allocateMemory(kotlin/Function1<io.technoirlab.volk/VkMemoryAllocateInfo, kotlin/Unit>): io.technoirlab.vulkan.memory/DeviceMemory // io.technoirlab.vulkan/Device.allocateMemory|allocateMemory(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkMemoryAllocateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createBuffer(kotlin/Function1<io.technoirlab.volk/VkBufferCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/Buffer // io.technoirlab.vulkan/Device.createBuffer|createBuffer(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkBufferCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createBufferView(kotlin/Function1<io.technoirlab.volk/VkBufferViewCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/BufferView // io.technoirlab.vulkan/Device.createBufferView|createBufferView(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkBufferViewCreateInfo,kotlin.Unit>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).createCommandPool(kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan.command/CommandPool // io.technoirlab.vulkan/Device.createCommandPool|createCommandPool(kotlinx.cinterop.NativePlacement)(kotlin.UInt;kotlin.UInt){}[0]
@@ -455,7 +494,7 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun (context(kotlinx.cinterop/NativePlacement)).getFeatures(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Features // io.technoirlab.vulkan/PhysicalDevice.getFeatures|getFeatures(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getFormatProperties(kotlin/UInt): io.technoirlab.vulkan/FormatProperties // io.technoirlab.vulkan/PhysicalDevice.getFormatProperties|getFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.UInt){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getImageFormatProperties(kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceImageFormatInfo2, kotlin/Unit>): io.technoirlab.volk/VkImageFormatProperties2 // io.technoirlab.vulkan/PhysicalDevice.getImageFormatProperties|getImageFormatProperties(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2,kotlin.Unit>){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryProperties(): io.technoirlab.volk/VkPhysicalDeviceMemoryProperties // io.technoirlab.vulkan/PhysicalDevice.getMemoryProperties|getMemoryProperties(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).getMemoryProperties(): io.technoirlab.vulkan.memory/MemoryProperties // io.technoirlab.vulkan/PhysicalDevice.getMemoryProperties|getMemoryProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties(): io.technoirlab.volk/VkPhysicalDeviceProperties // io.technoirlab.vulkan/PhysicalDevice.getProperties|getProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getProperties2(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/PhysicalDevice.Properties // io.technoirlab.vulkan/PhysicalDevice.getProperties2|getProperties2(kotlinx.cinterop.NativePlacement)(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).getQueueFamilyProperties(): kotlin.collections/List<io.technoirlab.volk/VkQueueFamilyProperties> // io.technoirlab.vulkan/PhysicalDevice.getQueueFamilyProperties|getQueueFamilyProperties(kotlinx.cinterop.NativePlacement)(){}[0]

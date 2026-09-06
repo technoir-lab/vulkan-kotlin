@@ -58,6 +58,8 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
+import io.technoirlab.vulkan.memory.MemoryProperties
+import io.technoirlab.vulkan.memory.toMemoryProperties
 import io.technoirlab.vulkan.presentation.Surface
 import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.COpaquePointer
@@ -247,10 +249,10 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceMemoryProperties.html">vkGetPhysicalDeviceMemoryProperties Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun getMemoryProperties(): VkPhysicalDeviceMemoryProperties {
+    fun getMemoryProperties(): MemoryProperties {
         val memoryProperties = allocator.alloc<VkPhysicalDeviceMemoryProperties>()
         vkGetPhysicalDeviceMemoryProperties!!(handle, memoryProperties.ptr)
-        return memoryProperties
+        return memoryProperties.toMemoryProperties()
     }
 
     /**
