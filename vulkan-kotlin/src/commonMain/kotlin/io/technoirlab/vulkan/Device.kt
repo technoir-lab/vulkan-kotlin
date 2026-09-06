@@ -133,7 +133,9 @@ import io.technoirlab.vulkan.command.CommandPool
 import io.technoirlab.vulkan.descriptor.DescriptorPool
 import io.technoirlab.vulkan.descriptor.DescriptorSetLayout
 import io.technoirlab.vulkan.image.Image
+import io.technoirlab.vulkan.image.ImageSubresourceLayout
 import io.technoirlab.vulkan.image.ImageView
+import io.technoirlab.vulkan.image.toImageSubresourceLayout
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCache
@@ -642,7 +644,7 @@ class Device internal constructor(
         aspectMask: VkImageAspectFlags,
         mipLevel: UInt = 0u,
         arrayLayer: UInt = 0u,
-    ): VkSubresourceLayout2 {
+    ): ImageSubresourceLayout {
         assert(aspectMask != 0u) { "aspectMask must not be 0" }
         val subresource = allocator.alloc<VkImageSubresource2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
@@ -658,7 +660,7 @@ class Device internal constructor(
             pNext = hostMemcpySize.ptr
         }
         vkGetImageSubresourceLayout2!!(handle, image.handle, subresource.ptr, subresourceLayout.ptr)
-        return subresourceLayout
+        return subresourceLayout.subresourceLayout.toImageSubresourceLayout(hostMemcpySize.size)
     }
 
     /**
