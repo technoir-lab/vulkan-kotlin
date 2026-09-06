@@ -27,7 +27,7 @@ class Sample : AutoCloseable {
             println("Supported instance extensions: ${instanceExtensions.joinToString(", ") { it.name }}")
 
             val instanceLayers = vulkan.enumerateInstanceLayerProperties()
-            println("Supported instance layers: ${instanceLayers.joinToString(", ") { it.layerName.toKString() }}")
+            println("Supported instance layers: ${instanceLayers.joinToString(", ") { it.name }}")
 
             val extensions = buildList {
                 if (Platform.osFamily.isAppleFamily) {

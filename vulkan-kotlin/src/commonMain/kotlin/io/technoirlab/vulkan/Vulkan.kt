@@ -113,7 +113,7 @@ class Vulkan : AutoCloseable {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceLayerProperties.html">vkEnumerateInstanceLayerProperties Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun enumerateInstanceLayerProperties(): List<VkLayerProperties> {
+    fun enumerateInstanceLayerProperties(): List<LayerProperties> {
         val countVar = allocator.alloc<UIntVar>()
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
             .checkResult("Failed to enumerate instance layers")
@@ -125,7 +125,15 @@ class Vulkan : AutoCloseable {
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
             .checkResult("Failed to enumerate instance layers")
 
-        return (0 until count).map { layerProperties[it] }
+        return (0 until count).map {
+            val properties = layerProperties[it]
+            LayerProperties(
+                properties.layerName.toKString(),
+                properties.specVersion,
+                properties.implementationVersion,
+                properties.description.toKString(),
+            )
+        }
     }
 
     context(allocator: AutofreeScope)

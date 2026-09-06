@@ -412,6 +412,28 @@ final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject,
     final fun close() // io.technoirlab.vulkan/Instance.close|close(){}[0]
 }
 
+final class io.technoirlab.vulkan/LayerProperties { // io.technoirlab.vulkan/LayerProperties|null[0]
+    constructor <init>(kotlin/String, kotlin/UInt, kotlin/UInt, kotlin/String) // io.technoirlab.vulkan/LayerProperties.<init>|<init>(kotlin.String;kotlin.UInt;kotlin.UInt;kotlin.String){}[0]
+
+    final val description // io.technoirlab.vulkan/LayerProperties.description|{}description[0]
+        final fun <get-description>(): kotlin/String // io.technoirlab.vulkan/LayerProperties.description.<get-description>|<get-description>(){}[0]
+    final val implementationVersion // io.technoirlab.vulkan/LayerProperties.implementationVersion|{}implementationVersion[0]
+        final fun <get-implementationVersion>(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.implementationVersion.<get-implementationVersion>|<get-implementationVersion>(){}[0]
+    final val name // io.technoirlab.vulkan/LayerProperties.name|{}name[0]
+        final fun <get-name>(): kotlin/String // io.technoirlab.vulkan/LayerProperties.name.<get-name>|<get-name>(){}[0]
+    final val specVersion // io.technoirlab.vulkan/LayerProperties.specVersion|{}specVersion[0]
+        final fun <get-specVersion>(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.specVersion.<get-specVersion>|<get-specVersion>(){}[0]
+
+    final fun component1(): kotlin/String // io.technoirlab.vulkan/LayerProperties.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan/LayerProperties.component3|component3(){}[0]
+    final fun component4(): kotlin/String // io.technoirlab.vulkan/LayerProperties.component4|component4(){}[0]
+    final fun copy(kotlin/String = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/String = ...): io.technoirlab.vulkan/LayerProperties // io.technoirlab.vulkan/LayerProperties.copy|copy(kotlin.String;kotlin.UInt;kotlin.UInt;kotlin.String){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/LayerProperties.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/LayerProperties.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan/LayerProperties.toString|toString(){}[0]
+}
+
 final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan/PhysicalDevice|null[0]
     final val handle // io.technoirlab.vulkan/PhysicalDevice.handle|{}handle[0]
         final fun <get-handle>(): kotlinx.cinterop/CPointer<cnames.structs/VkPhysicalDevice_T> // io.technoirlab.vulkan/PhysicalDevice.handle.<get-handle>|<get-handle>(){}[0]
@@ -504,7 +526,7 @@ final class io.technoirlab.vulkan/Vulkan : kotlin/AutoCloseable { // io.technoir
 
     final fun (context(kotlinx.cinterop/AutofreeScope)).createInstance(io.technoirlab.vulkan/ApplicationInfo, kotlin.collections/List<kotlin/String> = ..., kotlin.collections/List<kotlin/String> = ...): io.technoirlab.vulkan/Instance // io.technoirlab.vulkan/Vulkan.createInstance|createInstance(kotlinx.cinterop.AutofreeScope)(io.technoirlab.vulkan.ApplicationInfo;kotlin.collections.List<kotlin.String>;kotlin.collections.List<kotlin.String>){}[0]
     final fun (context(kotlinx.cinterop/NativePlacement)).enumerateInstanceExtensionProperties(): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceExtensionProperties|enumerateInstanceExtensionProperties(kotlinx.cinterop.NativePlacement)(){}[0]
-    final fun (context(kotlinx.cinterop/NativePlacement)).enumerateInstanceLayerProperties(): kotlin.collections/List<io.technoirlab.volk/VkLayerProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceLayerProperties|enumerateInstanceLayerProperties(kotlinx.cinterop.NativePlacement)(){}[0]
+    final fun (context(kotlinx.cinterop/NativePlacement)).enumerateInstanceLayerProperties(): kotlin.collections/List<io.technoirlab.vulkan/LayerProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceLayerProperties|enumerateInstanceLayerProperties(kotlinx.cinterop.NativePlacement)(){}[0]
     final fun close() // io.technoirlab.vulkan/Vulkan.close|close(){}[0]
 }
 
