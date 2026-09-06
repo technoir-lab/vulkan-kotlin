@@ -17,11 +17,11 @@ import io.technoirlab.volk.vkQueueWaitIdle
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 
@@ -45,22 +45,21 @@ class Queue internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueuePresentKHR.html">vkQueuePresentKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun present(swapChain: Swapchain, imageIndex: UInt, waitSemaphores: List<Semaphore> = emptyList()): VkResult {
-        val swapChainVar = allocator.alloc<VkSwapchainKHRVar> {
+    fun present(swapChain: Swapchain, imageIndex: UInt, waitSemaphores: List<Semaphore> = emptyList()): VkResult = memScoped {
+        val swapChainVar = alloc<VkSwapchainKHRVar> {
             value = swapChain.handle
         }
-        val imageIndexVar = allocator.alloc<UIntVar> {
+        val imageIndexVar = alloc<UIntVar> {
             value = imageIndex
         }
-        val presentInfo = allocator.alloc<VkPresentInfoKHR> {
+        val presentInfo = alloc<VkPresentInfoKHR> {
             sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR
             swapchainCount = 1u
             pSwapchains = swapChainVar.ptr
             pImageIndices = imageIndexVar.ptr
             if (waitSemaphores.isNotEmpty()) {
                 waitSemaphoreCount = waitSemaphores.size.toUInt()
-                pWaitSemaphores = allocator.allocArrayOf(waitSemaphores.map { it.handle })
+                pWaitSemaphores = allocArrayOf(waitSemaphores.map { it.handle })
             }
         }
         val result = vkQueuePresentKHR!!(handle, presentInfo.ptr)
@@ -75,9 +74,8 @@ class Queue internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueSubmit2.html">vkQueueSubmit2 Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun submit(fence: Fence? = null, submitInfo: VkSubmitInfo2.() -> Unit) {
-        val submitInfo = allocator.alloc<VkSubmitInfo2> {
+    fun submit(fence: Fence? = null, submitInfo: VkSubmitInfo2.() -> Unit): Unit = memScoped {
+        val submitInfo = alloc<VkSubmitInfo2> {
             sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2
             submitInfo()
         }

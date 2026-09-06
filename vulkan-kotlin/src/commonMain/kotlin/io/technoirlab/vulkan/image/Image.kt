@@ -18,9 +18,9 @@ import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlin.assert
 
@@ -46,13 +46,12 @@ class Image internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageMemoryRequirements2.html">vkGetImageMemoryRequirements2 Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getMemoryRequirements(): MemoryRequirements {
-        val memoryRequirementsInfo = allocator.alloc<VkImageMemoryRequirementsInfo2> {
+    fun getMemoryRequirements(): MemoryRequirements = memScoped {
+        val memoryRequirementsInfo = alloc<VkImageMemoryRequirementsInfo2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
             image = handle
         }
-        val memoryRequirements = allocator.alloc<VkMemoryRequirements2> {
+        val memoryRequirements = alloc<VkMemoryRequirements2> {
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
         }
         vkGetImageMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
@@ -64,11 +63,10 @@ class Image internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBindImageMemory2.html">vkBindImageMemory2 Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL) {
+    fun bindMemory(memory: DeviceMemory, offset: ULong = 0uL): Unit = memScoped {
         assert(offset < memory.size) { "offset must be less than ${memory.size}" }
 
-        val bindImageMemoryInfo = allocator.alloc<VkBindImageMemoryInfo> {
+        val bindImageMemoryInfo = alloc<VkBindImageMemoryInfo> {
             sType = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
             image = handle
             memoryOffset = offset

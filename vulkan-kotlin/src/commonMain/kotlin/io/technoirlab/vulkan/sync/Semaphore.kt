@@ -17,11 +17,11 @@ import io.technoirlab.volk.vkWaitSemaphores
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArrayOf
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlin.assert
@@ -49,13 +49,12 @@ class Semaphore internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetSemaphoreCounterValue.html">vkGetSemaphoreCounterValue Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun counterValue(): ULong {
+    fun counterValue(): ULong = memScoped {
         assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
             "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
         }
 
-        val valueVar = allocator.alloc<ULongVar>()
+        val valueVar = alloc<ULongVar>()
         vkGetSemaphoreCounterValue!!(device, handle, valueVar.ptr)
             .checkResult("Failed to get timeline semaphore counter value")
         return valueVar.value
@@ -66,13 +65,12 @@ class Semaphore internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSignalSemaphore.html">vkSignalSemaphore Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun signal(value: ULong) {
+    fun signal(value: ULong): Unit = memScoped {
         assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
             "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
         }
 
-        val signalInfo = allocator.alloc<VkSemaphoreSignalInfo> {
+        val signalInfo = alloc<VkSemaphoreSignalInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
             semaphore = handle
             this.value = value
@@ -86,17 +84,16 @@ class Semaphore internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkWaitSemaphores.html">vkWaitSemaphores Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun wait(value: ULong, timeout: Duration = Duration.INFINITE) {
+    fun wait(value: ULong, timeout: Duration = Duration.INFINITE): Unit = memScoped {
         assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
             "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
         }
 
-        val valueVar = allocator.alloc<ULongVar> { this.value = value }
-        val waitInfo = allocator.alloc<VkSemaphoreWaitInfo> {
+        val valueVar = alloc<ULongVar> { this.value = value }
+        val waitInfo = alloc<VkSemaphoreWaitInfo> {
             sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO
             semaphoreCount = 1u
-            pSemaphores = allocator.allocArrayOf(handle)
+            pSemaphores = allocArrayOf(handle)
             pValues = valueVar.ptr
             flags = 0u
         }

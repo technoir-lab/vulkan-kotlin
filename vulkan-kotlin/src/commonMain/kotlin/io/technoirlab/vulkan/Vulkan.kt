@@ -16,13 +16,13 @@ import io.technoirlab.volk.volkFinalize
 import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
 import kotlinx.cinterop.AutofreeScope
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toKString
@@ -54,13 +54,12 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateInstance.html">vkCreateInstance Manual Page</a>
      */
-    context(allocator: AutofreeScope)
     fun createInstance(
         applicationInfo: ApplicationInfo,
         enabledLayers: List<String> = emptyList(),
         enabledExtensions: List<String> = emptyList(),
-    ): Instance {
-        val instanceCreateInfo = allocator.alloc<VkInstanceCreateInfo> {
+    ): Instance = memScoped {
+        val instanceCreateInfo = alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
             pApplicationInfo = applicationInfo.toVkApplicationInfo().ptr
             flags = if (VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME in enabledExtensions) {
@@ -70,14 +69,14 @@ class Vulkan : AutoCloseable {
             }
             if (enabledLayers.isNotEmpty()) {
                 enabledLayerCount = enabledLayers.size.toUInt()
-                ppEnabledLayerNames = enabledLayers.toCStringArray(allocator)
+                ppEnabledLayerNames = enabledLayers.toCStringArray(memScope)
             }
             if (enabledExtensions.isNotEmpty()) {
                 enabledExtensionCount = enabledExtensions.size.toUInt()
-                ppEnabledExtensionNames = enabledExtensions.toCStringArray(allocator)
+                ppEnabledExtensionNames = enabledExtensions.toCStringArray(memScope)
             }
         }
-        val instanceVar = allocator.alloc<VkInstanceVar>()
+        val instanceVar = alloc<VkInstanceVar>()
         vkCreateInstance!!(instanceCreateInfo.ptr, null, instanceVar.ptr)
             .checkResult("Failed to create a Vulkan instance")
         return Instance(instanceVar.value!!, enabledExtensions.toSet())
@@ -88,16 +87,15 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceExtensionProperties.html">vkEnumerateInstanceExtensionProperties Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun enumerateInstanceExtensionProperties(): List<ExtensionProperties> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun enumerateInstanceExtensionProperties(): List<ExtensionProperties> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, null)
             .checkResult("Failed to enumerate instance extensions")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val extensionProperties = allocator.allocArray<VkExtensionProperties>(count)
+        val extensionProperties = allocArray<VkExtensionProperties>(count)
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, extensionProperties)
             .checkResult("Failed to enumerate instance extensions")
 
@@ -112,16 +110,15 @@ class Vulkan : AutoCloseable {
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceLayerProperties.html">vkEnumerateInstanceLayerProperties Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun enumerateInstanceLayerProperties(): List<LayerProperties> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun enumerateInstanceLayerProperties(): List<LayerProperties> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
             .checkResult("Failed to enumerate instance layers")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val layerProperties = allocator.allocArray<VkLayerProperties>(count)
+        val layerProperties = allocArray<VkLayerProperties>(count)
         vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
             .checkResult("Failed to enumerate instance layers")
 

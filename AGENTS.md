@@ -5,7 +5,8 @@ This library provides thin object-oriented Kotlin Multiplatform bindings for Vul
 Wrapped Vulkan handle types use `AutoCloseable` RAII objects; for example, `VkDevice` is wrapped by `Device` and
 `VkInstance` by `Instance`.
 
-The project leverages exceptions for error handling, and context parameters for scoped memory allocations.
+The project leverages exceptions for error handling and local scopes for temporary native memory allocations.
+Queries returning native views retain context parameters so callers control the lifetime of those views.
 The goal of the wrapper is to provide full coverage of Vulkan API and extensions, except for
 any deprecated or intentionally unsupported functionality.
 
@@ -56,8 +57,8 @@ The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension
 
 * The functions inside each class should be sorted by visibility (public then private), then lexicographically.
 * `Device` class acts as the factory for most of the other classes that need `VkDevice` for their creation.
-* When native memory allocation is required inside a function, `NativePlacement` should be passed as a context parameter.
-  The caller is responsible for handling the allocation and freeing the memory.
+* Allocate temporary native memory inside `memScoped` when returned values do not depend on the allocation scope.
+  Keep allocation context parameters for native views whose memory lifetime must be controlled by the caller.
 * When the same functionality is available both in core and as an extension, the core functionality must be used.
 * Use only `kotlin.assert` for input and constraint validation; never use `require`, `requireNotNull`, `check`, or `checkNotNull`.
 * Every `public` class, function, and property must have a KDoc.

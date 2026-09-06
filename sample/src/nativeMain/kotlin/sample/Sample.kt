@@ -22,34 +22,34 @@ class Sample : AutoCloseable {
         val vulkanVersion = vulkan.instanceVersion
         println("Vulkan version: ${VK_VERSION_MAJOR(vulkanVersion)}.${VK_VERSION_MINOR(vulkanVersion)}.${VK_VERSION_PATCH(vulkanVersion)}")
 
-        memScoped {
-            val instanceExtensions = vulkan.enumerateInstanceExtensionProperties()
-            println("Supported instance extensions: ${instanceExtensions.joinToString(", ") { it.name }}")
+        val instanceExtensions = vulkan.enumerateInstanceExtensionProperties()
+        println("Supported instance extensions: ${instanceExtensions.joinToString(", ") { it.name }}")
 
-            val instanceLayers = vulkan.enumerateInstanceLayerProperties()
-            println("Supported instance layers: ${instanceLayers.joinToString(", ") { it.name }}")
+        val instanceLayers = vulkan.enumerateInstanceLayerProperties()
+        println("Supported instance layers: ${instanceLayers.joinToString(", ") { it.name }}")
 
-            val extensions = buildList {
-                if (Platform.osFamily.isAppleFamily) {
-                    add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
-                }
+        val extensions = buildList {
+            if (Platform.osFamily.isAppleFamily) {
+                add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
             }
-
-            val applicationInfo = ApplicationInfo()
-            val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions).also { instance = it }
-            println("Created Vulkan instance")
-
-            val physicalDevices = instance.enumeratePhysicalDevices().map { it to it.getProperties().deviceName.toKString() }
-            println("Supported physical devices: ${physicalDevices.joinToString(", ") { it.second }}")
-
-            val (physicalDevice, deviceName) = physicalDevices.firstOrNull() ?: error("No physical devices found")
-
-            val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
-            println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.name }}")
-
-            device = physicalDevice.createDevice()
-            println("Created logical device for $deviceName")
         }
+
+        val applicationInfo = ApplicationInfo()
+        val instance = vulkan.createInstance(applicationInfo, enabledExtensions = extensions).also { instance = it }
+        println("Created Vulkan instance")
+
+        val physicalDevices = instance.enumeratePhysicalDevices().map { physicalDevice ->
+            physicalDevice to memScoped { physicalDevice.getProperties().deviceName.toKString() }
+        }
+        println("Supported physical devices: ${physicalDevices.joinToString(", ") { it.second }}")
+
+        val (physicalDevice, deviceName) = physicalDevices.firstOrNull() ?: error("No physical devices found")
+
+        val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
+        println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.name }}")
+
+        device = physicalDevice.createDevice()
+        println("Created logical device for $deviceName")
     }
 
     override fun close() {

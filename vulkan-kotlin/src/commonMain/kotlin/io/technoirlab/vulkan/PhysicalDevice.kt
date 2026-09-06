@@ -67,7 +67,6 @@ import io.technoirlab.vulkan.presentation.SurfaceCapabilities
 import io.technoirlab.vulkan.presentation.SurfaceFormat
 import io.technoirlab.vulkan.presentation.toSurfaceCapabilities
 import io.technoirlab.vulkan.presentation.toSurfaceFormat
-import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
@@ -75,6 +74,7 @@ import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
+import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toKString
@@ -107,7 +107,6 @@ class PhysicalDevice internal constructor(
      * @param features14 Configures enabled Vulkan 1.4 features. Dynamic rendering local read is enabled by default.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDevice.html">vkCreateDevice Manual Page</a>
      */
-    context(allocator: AutofreeScope)
     fun createDevice(
         enabledExtensions: List<String> = emptyList(),
         createInfo: VkDeviceCreateInfo.() -> Unit = {},
@@ -116,44 +115,44 @@ class PhysicalDevice internal constructor(
         features12: VkPhysicalDeviceVulkan12Features.() -> Unit = {},
         features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {},
         features14: VkPhysicalDeviceVulkan14Features.() -> Unit = {},
-    ): Device {
-        val features14 = allocator.alloc<VkPhysicalDeviceVulkan14Features> {
+    ): Device = memScoped {
+        val features14 = alloc<VkPhysicalDeviceVulkan14Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_4_FEATURES
             dynamicRenderingLocalRead = VK_TRUE
             features14()
         }
-        val features13 = allocator.alloc<VkPhysicalDeviceVulkan13Features> {
+        val features13 = alloc<VkPhysicalDeviceVulkan13Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_3_FEATURES
             dynamicRendering = VK_TRUE
             synchronization2 = VK_TRUE
             features13()
             pNext = features14.ptr
         }
-        val features12 = allocator.alloc<VkPhysicalDeviceVulkan12Features> {
+        val features12 = alloc<VkPhysicalDeviceVulkan12Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_2_FEATURES
             features12()
             pNext = features13.ptr
         }
-        val features11 = allocator.alloc<VkPhysicalDeviceVulkan11Features> {
+        val features11 = alloc<VkPhysicalDeviceVulkan11Features> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES
             features11()
             pNext = features12.ptr
         }
-        val features = allocator.alloc<VkPhysicalDeviceFeatures2> {
+        val features = alloc<VkPhysicalDeviceFeatures2> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
             this.features.features()
             pNext = features11.ptr
         }
-        val deviceCreateInfo = allocator.alloc<VkDeviceCreateInfo> {
+        val deviceCreateInfo = alloc<VkDeviceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
             createInfo()
             pNext = features.ptr
             if (enabledExtensions.isNotEmpty()) {
                 enabledExtensionCount = enabledExtensions.size.toUInt()
-                ppEnabledExtensionNames = enabledExtensions.toCStringArray(allocator)
+                ppEnabledExtensionNames = enabledExtensions.toCStringArray(memScope)
             }
         }
-        val deviceVar = allocator.alloc<VkDeviceVar>()
+        val deviceVar = alloc<VkDeviceVar>()
         vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
             .checkResult("Failed to create a device")
         return Device(deviceVar.value!!, enabledExtensions.toSet())
@@ -164,15 +163,14 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateDeviceExtensionProperties.html">vkEnumerateDeviceExtensionProperties Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun enumerateDeviceExtensionProperties(): List<ExtensionProperties> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun enumerateDeviceExtensionProperties(): List<ExtensionProperties> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val extensionProperties = allocator.allocArray<VkExtensionProperties>(count)
+        val extensionProperties = allocArray<VkExtensionProperties>(count)
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
 
         return (0 until count).map {
@@ -217,9 +215,8 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceFormatProperties2.html">vkGetPhysicalDeviceFormatProperties2 Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getFormatProperties(format: VkFormat): FormatProperties {
-        val properties = allocator.alloc<VkFormatProperties2> {
+    fun getFormatProperties(format: VkFormat): FormatProperties = memScoped {
+        val properties = alloc<VkFormatProperties2> {
             sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
         }
         vkGetPhysicalDeviceFormatProperties2!!(handle, format, properties.ptr)
@@ -235,13 +232,12 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceImageFormatProperties2.html">vkGetPhysicalDeviceImageFormatProperties2 Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getImageFormatProperties(formatInfo: VkPhysicalDeviceImageFormatInfo2.() -> Unit): ImageFormatProperties {
-        val imageFormatInfo = allocator.alloc<VkPhysicalDeviceImageFormatInfo2> {
+    fun getImageFormatProperties(formatInfo: VkPhysicalDeviceImageFormatInfo2.() -> Unit): ImageFormatProperties = memScoped {
+        val imageFormatInfo = alloc<VkPhysicalDeviceImageFormatInfo2> {
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2
             formatInfo()
         }
-        val properties = allocator.alloc<VkImageFormatProperties2> {
+        val properties = alloc<VkImageFormatProperties2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2
         }
         vkGetPhysicalDeviceImageFormatProperties2!!(handle, imageFormatInfo.ptr, properties.ptr)
@@ -254,9 +250,8 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceMemoryProperties.html">vkGetPhysicalDeviceMemoryProperties Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getMemoryProperties(): MemoryProperties {
-        val memoryProperties = allocator.alloc<VkPhysicalDeviceMemoryProperties>()
+    fun getMemoryProperties(): MemoryProperties = memScoped {
+        val memoryProperties = alloc<VkPhysicalDeviceMemoryProperties>()
         vkGetPhysicalDeviceMemoryProperties!!(handle, memoryProperties.ptr)
         return memoryProperties.toMemoryProperties()
     }
@@ -316,15 +311,14 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceQueueFamilyProperties.html">vkGetPhysicalDeviceQueueFamilyProperties Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getQueueFamilyProperties(): List<QueueFamilyProperties> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun getQueueFamilyProperties(): List<QueueFamilyProperties> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val queueFamilyProperties = allocator.allocArray<VkQueueFamilyProperties>(count)
+        val queueFamilyProperties = allocArray<VkQueueFamilyProperties>(count)
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
 
         return List(countVar.value.toInt()) { index ->
@@ -337,9 +331,8 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceCapabilitiesKHR.html">vkGetPhysicalDeviceSurfaceCapabilitiesKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getSurfaceCapabilities(surface: Surface): SurfaceCapabilities {
-        val capabilities = allocator.alloc<VkSurfaceCapabilitiesKHR>()
+    fun getSurfaceCapabilities(surface: Surface): SurfaceCapabilities = memScoped {
+        val capabilities = alloc<VkSurfaceCapabilitiesKHR>()
         vkGetPhysicalDeviceSurfaceCapabilitiesKHR!!(handle, surface.handle, capabilities.ptr)
             .checkResult("Failed to get surface capabilities")
         return capabilities.toSurfaceCapabilities()
@@ -350,16 +343,15 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceFormatsKHR.html">vkGetPhysicalDeviceSurfaceFormatsKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getSurfaceFormats(surface: Surface): List<SurfaceFormat> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun getSurfaceFormats(surface: Surface): List<SurfaceFormat> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
             .checkResult("Failed to get surface formats")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
-        val surfaceFormats = allocator.allocArray<VkSurfaceFormatKHR>(count)
+        val surfaceFormats = allocArray<VkSurfaceFormatKHR>(count)
         vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
             .checkResult("Failed to get surface formats")
 
@@ -373,16 +365,15 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfacePresentModesKHR.html">vkGetPhysicalDeviceSurfacePresentModesKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getSurfacePresentModes(surface: Surface): Set<VkPresentModeKHR> {
-        val countVar = allocator.alloc<UIntVar>()
+    fun getSurfacePresentModes(surface: Surface): Set<VkPresentModeKHR> = memScoped {
+        val countVar = alloc<UIntVar>()
         vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
             .checkResult("Failed to get surface present modes")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptySet()
 
-        val presentModes = allocator.allocArray<VkPresentModeKHRVar>(count)
+        val presentModes = allocArray<VkPresentModeKHRVar>(count)
         vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)
             .checkResult("Failed to get surface present modes")
 
@@ -394,9 +385,8 @@ class PhysicalDevice internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceSurfaceSupportKHR.html">vkGetPhysicalDeviceSurfaceSupportKHR Manual Page</a>
      */
-    context(allocator: NativePlacement)
-    fun getSurfaceSupport(surface: Surface, queueFamilyIndex: UInt): Boolean {
-        val isSupported = allocator.alloc<VkBool32Var>()
+    fun getSurfaceSupport(surface: Surface, queueFamilyIndex: UInt): Boolean = memScoped {
+        val isSupported = alloc<VkBool32Var>()
         vkGetPhysicalDeviceSurfaceSupportKHR!!(handle, queueFamilyIndex, surface.handle, isSupported.ptr)
             .checkResult("Failed to check surface support")
         return isSupported.value == VK_TRUE
