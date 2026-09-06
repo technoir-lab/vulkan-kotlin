@@ -24,7 +24,7 @@ class Sample : AutoCloseable {
 
         memScoped {
             val instanceExtensions = vulkan.enumerateInstanceExtensionProperties()
-            println("Supported instance extensions: ${instanceExtensions.joinToString(", ") { it.extensionName.toKString() }}")
+            println("Supported instance extensions: ${instanceExtensions.joinToString(", ") { it.name }}")
 
             val instanceLayers = vulkan.enumerateInstanceLayerProperties()
             println("Supported instance layers: ${instanceLayers.joinToString(", ") { it.layerName.toKString() }}")
@@ -45,7 +45,7 @@ class Sample : AutoCloseable {
             val (physicalDevice, deviceName) = physicalDevices.firstOrNull() ?: error("No physical devices found")
 
             val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
-            println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.extensionName.toKString() }}")
+            println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.name }}")
 
             device = physicalDevice.createDevice()
             println("Created logical device for $deviceName")

@@ -69,6 +69,7 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toCStringArray
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 
 /**
@@ -156,7 +157,7 @@ class PhysicalDevice internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateDeviceExtensionProperties.html">vkEnumerateDeviceExtensionProperties Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun enumerateDeviceExtensionProperties(): List<VkExtensionProperties> {
+    fun enumerateDeviceExtensionProperties(): List<ExtensionProperties> {
         val countVar = allocator.alloc<UIntVar>()
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
 
@@ -166,7 +167,10 @@ class PhysicalDevice internal constructor(
         val extensionProperties = allocator.allocArray<VkExtensionProperties>(count)
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
 
-        return (0 until count).map { extensionProperties[it] }
+        return (0 until count).map {
+            val properties = extensionProperties[it]
+            ExtensionProperties(properties.extensionName.toKString(), properties.specVersion)
+        }
     }
 
     /**

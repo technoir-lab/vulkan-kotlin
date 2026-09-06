@@ -25,6 +25,7 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toCStringArray
+import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
 
 /**
@@ -88,7 +89,7 @@ class Vulkan : AutoCloseable {
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceExtensionProperties.html">vkEnumerateInstanceExtensionProperties Manual Page</a>
      */
     context(allocator: NativePlacement)
-    fun enumerateInstanceExtensionProperties(): List<VkExtensionProperties> {
+    fun enumerateInstanceExtensionProperties(): List<ExtensionProperties> {
         val countVar = allocator.alloc<UIntVar>()
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, null)
             .checkResult("Failed to enumerate instance extensions")
@@ -100,7 +101,10 @@ class Vulkan : AutoCloseable {
         vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, extensionProperties)
             .checkResult("Failed to enumerate instance extensions")
 
-        return (0 until count).map { extensionProperties[it] }
+        return (0 until count).map {
+            val properties = extensionProperties[it]
+            ExtensionProperties(properties.extensionName.toKString(), properties.specVersion)
+        }
     }
 
     /**
