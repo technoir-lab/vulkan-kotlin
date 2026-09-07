@@ -68,7 +68,7 @@ jobs:
         run: ./gradlew publishAggregationToCentralPortal --scan
 
       - name: Create release
-        uses: softprops/action-gh-release@v3.0.2
+        uses: softprops/action-gh-release@v3.0.3
         if: github.ref_type == 'tag'
         with:
           generate_release_notes: true
