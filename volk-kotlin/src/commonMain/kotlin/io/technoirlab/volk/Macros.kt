@@ -1,4 +1,4 @@
-@file:Suppress("FunctionName", "MagicNumber", "NOTHING_TO_INLINE")
+@file:Suppress("FunctionName", "MagicNumber")
 
 package io.technoirlab.volk
 

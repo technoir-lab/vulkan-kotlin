@@ -10,7 +10,6 @@ data class VulkanResult<T> internal constructor(
     val status: VkResult,
 )
 
-@Suppress("NOTHING_TO_INLINE")
 inline fun VkResult.checkResult(message: String): Boolean {
     if (this != VK_SUCCESS) {
         throw VulkanException("$message: ${string_VkResult(this)?.toKString()}")
