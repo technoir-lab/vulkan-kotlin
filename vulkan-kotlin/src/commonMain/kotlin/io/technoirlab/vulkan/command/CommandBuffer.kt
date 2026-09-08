@@ -94,9 +94,12 @@ import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
+import io.technoirlab.vulkan.Rect2D
+import io.technoirlab.vulkan.Viewport
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.descriptor.DescriptorSet
+import io.technoirlab.vulkan.from
 import io.technoirlab.vulkan.internal.nCopies
 import io.technoirlab.vulkan.internal.toVkBool32
 import io.technoirlab.vulkan.pipeline.Pipeline
@@ -779,12 +782,12 @@ class CommandBuffer internal constructor(
     }
 
     /**
-     * Set scissor rectangles dynamically for the command buffer.
+     * Set the scissor rectangle at index zero dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissor.html">vkCmdSetScissor Manual Page</a>
      */
-    fun setScissor(scissor: VkRect2D.() -> Unit): Unit = memScoped {
-        val scissor = alloc<VkRect2D> { scissor() }
+    fun setScissor(scissor: Rect2D): Unit = memScoped {
+        val scissor = alloc<VkRect2D> { from(scissor) }
         vkCmdSetScissor!!(handle, 0u, 1u, scissor.ptr)
     }
 
@@ -793,9 +796,10 @@ class CommandBuffer internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissorWithCount.html">vkCmdSetScissorWithCount Manual Page</a>
      */
-    fun setScissorWithCount(count: UInt, scissors: VkRect2D.(UInt) -> Unit): Unit = memScoped {
-        assert(count > 0u) { "count must be greater than 0" }
-        val scissors = allocArray<VkRect2D>(count.toLong()) { scissors(it.toUInt()) }
+    fun setScissorWithCount(scissors: List<Rect2D>): Unit = memScoped {
+        assert(scissors.isNotEmpty()) { "scissors must not be empty" }
+        val count = scissors.size.toUInt()
+        val scissors = allocArray<VkRect2D>(scissors.size) { from(scissors[it]) }
         vkCmdSetScissorWithCount!!(handle, count, scissors)
     }
 
@@ -855,23 +859,24 @@ class CommandBuffer internal constructor(
     }
 
     /**
-     * Set viewport transformation parameters dynamically for the command buffer.
+     * Set viewport transformation parameters at index zero dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewport.html">vkCmdSetViewport Manual Page</a>
      */
-    fun setViewport(viewport: VkViewport.() -> Unit): Unit = memScoped {
-        val vp = alloc<VkViewport> { viewport() }
+    fun setViewport(viewport: Viewport): Unit = memScoped {
+        val vp = alloc<VkViewport> { from(viewport) }
         vkCmdSetViewport!!(handle, 0u, 1u, vp.ptr)
     }
 
     /**
-     * Set the viewport count and viewports dynamically for the command buffer
+     * Set the viewport count and viewports dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewportWithCount.html">vkCmdSetViewportWithCount Manual Page</a>
      */
-    fun setViewportWithCount(count: UInt, viewports: VkViewport.(UInt) -> Unit): Unit = memScoped {
-        assert(count > 0u) { "count must be greater than 0" }
-        val viewports = allocArray<VkViewport>(count.toLong()) { viewports(it.toUInt()) }
+    fun setViewportWithCount(viewports: List<Viewport>): Unit = memScoped {
+        assert(viewports.isNotEmpty()) { "viewports must not be empty" }
+        val count = viewports.size.toUInt()
+        val viewports = allocArray<VkViewport>(viewports.size) { from(viewports[it]) }
         vkCmdSetViewportWithCount!!(handle, count, viewports)
     }
 
