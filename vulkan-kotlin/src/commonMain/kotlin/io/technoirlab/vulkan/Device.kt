@@ -20,6 +20,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
@@ -73,7 +74,8 @@ import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineCacheCreateInfo
 import io.technoirlab.volk.VkPipelineCacheVar
 import io.technoirlab.volk.VkPipelineColorBlendStateCreateInfo
-import io.technoirlab.volk.VkPipelineCreateFlags
+import io.technoirlab.volk.VkPipelineCreateFlags2
+import io.technoirlab.volk.VkPipelineCreateFlags2CreateInfo
 import io.technoirlab.volk.VkPipelineDepthStencilStateCreateInfo
 import io.technoirlab.volk.VkPipelineDynamicStateCreateInfo
 import io.technoirlab.volk.VkPipelineInputAssemblyStateCreateInfo
@@ -245,19 +247,26 @@ class Device internal constructor(
     /**
      * Create a new compute pipeline.
      *
+     * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
+     * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
+     * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateComputePipelines.html">vkCreateComputePipelines Manual Page</a>
      */
     fun createComputePipeline(
-        layout: PipelineLayout,
+        layout: PipelineLayout?,
         shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit = {},
-        flags: VkPipelineCreateFlags = 0u,
+        flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
     ): Pipeline = memScoped {
+        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
+            this.flags = flags
+        }
         val computePipelineCreateInfo = alloc<VkComputePipelineCreateInfo> {
             sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
-            this.flags = flags
-            this.layout = layout.handle
+            pNext = flagsCreateInfo.ptr
+            this.layout = layout?.handle
             basePipelineHandle = basePipeline?.handle
             stage.apply {
                 sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
@@ -375,10 +384,14 @@ class Device internal constructor(
     /**
      * Create a new graphics pipeline.
      *
+     * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
+     * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
+     * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
+     * Do not also chain this structure through [renderingCreateInfo].
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
      */
     fun createGraphicsPipeline(
-        layout: PipelineLayout,
+        layout: PipelineLayout?,
         stageCount: UInt,
         stages: VkPipelineShaderStageCreateInfo.(UInt) -> Unit = {},
         vertexInputState: VkPipelineVertexInputStateCreateInfo.() -> Unit = {},
@@ -391,7 +404,7 @@ class Device internal constructor(
         colorBlendState: VkPipelineColorBlendStateCreateInfo.() -> Unit = {},
         dynamicState: VkPipelineDynamicStateCreateInfo.() -> Unit = {},
         renderingCreateInfo: VkPipelineRenderingCreateInfo.() -> Unit = {},
-        flags: VkPipelineCreateFlags = 0u,
+        flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
     ): Pipeline = memScoped {
@@ -443,11 +456,15 @@ class Device internal constructor(
             sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO
             renderingCreateInfo()
         }
+        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
+            pNext = renderingCreateInfo.ptr
+            this.flags = flags
+        }
         val graphicsPipelineCreateInfo = alloc<VkGraphicsPipelineCreateInfo> {
             sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
-            this.flags = flags
             this.stageCount = stageCount
-            this.layout = layout.handle
+            this.layout = layout?.handle
             pStages = shaderStageCreateInfo
             pVertexInputState = vertexInputStateCreateInfo.ptr
             pInputAssemblyState = inputAssemblyStateCreateInfo.ptr
@@ -458,7 +475,7 @@ class Device internal constructor(
             pDepthStencilState = depthStencilStateCreateInfo.ptr
             pColorBlendState = colorBlendStateCreateInfo.ptr
             pDynamicState = dynamicStateCreateInfo.ptr
-            pNext = renderingCreateInfo.ptr
+            pNext = flagsCreateInfo.ptr
             basePipelineHandle = basePipeline?.handle
         }
         val pipelineVar = alloc<VkPipelineVar>()
