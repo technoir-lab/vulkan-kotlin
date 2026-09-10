@@ -6,6 +6,7 @@
 // - Show declarations: true
 
 // Library unique name: <io.technoirlab.vulkan:volk-kotlin>
+final fun io.technoirlab.volk/volkKotlinInitialize() // io.technoirlab.volk/volkKotlinInitialize|volkKotlinInitialize(){}[0]
 final inline fun io.technoirlab.volk/VK_MAKE_API_VERSION(kotlin/UInt, kotlin/UInt, kotlin/UInt, kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_MAKE_API_VERSION|VK_MAKE_API_VERSION(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
 final inline fun io.technoirlab.volk/VK_MAKE_VERSION(kotlin/UInt, kotlin/UInt, kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_MAKE_VERSION|VK_MAKE_VERSION(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
 final inline fun io.technoirlab.volk/VK_VERSION_MAJOR(kotlin/UInt): kotlin/UInt // io.technoirlab.volk/VK_VERSION_MAJOR|VK_VERSION_MAJOR(kotlin.UInt){}[0]
