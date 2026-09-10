@@ -1,6 +1,10 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
+    cooldown:
+      exclude:
+        - "io.technoirlab:*"
+        - "io.technoirlab.*:*"
     directory: "/"
     schedule:
       interval: "weekly"
