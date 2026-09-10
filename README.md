@@ -43,6 +43,16 @@ val vulkan = Vulkan()
 val instance = vulkan.createInstance()
 ```
 
+On Apple platforms, `Vulkan()` appends bundled SwiftPM driver manifests to `VK_ADD_DRIVER_FILES`
+and validation layer directories to `VK_ADD_LAYER_PATH` before initializing the loader.
+Existing entries are preserved, and bundled and system-installed ICDs are discovered together.
+The loader's [environment variable rules](https://github.com/KhronosGroup/Vulkan-Loader/blob/main/docs/LoaderDriverInterface.md#driver-discovery)
+still apply: `VK_DRIVER_FILES` takes precedence over the deprecated `VK_ICD_FILENAMES`, and
+either overrides additive and default driver discovery. `VK_LAYER_PATH` overrides additive
+explicit-layer discovery. Driver selection and disable filters are left unchanged. Applications select
+physical devices according to their requirements and must still package the runtime libraries
+and resource bundles with valid manifest paths.
+
 For more information, please see the [API reference](https://technoir-lab.github.io/vulkan-kotlin/) and the [sample](sample) project.
 
 On Android, add the following as a direct child of the `<manifest>` element in `AndroidManifest.xml`:

@@ -15,6 +15,7 @@ import io.technoirlab.volk.vkEnumerateInstanceLayerProperties
 import io.technoirlab.volk.volkFinalize
 import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
+import io.technoirlab.volk.volkKotlinInitialize
 import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
@@ -33,6 +34,7 @@ import kotlinx.cinterop.value
  */
 class Vulkan : AutoCloseable {
     init {
+        volkKotlinInitialize()
         volkInitialize().checkResult("Failed to initialize Volk")
     }
 
