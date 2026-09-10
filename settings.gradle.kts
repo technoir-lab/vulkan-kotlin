@@ -14,7 +14,7 @@ pluginManagement {
         id("io.technoirlab.conventions.kotlin-multiplatform-library") version conventionPluginsVersion
         id("io.technoirlab.conventions.root") version conventionPluginsVersion
         id("io.technoirlab.conventions.settings") version conventionPluginsVersion
-        id("io.technoirlab.vfs-overlay") version "1.1.0"
+        id("io.technoirlab.vfs-overlay") version "1.2.0"
     }
 }
 
