@@ -8,7 +8,12 @@ kotlin {
     iosSimulatorArm64()
     linuxArm64()
     linuxX64()
-    macosArm64()
+    macosArm64 {
+        binaries.framework {
+            baseName = project.name
+            isStatic = true
+        }
+    }
     mingwX64()
 
     compilerOptions {
