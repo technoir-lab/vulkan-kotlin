@@ -33,7 +33,7 @@ kotlin {
 vfsOverlay {
     mapping(
         source = kotlinNativeDependenciesDir.map {
-            File(it, "target-toolchain-2-${HostManager.hostOs()}-android_ndk/sysroot/usr/include/vulkan")
+            it.dir("target-toolchain-2-${HostManager.hostOs()}-android_ndk/sysroot/usr/include/vulkan").asFile
         },
         target = providers.environmentVariable("VULKAN_SDK").map {
             File(it, "${if (HostManager.hostIsMingw) "Include" else "include"}/vulkan")
