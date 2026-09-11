@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_FORMAT_UNDEFINED
 import io.technoirlab.volk.VK_KHR_SWAPCHAIN_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
@@ -34,6 +35,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_QUERY_POOL_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_AREA_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
@@ -62,8 +64,10 @@ import io.technoirlab.volk.VkDeviceMemoryVar
 import io.technoirlab.volk.VkEventCreateFlags
 import io.technoirlab.volk.VkEventCreateInfo
 import io.technoirlab.volk.VkEventVar
+import io.technoirlab.volk.VkExtent2D
 import io.technoirlab.volk.VkFenceCreateInfo
 import io.technoirlab.volk.VkFenceVar
+import io.technoirlab.volk.VkFormat
 import io.technoirlab.volk.VkGraphicsPipelineCreateInfo
 import io.technoirlab.volk.VkImageAspectFlags
 import io.technoirlab.volk.VkImageCreateInfo
@@ -94,6 +98,7 @@ import io.technoirlab.volk.VkPipelineViewportStateCreateInfo
 import io.technoirlab.volk.VkQueryPoolCreateInfo
 import io.technoirlab.volk.VkQueryPoolVar
 import io.technoirlab.volk.VkQueueVar
+import io.technoirlab.volk.VkRenderingAreaInfo
 import io.technoirlab.volk.VkSamplerCreateInfo
 import io.technoirlab.volk.VkSamplerVar
 import io.technoirlab.volk.VkSemaphoreCreateInfo
@@ -132,6 +137,7 @@ import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
 import io.technoirlab.volk.vkGetDeviceImageSubresourceLayout
 import io.technoirlab.volk.vkGetDeviceQueue
 import io.technoirlab.volk.vkGetImageSubresourceLayout2
+import io.technoirlab.volk.vkGetRenderingAreaGranularity
 import io.technoirlab.volk.vkUpdateDescriptorSets
 import io.technoirlab.volk.volkLoadDevice
 import io.technoirlab.vulkan.command.CommandPool
@@ -155,6 +161,7 @@ import io.technoirlab.vulkan.sync.Event
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
 import kotlinx.cinterop.NativePlacement
+import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.invoke
@@ -710,6 +717,38 @@ class Device internal constructor(
         val queueVar = alloc<VkQueueVar>()
         vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
         return Queue(queueVar.value!!, queueFamilyIndex)
+    }
+
+    /**
+     * Get the optimal render area granularity for a dynamic rendering instance with the supplied attachment formats.
+     *
+     * This Vulkan 1.4 query describes a non-multiview rendering instance.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetRenderingAreaGranularity.html">vkGetRenderingAreaGranularity Manual Page</a>
+     */
+    fun getRenderingAreaGranularity(
+        colorAttachmentFormats: List<VkFormat> = emptyList(),
+        depthAttachmentFormat: VkFormat = VK_FORMAT_UNDEFINED,
+        stencilAttachmentFormat: VkFormat = VK_FORMAT_UNDEFINED,
+    ): Extent2D = memScoped {
+        val colorFormats = if (colorAttachmentFormats.isNotEmpty()) {
+            allocArray<UIntVar>(colorAttachmentFormats.size) { index ->
+                value = colorAttachmentFormats[index]
+            }
+        } else {
+            null
+        }
+        val renderingAreaInfo = alloc<VkRenderingAreaInfo> {
+            sType = VK_STRUCTURE_TYPE_RENDERING_AREA_INFO
+            viewMask = 0u
+            colorAttachmentCount = colorAttachmentFormats.size.toUInt()
+            pColorAttachmentFormats = colorFormats
+            this.depthAttachmentFormat = depthAttachmentFormat
+            this.stencilAttachmentFormat = stencilAttachmentFormat
+        }
+        val granularity = alloc<VkExtent2D>()
+        vkGetRenderingAreaGranularity!!(handle, renderingAreaInfo.ptr, granularity.ptr)
+        return granularity.toExtent2D()
     }
 
     /**
