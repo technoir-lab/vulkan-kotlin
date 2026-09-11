@@ -160,7 +160,6 @@ import io.technoirlab.vulkan.resource.Sampler
 import io.technoirlab.vulkan.sync.Event
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
-import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -646,37 +645,36 @@ class Device internal constructor(
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceImageSubresourceLayout.html">vkGetDeviceImageSubresourceLayout Manual Page</a>
      */
-    context(allocator: NativePlacement)
     fun getDeviceImageSubresourceLayout(
         imageCreateInfo: VkImageCreateInfo.() -> Unit,
         aspectMask: VkImageAspectFlags,
         mipLevel: UInt = 0u,
         arrayLayer: UInt = 0u,
-    ): VkSubresourceLayout2 {
-        val createInfo = allocator.alloc<VkImageCreateInfo> {
+    ): ImageSubresourceLayout = memScoped {
+        val createInfo = alloc<VkImageCreateInfo> {
             sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
             imageCreateInfo()
         }
-        val subresource = allocator.alloc<VkImageSubresource2> {
+        val subresource = alloc<VkImageSubresource2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
             imageSubresource.aspectMask = aspectMask
             imageSubresource.mipLevel = mipLevel
             imageSubresource.arrayLayer = arrayLayer
         }
-        val deviceImageSubresourceInfo = allocator.alloc<VkDeviceImageSubresourceInfo> {
+        val deviceImageSubresourceInfo = alloc<VkDeviceImageSubresourceInfo> {
             sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO
             pCreateInfo = createInfo.ptr
             pSubresource = subresource.ptr
         }
-        val hostMemcpySize = allocator.alloc<VkSubresourceHostMemcpySize> {
+        val hostMemcpySize = alloc<VkSubresourceHostMemcpySize> {
             sType = VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE
         }
-        val subresourceLayout = allocator.alloc<VkSubresourceLayout2> {
+        val subresourceLayout = alloc<VkSubresourceLayout2> {
             sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
             pNext = hostMemcpySize.ptr
         }
         vkGetDeviceImageSubresourceLayout!!(handle, deviceImageSubresourceInfo.ptr, subresourceLayout.ptr)
-        return subresourceLayout
+        return subresourceLayout.subresourceLayout.toImageSubresourceLayout(hostMemcpySize.size)
     }
 
     /**

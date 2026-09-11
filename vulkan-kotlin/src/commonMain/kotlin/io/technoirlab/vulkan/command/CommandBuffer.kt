@@ -9,30 +9,53 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_COMMAND_BUFFER
 import io.technoirlab.volk.VK_PIPELINE_BIND_POINT_GRAPHICS
 import io.technoirlab.volk.VK_PIPELINE_STAGE_2_HOST_BIT
 import io.technoirlab.volk.VK_QUERY_RESULT_64_BIT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEPENDENCY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PUSH_DESCRIPTOR_SET_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
 import io.technoirlab.volk.VK_WHOLE_SIZE
+import io.technoirlab.volk.VkBlitImageInfo2
+import io.technoirlab.volk.VkBufferCopy2
+import io.technoirlab.volk.VkBufferImageCopy2
 import io.technoirlab.volk.VkBufferMemoryBarrier2
 import io.technoirlab.volk.VkBufferVar
+import io.technoirlab.volk.VkClearAttachment
+import io.technoirlab.volk.VkClearColorValue
+import io.technoirlab.volk.VkClearDepthStencilValue
+import io.technoirlab.volk.VkClearRect
 import io.technoirlab.volk.VkCommandBuffer
 import io.technoirlab.volk.VkCommandBufferBeginInfo
 import io.technoirlab.volk.VkCommandBufferResetFlags
 import io.technoirlab.volk.VkCommandBufferUsageFlags
 import io.technoirlab.volk.VkCompareOp
+import io.technoirlab.volk.VkCopyBufferInfo2
+import io.technoirlab.volk.VkCopyBufferToImageInfo2
+import io.technoirlab.volk.VkCopyImageInfo2
+import io.technoirlab.volk.VkCopyImageToBufferInfo2
 import io.technoirlab.volk.VkCullModeFlags
 import io.technoirlab.volk.VkDependencyInfo
 import io.technoirlab.volk.VkExtent2D
+import io.technoirlab.volk.VkFilter
 import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHR
 import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHRVar
 import io.technoirlab.volk.VkFrontFace
+import io.technoirlab.volk.VkImageBlit2
+import io.technoirlab.volk.VkImageCopy2
+import io.technoirlab.volk.VkImageLayout
 import io.technoirlab.volk.VkImageMemoryBarrier2
+import io.technoirlab.volk.VkImageResolve2
+import io.technoirlab.volk.VkImageSubresourceRange
 import io.technoirlab.volk.VkIndexType
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineBindPoint
@@ -46,6 +69,8 @@ import io.technoirlab.volk.VkRect2D
 import io.technoirlab.volk.VkRenderingAttachmentLocationInfo
 import io.technoirlab.volk.VkRenderingInfo
 import io.technoirlab.volk.VkRenderingInputAttachmentIndexInfo
+import io.technoirlab.volk.VkResolveImageInfo2
+import io.technoirlab.volk.VkResolveImageModeInfoKHR
 import io.technoirlab.volk.VkSampleCountFlagBits
 import io.technoirlab.volk.VkSampleLocationEXT
 import io.technoirlab.volk.VkSampleLocationsInfoEXT
@@ -61,6 +86,14 @@ import io.technoirlab.volk.vkCmdBindIndexBuffer
 import io.technoirlab.volk.vkCmdBindIndexBuffer2
 import io.technoirlab.volk.vkCmdBindPipeline
 import io.technoirlab.volk.vkCmdBindVertexBuffers2
+import io.technoirlab.volk.vkCmdBlitImage2
+import io.technoirlab.volk.vkCmdClearAttachments
+import io.technoirlab.volk.vkCmdClearColorImage
+import io.technoirlab.volk.vkCmdClearDepthStencilImage
+import io.technoirlab.volk.vkCmdCopyBuffer2
+import io.technoirlab.volk.vkCmdCopyBufferToImage2
+import io.technoirlab.volk.vkCmdCopyImage2
+import io.technoirlab.volk.vkCmdCopyImageToBuffer2
 import io.technoirlab.volk.vkCmdCopyQueryPoolResults
 import io.technoirlab.volk.vkCmdDispatch
 import io.technoirlab.volk.vkCmdDispatchBase
@@ -74,11 +107,13 @@ import io.technoirlab.volk.vkCmdDrawIndirectCount
 import io.technoirlab.volk.vkCmdEndQuery
 import io.technoirlab.volk.vkCmdEndRendering
 import io.technoirlab.volk.vkCmdExecuteCommands
+import io.technoirlab.volk.vkCmdFillBuffer
 import io.technoirlab.volk.vkCmdPipelineBarrier2
 import io.technoirlab.volk.vkCmdPushConstants
 import io.technoirlab.volk.vkCmdPushDescriptorSet2
 import io.technoirlab.volk.vkCmdResetEvent2
 import io.technoirlab.volk.vkCmdResetQueryPool
+import io.technoirlab.volk.vkCmdResolveImage2
 import io.technoirlab.volk.vkCmdSetBlendConstants
 import io.technoirlab.volk.vkCmdSetCullMode
 import io.technoirlab.volk.vkCmdSetDepthBias
@@ -108,6 +143,7 @@ import io.technoirlab.volk.vkCmdSetStencilTestEnable
 import io.technoirlab.volk.vkCmdSetStencilWriteMask
 import io.technoirlab.volk.vkCmdSetViewport
 import io.technoirlab.volk.vkCmdSetViewportWithCount
+import io.technoirlab.volk.vkCmdUpdateBuffer
 import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
@@ -119,6 +155,14 @@ import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.descriptor.DescriptorSet
 import io.technoirlab.vulkan.from
+import io.technoirlab.vulkan.image.BufferImageCopyRegion
+import io.technoirlab.vulkan.image.Image
+import io.technoirlab.vulkan.image.ImageBlitRegion
+import io.technoirlab.vulkan.image.ImageCopyRegion
+import io.technoirlab.vulkan.image.ImageResolveRegion
+import io.technoirlab.vulkan.image.ImageSubresourceRange
+import io.technoirlab.vulkan.image.ResolveImageModeInfo
+import io.technoirlab.vulkan.image.from
 import io.technoirlab.vulkan.internal.nCopies
 import io.technoirlab.vulkan.internal.toVkBool32
 import io.technoirlab.vulkan.pipeline.Pipeline
@@ -321,6 +365,36 @@ class CommandBuffer internal constructor(
     }
 
     /**
+     * Blit regions of an image to another image.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBlitImage2.html">vkCmdBlitImage2 Manual Page</a>
+     */
+    fun blitImage(
+        srcImage: Image,
+        srcImageLayout: VkImageLayout,
+        dstImage: Image,
+        dstImageLayout: VkImageLayout,
+        filter: VkFilter,
+        regions: List<ImageBlitRegion>,
+    ): Unit = memScoped {
+        assert(regions.isNotEmpty()) { "Regions must not be empty" }
+        val imageBlits = allocArray<VkImageBlit2>(regions.size) {
+            from(regions[it])
+        }
+        val blitImageInfo = alloc<VkBlitImageInfo2> {
+            sType = VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2
+            this.srcImage = srcImage.handle
+            this.srcImageLayout = srcImageLayout
+            this.dstImage = dstImage.handle
+            this.dstImageLayout = dstImageLayout
+            regionCount = regions.size.toUInt()
+            pRegions = imageBlits
+            this.filter = filter
+        }
+        vkCmdBlitImage2!!(handle, blitImageInfo.ptr)
+    }
+
+    /**
      * Insert a pipeline barrier for buffer memory.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
@@ -335,6 +409,160 @@ class CommandBuffer internal constructor(
             pBufferMemoryBarriers = bufferMemoryBarrier.ptr
         }
     }
+
+    /**
+     * Clear regions of color or depth/stencil attachments.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdClearAttachments.html">vkCmdClearAttachments Manual Page</a>
+     */
+    fun clearAttachments(attachments: List<ClearAttachment>, rects: List<ClearRect>): Unit = memScoped {
+        assert(attachments.isNotEmpty()) { "Attachments must not be empty" }
+        assert(rects.isNotEmpty()) { "Rectangles must not be empty" }
+        val clearAttachments = allocArray<VkClearAttachment>(attachments.size) {
+            from(attachments[it])
+        }
+        val clearRects = allocArray<VkClearRect>(rects.size) {
+            from(rects[it])
+        }
+        vkCmdClearAttachments!!(handle, attachments.size.toUInt(), clearAttachments, rects.size.toUInt(), clearRects)
+    }
+
+    /**
+     * Clear regions of a color image.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdClearColorImage.html">vkCmdClearColorImage Manual Page</a>
+     */
+    fun clearColorImage(image: Image, imageLayout: VkImageLayout, color: ClearValue.Color, ranges: List<ImageSubresourceRange>): Unit =
+        memScoped {
+            assert(ranges.isNotEmpty()) { "Ranges must not be empty" }
+            val clearColor = alloc<VkClearColorValue> { from(color) }
+            val subresourceRanges = allocArray<VkImageSubresourceRange>(ranges.size) {
+                from(ranges[it])
+            }
+            vkCmdClearColorImage!!(handle, image.handle, imageLayout, clearColor.ptr, ranges.size.toUInt(), subresourceRanges)
+        }
+
+    /**
+     * Clear regions of a depth/stencil image.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdClearDepthStencilImage.html">vkCmdClearDepthStencilImage Manual Page</a>
+     */
+    fun clearDepthStencilImage(
+        image: Image,
+        imageLayout: VkImageLayout,
+        depth: Float,
+        stencil: UInt,
+        ranges: List<ImageSubresourceRange>,
+    ): Unit = memScoped {
+        assert(ranges.isNotEmpty()) { "Ranges must not be empty" }
+        val clearDepthStencil = alloc<VkClearDepthStencilValue> {
+            this.depth = depth
+            this.stencil = stencil
+        }
+        val subresourceRanges = allocArray<VkImageSubresourceRange>(ranges.size) {
+            from(ranges[it])
+        }
+        vkCmdClearDepthStencilImage!!(
+            handle,
+            image.handle,
+            imageLayout,
+            clearDepthStencil.ptr,
+            ranges.size.toUInt(),
+            subresourceRanges,
+        )
+    }
+
+    /**
+     * Copy regions between buffers.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyBuffer2.html">vkCmdCopyBuffer2 Manual Page</a>
+     */
+    fun copyBuffer(srcBuffer: Buffer, dstBuffer: Buffer, regions: List<BufferCopyRegion>): Unit = memScoped {
+        assert(regions.isNotEmpty()) { "Regions must not be empty" }
+        val bufferCopies = allocArray<VkBufferCopy2>(regions.size) {
+            from(regions[it])
+        }
+        val copyBufferInfo = alloc<VkCopyBufferInfo2> {
+            sType = VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2
+            this.srcBuffer = srcBuffer.handle
+            this.dstBuffer = dstBuffer.handle
+            regionCount = regions.size.toUInt()
+            pRegions = bufferCopies
+        }
+        vkCmdCopyBuffer2!!(handle, copyBufferInfo.ptr)
+    }
+
+    /**
+     * Copy regions from a buffer to an image.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyBufferToImage2.html">vkCmdCopyBufferToImage2 Manual Page</a>
+     */
+    fun copyBufferToImage(srcBuffer: Buffer, dstImage: Image, dstImageLayout: VkImageLayout, regions: List<BufferImageCopyRegion>): Unit =
+        memScoped {
+            assert(regions.isNotEmpty()) { "Regions must not be empty" }
+            val bufferImageCopies = allocArray<VkBufferImageCopy2>(regions.size) {
+                from(regions[it])
+            }
+            val copyBufferToImageInfo = alloc<VkCopyBufferToImageInfo2> {
+                sType = VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2
+                this.srcBuffer = srcBuffer.handle
+                this.dstImage = dstImage.handle
+                this.dstImageLayout = dstImageLayout
+                regionCount = regions.size.toUInt()
+                pRegions = bufferImageCopies
+            }
+            vkCmdCopyBufferToImage2!!(handle, copyBufferToImageInfo.ptr)
+        }
+
+    /**
+     * Copy regions between images.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyImage2.html">vkCmdCopyImage2 Manual Page</a>
+     */
+    fun copyImage(
+        srcImage: Image,
+        srcImageLayout: VkImageLayout,
+        dstImage: Image,
+        dstImageLayout: VkImageLayout,
+        regions: List<ImageCopyRegion>,
+    ): Unit = memScoped {
+        assert(regions.isNotEmpty()) { "Regions must not be empty" }
+        val imageCopies = allocArray<VkImageCopy2>(regions.size) {
+            from(regions[it])
+        }
+        val copyImageInfo = alloc<VkCopyImageInfo2> {
+            sType = VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2
+            this.srcImage = srcImage.handle
+            this.srcImageLayout = srcImageLayout
+            this.dstImage = dstImage.handle
+            this.dstImageLayout = dstImageLayout
+            regionCount = regions.size.toUInt()
+            pRegions = imageCopies
+        }
+        vkCmdCopyImage2!!(handle, copyImageInfo.ptr)
+    }
+
+    /**
+     * Copy regions from an image to a buffer.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdCopyImageToBuffer2.html">vkCmdCopyImageToBuffer2 Manual Page</a>
+     */
+    fun copyImageToBuffer(srcImage: Image, srcImageLayout: VkImageLayout, dstBuffer: Buffer, regions: List<BufferImageCopyRegion>): Unit =
+        memScoped {
+            assert(regions.isNotEmpty()) { "Regions must not be empty" }
+            val bufferImageCopies = allocArray<VkBufferImageCopy2>(regions.size) {
+                from(regions[it])
+            }
+            val copyImageToBufferInfo = alloc<VkCopyImageToBufferInfo2> {
+                sType = VK_STRUCTURE_TYPE_COPY_IMAGE_TO_BUFFER_INFO_2
+                this.srcImage = srcImage.handle
+                this.srcImageLayout = srcImageLayout
+                this.dstBuffer = dstBuffer.handle
+                regionCount = regions.size.toUInt()
+                pRegions = bufferImageCopies
+            }
+            vkCmdCopyImageToBuffer2!!(handle, copyImageToBufferInfo.ptr)
+        }
 
     /**
      * Copy results from a query pool into a buffer.
@@ -413,6 +641,22 @@ class CommandBuffer internal constructor(
         assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
         val commandBufferHandles = allocArrayOf(commandBuffers.map { it.handle })
         vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
+    }
+
+    /**
+     * Fill a region of a buffer with a fixed value.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdFillBuffer.html">vkCmdFillBuffer Manual Page</a>
+     */
+    fun fillBuffer(buffer: Buffer, data: UInt, offset: ULong = 0uL, size: ULong = VK_WHOLE_SIZE) {
+        assert(offset % 4uL == 0uL) { "Offset must be a multiple of 4" }
+        assert(offset < buffer.size) { "Offset must be less than the buffer size" }
+        if (size != VK_WHOLE_SIZE) {
+            assert(size > 0uL) { "Size must be greater than 0" }
+            assert(size <= buffer.size - offset) { "Fill range exceeds the buffer size" }
+            assert(size % 4uL == 0uL) { "Fill size must be a multiple of 4" }
+        }
+        vkCmdFillBuffer!!(handle, buffer.handle, offset, size, data)
     }
 
     /**
@@ -655,6 +899,42 @@ class CommandBuffer internal constructor(
      */
     fun resetQueryPool(queryPool: QueryPool, firstQuery: UInt, queryCount: UInt) {
         vkCmdResetQueryPool!!(handle, queryPool.handle, firstQuery, queryCount)
+    }
+
+    /**
+     * Resolve regions of a multisampled image into another image.
+     *
+     * [modeInfo] requires `VK_KHR_maintenance10` and its `maintenance10` feature. When `null`,
+     * no resolve-mode extension is chained. Depth/stencil resolves require a non-null [modeInfo].
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResolveImage2.html">vkCmdResolveImage2 Manual Page</a>
+     */
+    fun resolveImage(
+        srcImage: Image,
+        srcImageLayout: VkImageLayout,
+        dstImage: Image,
+        dstImageLayout: VkImageLayout,
+        regions: List<ImageResolveRegion>,
+        modeInfo: ResolveImageModeInfo? = null,
+    ): Unit = memScoped {
+        assert(regions.isNotEmpty()) { "Regions must not be empty" }
+        val imageResolves = allocArray<VkImageResolve2>(regions.size) {
+            from(regions[it])
+        }
+        val resolveImageModeInfo = modeInfo?.let { info ->
+            alloc<VkResolveImageModeInfoKHR> { from(info) }
+        }
+        val resolveImageInfo = alloc<VkResolveImageInfo2> {
+            sType = VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2
+            pNext = resolveImageModeInfo?.ptr
+            this.srcImage = srcImage.handle
+            this.srcImageLayout = srcImageLayout
+            this.dstImage = dstImage.handle
+            this.dstImageLayout = dstImageLayout
+            regionCount = regions.size.toUInt()
+            pRegions = imageResolves
+        }
+        vkCmdResolveImage2!!(handle, resolveImageInfo.ptr)
     }
 
     /**
@@ -1057,6 +1337,22 @@ class CommandBuffer internal constructor(
     }
 
     /**
+     * Update a buffer's contents from host data embedded in the command buffer.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdUpdateBuffer.html">vkCmdUpdateBuffer Manual Page</a>
+     */
+    fun updateBuffer(buffer: Buffer, data: ByteArray, offset: ULong = 0uL) {
+        assert(data.isNotEmpty()) { "Data must not be empty" }
+        assert(data.size % 4 == 0) { "Data size must be a multiple of 4" }
+        assert(data.size <= MAX_UPDATE_BUFFER_SIZE) { "Data size must not exceed $MAX_UPDATE_BUFFER_SIZE bytes" }
+        assert(offset % 4uL == 0uL) { "Offset must be a multiple of 4" }
+        assert(offset <= buffer.size && data.size.toULong() <= buffer.size - offset) { "Update range exceeds the buffer size" }
+        data.usePinned {
+            vkCmdUpdateBuffer!!(handle, buffer.handle, offset, data.size.toULong(), it.addressOf(0))
+        }
+    }
+
+    /**
      * Make the command buffer wait for one or more events to become signaled.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWaitEvents2.html">vkCmdWaitEvents2 Manual Page</a>
@@ -1084,5 +1380,6 @@ class CommandBuffer internal constructor(
     private companion object {
         const val DISPATCH_INDIRECT_COMMAND_SIZE = 12uL
         const val DRAW_COUNT_SIZE = 4uL
+        const val MAX_UPDATE_BUFFER_SIZE = 65_536
     }
 }

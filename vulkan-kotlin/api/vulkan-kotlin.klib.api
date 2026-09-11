@@ -15,6 +15,92 @@ abstract interface io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan
         abstract fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/VulkanObject.type.<get-type>|<get-type>(){}[0]
 }
 
+sealed interface io.technoirlab.vulkan.command/ClearValue { // io.technoirlab.vulkan.command/ClearValue|null[0]
+    sealed interface Color : io.technoirlab.vulkan.command/ClearValue { // io.technoirlab.vulkan.command/ClearValue.Color|null[0]
+        final class Float32 : io.technoirlab.vulkan.command/ClearValue.Color { // io.technoirlab.vulkan.command/ClearValue.Color.Float32|null[0]
+            constructor <init>(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float) // io.technoirlab.vulkan.command/ClearValue.Color.Float32.<init>|<init>(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
+
+            final val alpha // io.technoirlab.vulkan.command/ClearValue.Color.Float32.alpha|{}alpha[0]
+                final fun <get-alpha>(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.alpha.<get-alpha>|<get-alpha>(){}[0]
+            final val blue // io.technoirlab.vulkan.command/ClearValue.Color.Float32.blue|{}blue[0]
+                final fun <get-blue>(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.blue.<get-blue>|<get-blue>(){}[0]
+            final val green // io.technoirlab.vulkan.command/ClearValue.Color.Float32.green|{}green[0]
+                final fun <get-green>(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.green.<get-green>|<get-green>(){}[0]
+            final val red // io.technoirlab.vulkan.command/ClearValue.Color.Float32.red|{}red[0]
+                final fun <get-red>(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.red.<get-red>|<get-red>(){}[0]
+
+            final fun component1(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.component1|component1(){}[0]
+            final fun component2(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.component2|component2(){}[0]
+            final fun component3(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.component3|component3(){}[0]
+            final fun component4(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.Color.Float32.component4|component4(){}[0]
+            final fun copy(kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ..., kotlin/Float = ...): io.technoirlab.vulkan.command/ClearValue.Color.Float32 // io.technoirlab.vulkan.command/ClearValue.Color.Float32.copy|copy(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearValue.Color.Float32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Float32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearValue.Color.Float32.toString|toString(){}[0]
+        }
+
+        final class Int32 : io.technoirlab.vulkan.command/ClearValue.Color { // io.technoirlab.vulkan.command/ClearValue.Color.Int32|null[0]
+            constructor <init>(kotlin/Int, kotlin/Int, kotlin/Int, kotlin/Int) // io.technoirlab.vulkan.command/ClearValue.Color.Int32.<init>|<init>(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+
+            final val alpha // io.technoirlab.vulkan.command/ClearValue.Color.Int32.alpha|{}alpha[0]
+                final fun <get-alpha>(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.alpha.<get-alpha>|<get-alpha>(){}[0]
+            final val blue // io.technoirlab.vulkan.command/ClearValue.Color.Int32.blue|{}blue[0]
+                final fun <get-blue>(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.blue.<get-blue>|<get-blue>(){}[0]
+            final val green // io.technoirlab.vulkan.command/ClearValue.Color.Int32.green|{}green[0]
+                final fun <get-green>(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.green.<get-green>|<get-green>(){}[0]
+            final val red // io.technoirlab.vulkan.command/ClearValue.Color.Int32.red|{}red[0]
+                final fun <get-red>(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.red.<get-red>|<get-red>(){}[0]
+
+            final fun component1(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.component1|component1(){}[0]
+            final fun component2(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.component2|component2(){}[0]
+            final fun component3(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.component3|component3(){}[0]
+            final fun component4(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.component4|component4(){}[0]
+            final fun copy(kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ..., kotlin/Int = ...): io.technoirlab.vulkan.command/ClearValue.Color.Int32 // io.technoirlab.vulkan.command/ClearValue.Color.Int32.copy|copy(kotlin.Int;kotlin.Int;kotlin.Int;kotlin.Int){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearValue.Color.Int32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.Int32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearValue.Color.Int32.toString|toString(){}[0]
+        }
+
+        final class UInt32 : io.technoirlab.vulkan.command/ClearValue.Color { // io.technoirlab.vulkan.command/ClearValue.Color.UInt32|null[0]
+            constructor <init>(kotlin/UInt, kotlin/UInt, kotlin/UInt, kotlin/UInt) // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.<init>|<init>(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+
+            final val alpha // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.alpha|{}alpha[0]
+                final fun <get-alpha>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.alpha.<get-alpha>|<get-alpha>(){}[0]
+            final val blue // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.blue|{}blue[0]
+                final fun <get-blue>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.blue.<get-blue>|<get-blue>(){}[0]
+            final val green // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.green|{}green[0]
+                final fun <get-green>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.green.<get-green>|<get-green>(){}[0]
+            final val red // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.red|{}red[0]
+                final fun <get-red>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.red.<get-red>|<get-red>(){}[0]
+
+            final fun component1(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.component1|component1(){}[0]
+            final fun component2(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.component2|component2(){}[0]
+            final fun component3(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.component3|component3(){}[0]
+            final fun component4(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.component4|component4(){}[0]
+            final fun copy(kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.command/ClearValue.Color.UInt32 // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.copy|copy(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+            final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.equals|equals(kotlin.Any?){}[0]
+            final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.hashCode|hashCode(){}[0]
+            final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearValue.Color.UInt32.toString|toString(){}[0]
+        }
+    }
+
+    final class DepthStencil : io.technoirlab.vulkan.command/ClearValue { // io.technoirlab.vulkan.command/ClearValue.DepthStencil|null[0]
+        constructor <init>(kotlin/Float, kotlin/UInt) // io.technoirlab.vulkan.command/ClearValue.DepthStencil.<init>|<init>(kotlin.Float;kotlin.UInt){}[0]
+
+        final val depth // io.technoirlab.vulkan.command/ClearValue.DepthStencil.depth|{}depth[0]
+            final fun <get-depth>(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.DepthStencil.depth.<get-depth>|<get-depth>(){}[0]
+        final val stencil // io.technoirlab.vulkan.command/ClearValue.DepthStencil.stencil|{}stencil[0]
+            final fun <get-stencil>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.DepthStencil.stencil.<get-stencil>|<get-stencil>(){}[0]
+
+        final fun component1(): kotlin/Float // io.technoirlab.vulkan.command/ClearValue.DepthStencil.component1|component1(){}[0]
+        final fun component2(): kotlin/UInt // io.technoirlab.vulkan.command/ClearValue.DepthStencil.component2|component2(){}[0]
+        final fun copy(kotlin/Float = ..., kotlin/UInt = ...): io.technoirlab.vulkan.command/ClearValue.DepthStencil // io.technoirlab.vulkan.command/ClearValue.DepthStencil.copy|copy(kotlin.Float;kotlin.UInt){}[0]
+        final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearValue.DepthStencil.equals|equals(kotlin.Any?){}[0]
+        final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearValue.DepthStencil.hashCode|hashCode(){}[0]
+        final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearValue.DepthStencil.toString|toString(){}[0]
+    }
+}
+
 final class <#A: kotlin/Any?> io.technoirlab.vulkan/VulkanResult { // io.technoirlab.vulkan/VulkanResult|null[0]
     final val payload // io.technoirlab.vulkan/VulkanResult.payload|{}payload[0]
         final fun <get-payload>(): #A // io.technoirlab.vulkan/VulkanResult.payload.<get-payload>|<get-payload>(){}[0]
@@ -26,6 +112,63 @@ final class <#A: kotlin/Any?> io.technoirlab.vulkan/VulkanResult { // io.technoi
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/VulkanResult.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/VulkanResult.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan/VulkanResult.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.command/BufferCopyRegion { // io.technoirlab.vulkan.command/BufferCopyRegion|null[0]
+    constructor <init>(kotlin/ULong, kotlin/ULong = ..., kotlin/ULong = ...) // io.technoirlab.vulkan.command/BufferCopyRegion.<init>|<init>(kotlin.ULong;kotlin.ULong;kotlin.ULong){}[0]
+
+    final val destinationOffset // io.technoirlab.vulkan.command/BufferCopyRegion.destinationOffset|{}destinationOffset[0]
+        final fun <get-destinationOffset>(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.destinationOffset.<get-destinationOffset>|<get-destinationOffset>(){}[0]
+    final val size // io.technoirlab.vulkan.command/BufferCopyRegion.size|{}size[0]
+        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.size.<get-size>|<get-size>(){}[0]
+    final val sourceOffset // io.technoirlab.vulkan.command/BufferCopyRegion.sourceOffset|{}sourceOffset[0]
+        final fun <get-sourceOffset>(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.sourceOffset.<get-sourceOffset>|<get-sourceOffset>(){}[0]
+
+    final fun component1(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.component1|component1(){}[0]
+    final fun component2(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.component2|component2(){}[0]
+    final fun component3(): kotlin/ULong // io.technoirlab.vulkan.command/BufferCopyRegion.component3|component3(){}[0]
+    final fun copy(kotlin/ULong = ..., kotlin/ULong = ..., kotlin/ULong = ...): io.technoirlab.vulkan.command/BufferCopyRegion // io.technoirlab.vulkan.command/BufferCopyRegion.copy|copy(kotlin.ULong;kotlin.ULong;kotlin.ULong){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/BufferCopyRegion.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/BufferCopyRegion.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.command/BufferCopyRegion.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.command/ClearAttachment { // io.technoirlab.vulkan.command/ClearAttachment|null[0]
+    constructor <init>(kotlin/UInt, io.technoirlab.vulkan.command/ClearValue, kotlin/UInt = ...) // io.technoirlab.vulkan.command/ClearAttachment.<init>|<init>(kotlin.UInt;io.technoirlab.vulkan.command.ClearValue;kotlin.UInt){}[0]
+
+    final val aspectMask // io.technoirlab.vulkan.command/ClearAttachment.aspectMask|{}aspectMask[0]
+        final fun <get-aspectMask>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearAttachment.aspectMask.<get-aspectMask>|<get-aspectMask>(){}[0]
+    final val clearValue // io.technoirlab.vulkan.command/ClearAttachment.clearValue|{}clearValue[0]
+        final fun <get-clearValue>(): io.technoirlab.vulkan.command/ClearValue // io.technoirlab.vulkan.command/ClearAttachment.clearValue.<get-clearValue>|<get-clearValue>(){}[0]
+    final val colorAttachment // io.technoirlab.vulkan.command/ClearAttachment.colorAttachment|{}colorAttachment[0]
+        final fun <get-colorAttachment>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearAttachment.colorAttachment.<get-colorAttachment>|<get-colorAttachment>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan.command/ClearAttachment.component1|component1(){}[0]
+    final fun component2(): io.technoirlab.vulkan.command/ClearValue // io.technoirlab.vulkan.command/ClearAttachment.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.command/ClearAttachment.component3|component3(){}[0]
+    final fun copy(kotlin/UInt = ..., io.technoirlab.vulkan.command/ClearValue = ..., kotlin/UInt = ...): io.technoirlab.vulkan.command/ClearAttachment // io.technoirlab.vulkan.command/ClearAttachment.copy|copy(kotlin.UInt;io.technoirlab.vulkan.command.ClearValue;kotlin.UInt){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearAttachment.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearAttachment.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearAttachment.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.command/ClearRect { // io.technoirlab.vulkan.command/ClearRect|null[0]
+    constructor <init>(io.technoirlab.vulkan/Rect2D, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/ClearRect.<init>|<init>(io.technoirlab.vulkan.Rect2D;kotlin.UInt;kotlin.UInt){}[0]
+
+    final val baseArrayLayer // io.technoirlab.vulkan.command/ClearRect.baseArrayLayer|{}baseArrayLayer[0]
+        final fun <get-baseArrayLayer>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearRect.baseArrayLayer.<get-baseArrayLayer>|<get-baseArrayLayer>(){}[0]
+    final val layerCount // io.technoirlab.vulkan.command/ClearRect.layerCount|{}layerCount[0]
+        final fun <get-layerCount>(): kotlin/UInt // io.technoirlab.vulkan.command/ClearRect.layerCount.<get-layerCount>|<get-layerCount>(){}[0]
+    final val rect // io.technoirlab.vulkan.command/ClearRect.rect|{}rect[0]
+        final fun <get-rect>(): io.technoirlab.vulkan/Rect2D // io.technoirlab.vulkan.command/ClearRect.rect.<get-rect>|<get-rect>(){}[0]
+
+    final fun component1(): io.technoirlab.vulkan/Rect2D // io.technoirlab.vulkan.command/ClearRect.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.command/ClearRect.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.command/ClearRect.component3|component3(){}[0]
+    final fun copy(io.technoirlab.vulkan/Rect2D = ..., kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.command/ClearRect // io.technoirlab.vulkan.command/ClearRect.copy|copy(io.technoirlab.vulkan.Rect2D;kotlin.UInt;kotlin.UInt){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/ClearRect.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/ClearRect.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.command/ClearRect.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/VulkanObject { // io.technoirlab.vulkan.command/CommandBuffer|null[0]
@@ -42,7 +185,15 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun bindPipeline(kotlin/UInt, io.technoirlab.vulkan.pipeline/Pipeline) // io.technoirlab.vulkan.command/CommandBuffer.bindPipeline|bindPipeline(kotlin.UInt;io.technoirlab.vulkan.pipeline.Pipeline){}[0]
     final fun bindVertexBuffer(io.technoirlab.vulkan.resource/Buffer, kotlin/UInt = ..., kotlin/ULong = ..., kotlin/ULong? = ..., kotlin/ULong? = ...) // io.technoirlab.vulkan.command/CommandBuffer.bindVertexBuffer|bindVertexBuffer(io.technoirlab.vulkan.resource.Buffer;kotlin.UInt;kotlin.ULong;kotlin.ULong?;kotlin.ULong?){}[0]
     final fun bindVertexBuffers(kotlin.collections/List<io.technoirlab.vulkan.resource/Buffer>, kotlin/UInt = ..., kotlin.collections/List<kotlin/ULong> = ..., kotlin.collections/List<kotlin/ULong>? = ..., kotlin.collections/List<kotlin/ULong>? = ...) // io.technoirlab.vulkan.command/CommandBuffer.bindVertexBuffers|bindVertexBuffers(kotlin.collections.List<io.technoirlab.vulkan.resource.Buffer>;kotlin.UInt;kotlin.collections.List<kotlin.ULong>;kotlin.collections.List<kotlin.ULong>?;kotlin.collections.List<kotlin.ULong>?){}[0]
+    final fun blitImage(io.technoirlab.vulkan.image/Image, kotlin/UInt, io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/ImageBlitRegion>) // io.technoirlab.vulkan.command/CommandBuffer.blitImage|blitImage(io.technoirlab.vulkan.image.Image;kotlin.UInt;io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.ImageBlitRegion>){}[0]
     final fun bufferMemoryBarrier(kotlin/Function1<io.technoirlab.volk/VkBufferMemoryBarrier2, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.bufferMemoryBarrier|bufferMemoryBarrier(kotlin.Function1<io.technoirlab.volk.VkBufferMemoryBarrier2,kotlin.Unit>){}[0]
+    final fun clearAttachments(kotlin.collections/List<io.technoirlab.vulkan.command/ClearAttachment>, kotlin.collections/List<io.technoirlab.vulkan.command/ClearRect>) // io.technoirlab.vulkan.command/CommandBuffer.clearAttachments|clearAttachments(kotlin.collections.List<io.technoirlab.vulkan.command.ClearAttachment>;kotlin.collections.List<io.technoirlab.vulkan.command.ClearRect>){}[0]
+    final fun clearColorImage(io.technoirlab.vulkan.image/Image, kotlin/UInt, io.technoirlab.vulkan.command/ClearValue.Color, kotlin.collections/List<io.technoirlab.vulkan.image/ImageSubresourceRange>) // io.technoirlab.vulkan.command/CommandBuffer.clearColorImage|clearColorImage(io.technoirlab.vulkan.image.Image;kotlin.UInt;io.technoirlab.vulkan.command.ClearValue.Color;kotlin.collections.List<io.technoirlab.vulkan.image.ImageSubresourceRange>){}[0]
+    final fun clearDepthStencilImage(io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin/Float, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/ImageSubresourceRange>) // io.technoirlab.vulkan.command/CommandBuffer.clearDepthStencilImage|clearDepthStencilImage(io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.Float;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.ImageSubresourceRange>){}[0]
+    final fun copyBuffer(io.technoirlab.vulkan.resource/Buffer, io.technoirlab.vulkan.resource/Buffer, kotlin.collections/List<io.technoirlab.vulkan.command/BufferCopyRegion>) // io.technoirlab.vulkan.command/CommandBuffer.copyBuffer|copyBuffer(io.technoirlab.vulkan.resource.Buffer;io.technoirlab.vulkan.resource.Buffer;kotlin.collections.List<io.technoirlab.vulkan.command.BufferCopyRegion>){}[0]
+    final fun copyBufferToImage(io.technoirlab.vulkan.resource/Buffer, io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/BufferImageCopyRegion>) // io.technoirlab.vulkan.command/CommandBuffer.copyBufferToImage|copyBufferToImage(io.technoirlab.vulkan.resource.Buffer;io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.BufferImageCopyRegion>){}[0]
+    final fun copyImage(io.technoirlab.vulkan.image/Image, kotlin/UInt, io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/ImageCopyRegion>) // io.technoirlab.vulkan.command/CommandBuffer.copyImage|copyImage(io.technoirlab.vulkan.image.Image;kotlin.UInt;io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.ImageCopyRegion>){}[0]
+    final fun copyImageToBuffer(io.technoirlab.vulkan.image/Image, kotlin/UInt, io.technoirlab.vulkan.resource/Buffer, kotlin.collections/List<io.technoirlab.vulkan.image/BufferImageCopyRegion>) // io.technoirlab.vulkan.command/CommandBuffer.copyImageToBuffer|copyImageToBuffer(io.technoirlab.vulkan.image.Image;kotlin.UInt;io.technoirlab.vulkan.resource.Buffer;kotlin.collections.List<io.technoirlab.vulkan.image.BufferImageCopyRegion>){}[0]
     final fun copyQueryPoolResults(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt, io.technoirlab.vulkan.resource/Buffer, kotlin/ULong, kotlin/ULong, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.copyQueryPoolResults|copyQueryPoolResults(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.resource.Buffer;kotlin.ULong;kotlin.ULong;kotlin.UInt){}[0]
     final fun dispatch(kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.dispatch|dispatch(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun dispatchBase(kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.dispatchBase|dispatchBase(kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
@@ -57,6 +208,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun endQuery(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.endQuery|endQuery(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt){}[0]
     final fun endRendering() // io.technoirlab.vulkan.command/CommandBuffer.endRendering|endRendering(){}[0]
     final fun executeCommands(kotlin.collections/List<io.technoirlab.vulkan.command/CommandBuffer>) // io.technoirlab.vulkan.command/CommandBuffer.executeCommands|executeCommands(kotlin.collections.List<io.technoirlab.vulkan.command.CommandBuffer>){}[0]
+    final fun fillBuffer(io.technoirlab.vulkan.resource/Buffer, kotlin/UInt, kotlin/ULong = ..., kotlin/ULong = ...) // io.technoirlab.vulkan.command/CommandBuffer.fillBuffer|fillBuffer(io.technoirlab.vulkan.resource.Buffer;kotlin.UInt;kotlin.ULong;kotlin.ULong){}[0]
     final fun imageMemoryBarrier(kotlin/Function1<io.technoirlab.volk/VkImageMemoryBarrier2, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.imageMemoryBarrier|imageMemoryBarrier(kotlin.Function1<io.technoirlab.volk.VkImageMemoryBarrier2,kotlin.Unit>){}[0]
     final fun pipelineBarrier(kotlin/Function1<io.technoirlab.volk/VkDependencyInfo, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.pipelineBarrier|pipelineBarrier(kotlin.Function1<io.technoirlab.volk.VkDependencyInfo,kotlin.Unit>){}[0]
     final fun pushConstants(io.technoirlab.vulkan.pipeline/PipelineLayout, kotlin/UInt, kotlin/ByteArray, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.pushConstants|pushConstants(io.technoirlab.vulkan.pipeline.PipelineLayout;kotlin.UInt;kotlin.ByteArray;kotlin.UInt){}[0]
@@ -64,6 +216,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun reset(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.reset|reset(kotlin.UInt){}[0]
     final fun resetEvent(io.technoirlab.vulkan.sync/Event, kotlin/ULong) // io.technoirlab.vulkan.command/CommandBuffer.resetEvent|resetEvent(io.technoirlab.vulkan.sync.Event;kotlin.ULong){}[0]
     final fun resetQueryPool(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.resetQueryPool|resetQueryPool(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt){}[0]
+    final fun resolveImage(io.technoirlab.vulkan.image/Image, kotlin/UInt, io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/ImageResolveRegion>, io.technoirlab.vulkan.image/ResolveImageModeInfo? = ...) // io.technoirlab.vulkan.command/CommandBuffer.resolveImage|resolveImage(io.technoirlab.vulkan.image.Image;kotlin.UInt;io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.ImageResolveRegion>;io.technoirlab.vulkan.image.ResolveImageModeInfo?){}[0]
     final fun setBlendConstants(kotlin/Float, kotlin/Float, kotlin/Float, kotlin/Float) // io.technoirlab.vulkan.command/CommandBuffer.setBlendConstants|setBlendConstants(kotlin.Float;kotlin.Float;kotlin.Float;kotlin.Float){}[0]
     final fun setCullMode(kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.setCullMode|setCullMode(kotlin.UInt){}[0]
     final fun setDepthBias(kotlin/Float, kotlin/Float, kotlin/Float) // io.technoirlab.vulkan.command/CommandBuffer.setDepthBias|setDepthBias(kotlin.Float;kotlin.Float;kotlin.Float){}[0]
@@ -93,6 +246,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final fun setStencilWriteMask(kotlin/UInt, kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.setStencilWriteMask|setStencilWriteMask(kotlin.UInt;kotlin.UInt){}[0]
     final fun setViewport(io.technoirlab.vulkan/Viewport) // io.technoirlab.vulkan.command/CommandBuffer.setViewport|setViewport(io.technoirlab.vulkan.Viewport){}[0]
     final fun setViewportWithCount(kotlin.collections/List<io.technoirlab.vulkan/Viewport>) // io.technoirlab.vulkan.command/CommandBuffer.setViewportWithCount|setViewportWithCount(kotlin.collections.List<io.technoirlab.vulkan.Viewport>){}[0]
+    final fun updateBuffer(io.technoirlab.vulkan.resource/Buffer, kotlin/ByteArray, kotlin/ULong = ...) // io.technoirlab.vulkan.command/CommandBuffer.updateBuffer|updateBuffer(io.technoirlab.vulkan.resource.Buffer;kotlin.ByteArray;kotlin.ULong){}[0]
     final fun waitEvents(kotlin.collections/List<io.technoirlab.vulkan.sync/Event>, kotlin/Function2<io.technoirlab.volk/VkDependencyInfo, kotlin/UInt, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.waitEvents|waitEvents(kotlin.collections.List<io.technoirlab.vulkan.sync.Event>;kotlin.Function2<io.technoirlab.volk.VkDependencyInfo,kotlin.UInt,kotlin.Unit>){}[0]
     final fun writeTimestamp(kotlin/ULong, io.technoirlab.vulkan.query/QueryPool, kotlin/UInt) // io.technoirlab.vulkan.command/CommandBuffer.writeTimestamp|writeTimestamp(kotlin.ULong;io.technoirlab.vulkan.query.QueryPool;kotlin.UInt){}[0]
 }
@@ -152,6 +306,34 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirla
     final fun close() // io.technoirlab.vulkan.descriptor/DescriptorSetLayout.close|close(){}[0]
 }
 
+final class io.technoirlab.vulkan.image/BufferImageCopyRegion { // io.technoirlab.vulkan.image/BufferImageCopyRegion|null[0]
+    constructor <init>(io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan/Extent3D, io.technoirlab.vulkan/Offset3D = ..., kotlin/ULong = ..., kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.image/BufferImageCopyRegion.<init>|<init>(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Extent3D;io.technoirlab.vulkan.Offset3D;kotlin.ULong;kotlin.UInt;kotlin.UInt){}[0]
+
+    final val bufferImageHeight // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferImageHeight|{}bufferImageHeight[0]
+        final fun <get-bufferImageHeight>(): kotlin/UInt // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferImageHeight.<get-bufferImageHeight>|<get-bufferImageHeight>(){}[0]
+    final val bufferOffset // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferOffset|{}bufferOffset[0]
+        final fun <get-bufferOffset>(): kotlin/ULong // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferOffset.<get-bufferOffset>|<get-bufferOffset>(){}[0]
+    final val bufferRowLength // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferRowLength|{}bufferRowLength[0]
+        final fun <get-bufferRowLength>(): kotlin/UInt // io.technoirlab.vulkan.image/BufferImageCopyRegion.bufferRowLength.<get-bufferRowLength>|<get-bufferRowLength>(){}[0]
+    final val imageExtent // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageExtent|{}imageExtent[0]
+        final fun <get-imageExtent>(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageExtent.<get-imageExtent>|<get-imageExtent>(){}[0]
+    final val imageOffset // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageOffset|{}imageOffset[0]
+        final fun <get-imageOffset>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageOffset.<get-imageOffset>|<get-imageOffset>(){}[0]
+    final val imageSubresource // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageSubresource|{}imageSubresource[0]
+        final fun <get-imageSubresource>(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/BufferImageCopyRegion.imageSubresource.<get-imageSubresource>|<get-imageSubresource>(){}[0]
+
+    final fun component1(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/BufferImageCopyRegion.component1|component1(){}[0]
+    final fun component2(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/BufferImageCopyRegion.component2|component2(){}[0]
+    final fun component3(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/BufferImageCopyRegion.component3|component3(){}[0]
+    final fun component4(): kotlin/ULong // io.technoirlab.vulkan.image/BufferImageCopyRegion.component4|component4(){}[0]
+    final fun component5(): kotlin/UInt // io.technoirlab.vulkan.image/BufferImageCopyRegion.component5|component5(){}[0]
+    final fun component6(): kotlin/UInt // io.technoirlab.vulkan.image/BufferImageCopyRegion.component6|component6(){}[0]
+    final fun copy(io.technoirlab.vulkan.image/ImageSubresourceLayers = ..., io.technoirlab.vulkan/Extent3D = ..., io.technoirlab.vulkan/Offset3D = ..., kotlin/ULong = ..., kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.image/BufferImageCopyRegion // io.technoirlab.vulkan.image/BufferImageCopyRegion.copy|copy(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Extent3D;io.technoirlab.vulkan.Offset3D;kotlin.ULong;kotlin.UInt;kotlin.UInt){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/BufferImageCopyRegion.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/BufferImageCopyRegion.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.image/BufferImageCopyRegion.toString|toString(){}[0]
+}
+
 final class io.technoirlab.vulkan.image/HostImageCopyRegion { // io.technoirlab.vulkan.image/HostImageCopyRegion|null[0]
     constructor <init>(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>, io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan/Extent3D, io.technoirlab.vulkan/Offset3D = ..., kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.image/HostImageCopyRegion.<init>|<init>(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>;io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Extent3D;io.technoirlab.vulkan.Offset3D;kotlin.UInt;kotlin.UInt){}[0]
 
@@ -195,6 +377,34 @@ final class io.technoirlab.vulkan.image/Image : io.technoirlab.vulkan/VulkanObje
     final fun copyToMemory(kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.image/HostImageCopyRegion>, kotlin/UInt = ...) // io.technoirlab.vulkan.image/Image.copyToMemory|copyToMemory(kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.image.HostImageCopyRegion>;kotlin.UInt){}[0]
     final fun getMemoryRequirements(): io.technoirlab.vulkan.memory/MemoryRequirements // io.technoirlab.vulkan.image/Image.getMemoryRequirements|getMemoryRequirements(){}[0]
     final fun transitionLayout(kotlin/UInt, kotlin/UInt, io.technoirlab.vulkan.image/ImageSubresourceRange) // io.technoirlab.vulkan.image/Image.transitionLayout|transitionLayout(kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.image.ImageSubresourceRange){}[0]
+}
+
+final class io.technoirlab.vulkan.image/ImageBlitRegion { // io.technoirlab.vulkan.image/ImageBlitRegion|null[0]
+    constructor <init>(io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan/Offset3D, io.technoirlab.vulkan/Offset3D, io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ...) // io.technoirlab.vulkan.image/ImageBlitRegion.<init>|<init>(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D){}[0]
+
+    final val destinationEnd // io.technoirlab.vulkan.image/ImageBlitRegion.destinationEnd|{}destinationEnd[0]
+        final fun <get-destinationEnd>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.destinationEnd.<get-destinationEnd>|<get-destinationEnd>(){}[0]
+    final val destinationStart // io.technoirlab.vulkan.image/ImageBlitRegion.destinationStart|{}destinationStart[0]
+        final fun <get-destinationStart>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.destinationStart.<get-destinationStart>|<get-destinationStart>(){}[0]
+    final val destinationSubresource // io.technoirlab.vulkan.image/ImageBlitRegion.destinationSubresource|{}destinationSubresource[0]
+        final fun <get-destinationSubresource>(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageBlitRegion.destinationSubresource.<get-destinationSubresource>|<get-destinationSubresource>(){}[0]
+    final val sourceEnd // io.technoirlab.vulkan.image/ImageBlitRegion.sourceEnd|{}sourceEnd[0]
+        final fun <get-sourceEnd>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.sourceEnd.<get-sourceEnd>|<get-sourceEnd>(){}[0]
+    final val sourceStart // io.technoirlab.vulkan.image/ImageBlitRegion.sourceStart|{}sourceStart[0]
+        final fun <get-sourceStart>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.sourceStart.<get-sourceStart>|<get-sourceStart>(){}[0]
+    final val sourceSubresource // io.technoirlab.vulkan.image/ImageBlitRegion.sourceSubresource|{}sourceSubresource[0]
+        final fun <get-sourceSubresource>(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageBlitRegion.sourceSubresource.<get-sourceSubresource>|<get-sourceSubresource>(){}[0]
+
+    final fun component1(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageBlitRegion.component1|component1(){}[0]
+    final fun component2(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageBlitRegion.component2|component2(){}[0]
+    final fun component3(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.component3|component3(){}[0]
+    final fun component4(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.component4|component4(){}[0]
+    final fun component5(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.component5|component5(){}[0]
+    final fun component6(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageBlitRegion.component6|component6(){}[0]
+    final fun copy(io.technoirlab.vulkan.image/ImageSubresourceLayers = ..., io.technoirlab.vulkan.image/ImageSubresourceLayers = ..., io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ...): io.technoirlab.vulkan.image/ImageBlitRegion // io.technoirlab.vulkan.image/ImageBlitRegion.copy|copy(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/ImageBlitRegion.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/ImageBlitRegion.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.image/ImageBlitRegion.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.image/ImageCopyRegion { // io.technoirlab.vulkan.image/ImageCopyRegion|null[0]
@@ -242,6 +452,31 @@ final class io.technoirlab.vulkan.image/ImageFormatProperties { // io.technoirla
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/ImageFormatProperties.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/ImageFormatProperties.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan.image/ImageFormatProperties.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.image/ImageResolveRegion { // io.technoirlab.vulkan.image/ImageResolveRegion|null[0]
+    constructor <init>(io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan.image/ImageSubresourceLayers, io.technoirlab.vulkan/Extent3D, io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ...) // io.technoirlab.vulkan.image/ImageResolveRegion.<init>|<init>(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Extent3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D){}[0]
+
+    final val destinationOffset // io.technoirlab.vulkan.image/ImageResolveRegion.destinationOffset|{}destinationOffset[0]
+        final fun <get-destinationOffset>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageResolveRegion.destinationOffset.<get-destinationOffset>|<get-destinationOffset>(){}[0]
+    final val destinationSubresource // io.technoirlab.vulkan.image/ImageResolveRegion.destinationSubresource|{}destinationSubresource[0]
+        final fun <get-destinationSubresource>(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageResolveRegion.destinationSubresource.<get-destinationSubresource>|<get-destinationSubresource>(){}[0]
+    final val extent // io.technoirlab.vulkan.image/ImageResolveRegion.extent|{}extent[0]
+        final fun <get-extent>(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/ImageResolveRegion.extent.<get-extent>|<get-extent>(){}[0]
+    final val sourceOffset // io.technoirlab.vulkan.image/ImageResolveRegion.sourceOffset|{}sourceOffset[0]
+        final fun <get-sourceOffset>(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageResolveRegion.sourceOffset.<get-sourceOffset>|<get-sourceOffset>(){}[0]
+    final val sourceSubresource // io.technoirlab.vulkan.image/ImageResolveRegion.sourceSubresource|{}sourceSubresource[0]
+        final fun <get-sourceSubresource>(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageResolveRegion.sourceSubresource.<get-sourceSubresource>|<get-sourceSubresource>(){}[0]
+
+    final fun component1(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageResolveRegion.component1|component1(){}[0]
+    final fun component2(): io.technoirlab.vulkan.image/ImageSubresourceLayers // io.technoirlab.vulkan.image/ImageResolveRegion.component2|component2(){}[0]
+    final fun component3(): io.technoirlab.vulkan/Extent3D // io.technoirlab.vulkan.image/ImageResolveRegion.component3|component3(){}[0]
+    final fun component4(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageResolveRegion.component4|component4(){}[0]
+    final fun component5(): io.technoirlab.vulkan/Offset3D // io.technoirlab.vulkan.image/ImageResolveRegion.component5|component5(){}[0]
+    final fun copy(io.technoirlab.vulkan.image/ImageSubresourceLayers = ..., io.technoirlab.vulkan.image/ImageSubresourceLayers = ..., io.technoirlab.vulkan/Extent3D = ..., io.technoirlab.vulkan/Offset3D = ..., io.technoirlab.vulkan/Offset3D = ...): io.technoirlab.vulkan.image/ImageResolveRegion // io.technoirlab.vulkan.image/ImageResolveRegion.copy|copy(io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.image.ImageSubresourceLayers;io.technoirlab.vulkan.Extent3D;io.technoirlab.vulkan.Offset3D;io.technoirlab.vulkan.Offset3D){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/ImageResolveRegion.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/ImageResolveRegion.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.image/ImageResolveRegion.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.image/ImageSubresourceLayers { // io.technoirlab.vulkan.image/ImageSubresourceLayers|null[0]
@@ -323,6 +558,25 @@ final class io.technoirlab.vulkan.image/ImageView : io.technoirlab.vulkan/Vulkan
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.image/ImageView.type.<get-type>|<get-type>(){}[0]
 
     final fun close() // io.technoirlab.vulkan.image/ImageView.close|close(){}[0]
+}
+
+final class io.technoirlab.vulkan.image/ResolveImageModeInfo { // io.technoirlab.vulkan.image/ResolveImageModeInfo|null[0]
+    constructor <init>(kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.image/ResolveImageModeInfo.<init>|<init>(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+
+    final val flags // io.technoirlab.vulkan.image/ResolveImageModeInfo.flags|{}flags[0]
+        final fun <get-flags>(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.flags.<get-flags>|<get-flags>(){}[0]
+    final val resolveMode // io.technoirlab.vulkan.image/ResolveImageModeInfo.resolveMode|{}resolveMode[0]
+        final fun <get-resolveMode>(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.resolveMode.<get-resolveMode>|<get-resolveMode>(){}[0]
+    final val stencilResolveMode // io.technoirlab.vulkan.image/ResolveImageModeInfo.stencilResolveMode|{}stencilResolveMode[0]
+        final fun <get-stencilResolveMode>(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.stencilResolveMode.<get-stencilResolveMode>|<get-stencilResolveMode>(){}[0]
+
+    final fun component1(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.image/ResolveImageModeInfo.component3|component3(){}[0]
+    final fun copy(kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.image/ResolveImageModeInfo // io.technoirlab.vulkan.image/ResolveImageModeInfo.copy|copy(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.image/ResolveImageModeInfo.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.image/ResolveImageModeInfo.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.image/ResolveImageModeInfo.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.memory/DeviceMemory : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.memory/DeviceMemory|null[0]
@@ -741,7 +995,6 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
     final val type // io.technoirlab.vulkan/Device.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan/Device.type.<get-type>|<get-type>(){}[0]
 
-    final fun (context(kotlinx.cinterop/NativePlacement)).getDeviceImageSubresourceLayout(kotlin/Function1<io.technoirlab.volk/VkImageCreateInfo, kotlin/Unit>, kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.volk/VkSubresourceLayout2 // io.technoirlab.vulkan/Device.getDeviceImageSubresourceLayout|getDeviceImageSubresourceLayout(kotlinx.cinterop.NativePlacement)(kotlin.Function1<io.technoirlab.volk.VkImageCreateInfo,kotlin.Unit>;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun allocateMemory(kotlin/Function1<io.technoirlab.volk/VkMemoryAllocateInfo, kotlin/Unit>): io.technoirlab.vulkan.memory/DeviceMemory // io.technoirlab.vulkan/Device.allocateMemory|allocateMemory(kotlin.Function1<io.technoirlab.volk.VkMemoryAllocateInfo,kotlin.Unit>){}[0]
     final fun close() // io.technoirlab.vulkan/Device.close|close(){}[0]
     final fun createBuffer(kotlin/Function1<io.technoirlab.volk/VkBufferCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.resource/Buffer // io.technoirlab.vulkan/Device.createBuffer|createBuffer(kotlin.Function1<io.technoirlab.volk.VkBufferCreateInfo,kotlin.Unit>){}[0]
@@ -763,6 +1016,7 @@ final class io.technoirlab.vulkan/Device : io.technoirlab.vulkan/VulkanObject, k
     final fun createShaderModule(kotlin/Function1<io.technoirlab.volk/VkShaderModuleCreateInfo, kotlin/Unit>): io.technoirlab.vulkan.pipeline/ShaderModule // io.technoirlab.vulkan/Device.createShaderModule|createShaderModule(kotlin.Function1<io.technoirlab.volk.VkShaderModuleCreateInfo,kotlin.Unit>){}[0]
     final fun createSwapchain(kotlin/Function1<io.technoirlab.volk/VkSwapchainCreateInfoKHR, kotlin/Unit>): io.technoirlab.vulkan.presentation/Swapchain // io.technoirlab.vulkan/Device.createSwapchain|createSwapchain(kotlin.Function1<io.technoirlab.volk.VkSwapchainCreateInfoKHR,kotlin.Unit>){}[0]
     final fun getDescriptorSetLayoutSupport(io.technoirlab.volk/VkDescriptorSetLayoutCreateInfo): kotlin/Boolean // io.technoirlab.vulkan/Device.getDescriptorSetLayoutSupport|getDescriptorSetLayoutSupport(io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo){}[0]
+    final fun getDeviceImageSubresourceLayout(kotlin/Function1<io.technoirlab.volk/VkImageCreateInfo, kotlin/Unit>, kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.image/ImageSubresourceLayout // io.technoirlab.vulkan/Device.getDeviceImageSubresourceLayout|getDeviceImageSubresourceLayout(kotlin.Function1<io.technoirlab.volk.VkImageCreateInfo,kotlin.Unit>;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun getImageSubresourceLayout(io.technoirlab.vulkan.image/Image, kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan.image/ImageSubresourceLayout // io.technoirlab.vulkan/Device.getImageSubresourceLayout|getImageSubresourceLayout(io.technoirlab.vulkan.image.Image;kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
     final fun getQueue(kotlin/UInt, kotlin/UInt = ...): io.technoirlab.vulkan/Queue // io.technoirlab.vulkan/Device.getQueue|getQueue(kotlin.UInt;kotlin.UInt){}[0]
     final fun getRenderingAreaGranularity(kotlin.collections/List<kotlin/UInt> = ..., kotlin/UInt = ..., kotlin/UInt = ...): io.technoirlab.vulkan/Extent2D // io.technoirlab.vulkan/Device.getRenderingAreaGranularity|getRenderingAreaGranularity(kotlin.collections.List<kotlin.UInt>;kotlin.UInt;kotlin.UInt){}[0]
