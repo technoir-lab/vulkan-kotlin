@@ -11,6 +11,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
@@ -56,6 +57,7 @@ import io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo
 import io.technoirlab.volk.VkDescriptorSetLayoutSupport
 import io.technoirlab.volk.VkDescriptorSetLayoutVar
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkDeviceImageSubresourceInfo
 import io.technoirlab.volk.VkDeviceMemoryVar
 import io.technoirlab.volk.VkEventCreateFlags
 import io.technoirlab.volk.VkEventCreateInfo
@@ -127,6 +129,7 @@ import io.technoirlab.volk.vkCreateSwapchainKHR
 import io.technoirlab.volk.vkDestroyDevice
 import io.technoirlab.volk.vkDeviceWaitIdle
 import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
+import io.technoirlab.volk.vkGetDeviceImageSubresourceLayout
 import io.technoirlab.volk.vkGetDeviceQueue
 import io.technoirlab.volk.vkGetImageSubresourceLayout2
 import io.technoirlab.volk.vkUpdateDescriptorSets
@@ -151,6 +154,7 @@ import io.technoirlab.vulkan.resource.Sampler
 import io.technoirlab.vulkan.sync.Event
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.invoke
@@ -628,6 +632,44 @@ class Device internal constructor(
         }
         vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
         return layoutSupport.supported == VK_TRUE
+    }
+
+    /**
+     * Retrieve layout information for an image subresource described by image creation parameters.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceImageSubresourceLayout.html">vkGetDeviceImageSubresourceLayout Manual Page</a>
+     */
+    context(allocator: NativePlacement)
+    fun getDeviceImageSubresourceLayout(
+        imageCreateInfo: VkImageCreateInfo.() -> Unit,
+        aspectMask: VkImageAspectFlags,
+        mipLevel: UInt = 0u,
+        arrayLayer: UInt = 0u,
+    ): VkSubresourceLayout2 {
+        val createInfo = allocator.alloc<VkImageCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+            imageCreateInfo()
+        }
+        val subresource = allocator.alloc<VkImageSubresource2> {
+            sType = VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
+            imageSubresource.aspectMask = aspectMask
+            imageSubresource.mipLevel = mipLevel
+            imageSubresource.arrayLayer = arrayLayer
+        }
+        val deviceImageSubresourceInfo = allocator.alloc<VkDeviceImageSubresourceInfo> {
+            sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO
+            pCreateInfo = createInfo.ptr
+            pSubresource = subresource.ptr
+        }
+        val hostMemcpySize = allocator.alloc<VkSubresourceHostMemcpySize> {
+            sType = VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE
+        }
+        val subresourceLayout = allocator.alloc<VkSubresourceLayout2> {
+            sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
+            pNext = hostMemcpySize.ptr
+        }
+        vkGetDeviceImageSubresourceLayout!!(handle, deviceImageSubresourceInfo.ptr, subresourceLayout.ptr)
+        return subresourceLayout
     }
 
     /**
