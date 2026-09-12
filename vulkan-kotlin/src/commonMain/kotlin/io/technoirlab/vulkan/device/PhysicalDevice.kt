@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan
+package io.technoirlab.vulkan.device
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_PHYSICAL_DEVICE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
@@ -58,6 +58,10 @@ import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceCapabilitiesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
 import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
+import io.technoirlab.vulkan.ExtensionProperties
+import io.technoirlab.vulkan.FormatProperties
+import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.image.ImageFormatProperties
 import io.technoirlab.vulkan.image.toImageFormatProperties
 import io.technoirlab.vulkan.memory.MemoryProperties

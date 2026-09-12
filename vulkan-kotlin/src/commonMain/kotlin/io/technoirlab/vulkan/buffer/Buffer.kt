@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.resource
+package io.technoirlab.vulkan.buffer
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_BUFFER
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO

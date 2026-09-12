@@ -3,7 +3,7 @@ package io.technoirlab.vulkan.command
 import io.technoirlab.volk.vkCmdDrawMeshTasksEXT
 import io.technoirlab.volk.vkCmdDrawMeshTasksIndirectCountEXT
 import io.technoirlab.volk.vkCmdDrawMeshTasksIndirectEXT
-import io.technoirlab.vulkan.resource.Buffer
+import io.technoirlab.vulkan.buffer.Buffer
 import kotlinx.cinterop.invoke
 import kotlin.assert
 

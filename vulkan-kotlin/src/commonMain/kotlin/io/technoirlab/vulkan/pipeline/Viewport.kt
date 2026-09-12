@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan
+package io.technoirlab.vulkan.pipeline
 
 import io.technoirlab.volk.VkViewport
 

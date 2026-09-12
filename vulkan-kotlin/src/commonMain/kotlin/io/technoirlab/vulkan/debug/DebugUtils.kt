@@ -1,30 +1,68 @@
 package io.technoirlab.vulkan.debug
 
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_TAG_INFO_EXT
 import io.technoirlab.volk.VkDebugUtilsLabelEXT
+import io.technoirlab.volk.VkDebugUtilsMessageSeverityFlagsEXT
+import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagsEXT
+import io.technoirlab.volk.VkDebugUtilsMessengerCreateInfoEXT
+import io.technoirlab.volk.VkDebugUtilsMessengerEXTVar
 import io.technoirlab.volk.VkDebugUtilsObjectNameInfoEXT
 import io.technoirlab.volk.VkDebugUtilsObjectTagInfoEXT
 import io.technoirlab.volk.vkCmdBeginDebugUtilsLabelEXT
 import io.technoirlab.volk.vkCmdEndDebugUtilsLabelEXT
 import io.technoirlab.volk.vkCmdInsertDebugUtilsLabelEXT
+import io.technoirlab.volk.vkCreateDebugUtilsMessengerEXT
 import io.technoirlab.volk.vkQueueBeginDebugUtilsLabelEXT
 import io.technoirlab.volk.vkQueueEndDebugUtilsLabelEXT
 import io.technoirlab.volk.vkQueueInsertDebugUtilsLabelEXT
 import io.technoirlab.volk.vkSetDebugUtilsObjectNameEXT
 import io.technoirlab.volk.vkSetDebugUtilsObjectTagEXT
-import io.technoirlab.vulkan.Device
-import io.technoirlab.vulkan.Queue
+import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.command.CommandBuffer
+import io.technoirlab.vulkan.device.Device
+import io.technoirlab.vulkan.device.Queue
+import kotlinx.cinterop.StableRef
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.toLong
+import kotlinx.cinterop.value
+import kotlin.assert
+
+/**
+ * Create a debug messenger.
+ * Requires the `VK_EXT_debug_utils` extension to be enabled on the instance.
+ *
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDebugUtilsMessengerEXT.html">vkCreateDebugUtilsMessengerEXT Manual Page</a>
+ */
+fun Instance.createDebugMessenger(
+    messageSeverity: VkDebugUtilsMessageSeverityFlagsEXT,
+    messageType: VkDebugUtilsMessageTypeFlagsEXT,
+    callback: DebugMessenger.Callback,
+): DebugMessenger = memScoped {
+    assert(messageSeverity != 0u) { "messageSeverity must not be 0" }
+    assert(messageType != 0u) { "messageType must not be 0" }
+    val callbackRef = StableRef.create(callback)
+    val debugUtilsMessengerCreateInfo = alloc<VkDebugUtilsMessengerCreateInfoEXT> {
+        sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
+        pfnUserCallback = staticCFunction(::debugMessengerCallback)
+        pUserData = callbackRef.asCPointer()
+        this.messageSeverity = messageSeverity
+        this.messageType = messageType
+    }
+    val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
+    vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
+        .checkResult("Failed to create a debug messenger")
+    return DebugMessenger(handle, messengerVar.value!!, callbackRef)
+}
 
 /**
  * Begin a debug label region in the command buffer.

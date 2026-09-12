@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan
+package io.technoirlab.vulkan.device
 
 import io.technoirlab.volk.VK_ERROR_OUT_OF_DATE_KHR
 import io.technoirlab.volk.VK_OBJECT_TYPE_QUEUE
@@ -14,6 +14,8 @@ import io.technoirlab.volk.VkSwapchainKHRVar
 import io.technoirlab.volk.vkQueuePresentKHR
 import io.technoirlab.volk.vkQueueSubmit2
 import io.technoirlab.volk.vkQueueWaitIdle
+import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore

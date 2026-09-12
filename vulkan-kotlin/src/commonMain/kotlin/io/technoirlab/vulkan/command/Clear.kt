@@ -1,9 +1,40 @@
 package io.technoirlab.vulkan.command
 
+import io.technoirlab.volk.VkClearAttachment
 import io.technoirlab.volk.VkClearColorValue
 import io.technoirlab.volk.VkClearDepthStencilValue
+import io.technoirlab.volk.VkClearRect
 import io.technoirlab.volk.VkClearValue
+import io.technoirlab.volk.VkImageAspectFlags
+import io.technoirlab.vulkan.Rect2D
+import io.technoirlab.vulkan.from
 import kotlinx.cinterop.set
+
+/**
+ * An attachment to clear inside a rendering instance.
+ *
+ * @property aspectMask The color, depth, or stencil aspects to clear.
+ * @property clearValue The clear value matching the selected aspects and attachment format.
+ * @property colorAttachment The color attachment index, ignored for depth/stencil clears.
+ */
+data class ClearAttachment(
+    val aspectMask: VkImageAspectFlags,
+    val clearValue: ClearValue,
+    val colorAttachment: UInt = 0u,
+)
+
+/**
+ * A rectangular region and array layers to clear in an attachment.
+ *
+ * @property rect The offset and dimensions of the region.
+ * @property baseArrayLayer The first array layer to clear.
+ * @property layerCount The number of array layers to clear.
+ */
+data class ClearRect(
+    val rect: Rect2D,
+    val baseArrayLayer: UInt = 0u,
+    val layerCount: UInt = 1u,
+)
 
 /**
  * A color or depth/stencil value used to clear an attachment.
@@ -69,6 +100,18 @@ sealed interface ClearValue {
         val depth: Float,
         val stencil: UInt,
     ) : ClearValue
+}
+
+internal inline fun VkClearAttachment.from(attachment: ClearAttachment) {
+    aspectMask = attachment.aspectMask
+    colorAttachment = attachment.colorAttachment
+    clearValue.from(attachment.clearValue)
+}
+
+internal inline fun VkClearRect.from(region: ClearRect) {
+    rect.from(region.rect)
+    baseArrayLayer = region.baseArrayLayer
+    layerCount = region.layerCount
 }
 
 internal fun VkClearColorValue.from(value: ClearValue.Color) {

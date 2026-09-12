@@ -5,9 +5,9 @@ import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
 import io.technoirlab.volk.VK_VERSION_PATCH
 import io.technoirlab.vulkan.ApplicationInfo
-import io.technoirlab.vulkan.Device
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.Vulkan
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.toKString
 import kotlin.experimental.ExperimentalNativeApi

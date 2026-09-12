@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.pipeline
+package io.technoirlab.vulkan.shader
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_MODULE
 import io.technoirlab.volk.VkDevice
