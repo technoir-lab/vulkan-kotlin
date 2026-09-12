@@ -1,5 +1,8 @@
 package io.technoirlab.vulkan
 
-class VulkanException(
+/**
+ * Exception thrown when a Vulkan operation fails.
+ */
+class VulkanException @PublishedApi internal constructor(
     message: String,
 ) : Exception(message)
