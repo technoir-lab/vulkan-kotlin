@@ -1177,22 +1177,6 @@ class CommandBuffer internal constructor(
         depthInputAttachmentIndex: UInt? = null,
         stencilInputAttachmentIndex: UInt? = null,
     ): Unit = memScoped {
-        val mappedColorIndices = colorAttachmentInputIndices.filter { it != VK_ATTACHMENT_UNUSED }
-        assert(
-            depthInputAttachmentIndex == null ||
-                depthInputAttachmentIndex == VK_ATTACHMENT_UNUSED ||
-                depthInputAttachmentIndex !in mappedColorIndices,
-        ) {
-            "The depth input attachment index must differ from all mapped color attachment indices"
-        }
-        assert(
-            stencilInputAttachmentIndex == null ||
-                stencilInputAttachmentIndex == VK_ATTACHMENT_UNUSED ||
-                stencilInputAttachmentIndex !in mappedColorIndices,
-        ) {
-            "The stencil input attachment index must differ from all mapped color attachment indices"
-        }
-
         val colorIndices = if (colorAttachmentInputIndices.isNotEmpty()) {
             allocArray<UIntVar>(colorAttachmentInputIndices.size) { index ->
                 value = colorAttachmentInputIndices[index]

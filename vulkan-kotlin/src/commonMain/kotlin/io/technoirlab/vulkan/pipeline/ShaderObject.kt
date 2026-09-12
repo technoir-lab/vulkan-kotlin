@@ -114,7 +114,6 @@ class Shader internal constructor(
  */
 fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List<Shader?>? = null): Unit = memScoped {
     assert(stages.isNotEmpty()) { "stages must not be empty" }
-    assert(stages.distinct().size == stages.size) { "stages must contain unique values" }
     assert(shaders == null || stages.size == shaders.size) { "stages and shaders must have the same size" }
 
     val stageValues = allocArray<UIntVar>(stages.size) { value = stages[it] }
