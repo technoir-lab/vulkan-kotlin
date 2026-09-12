@@ -177,7 +177,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final val type // io.technoirlab.vulkan.command/CommandBuffer.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.command/CommandBuffer.type.<get-type>|<get-type>(){}[0]
 
-    final fun begin(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.begin|begin(kotlin.UInt){}[0]
+    final fun begin(kotlin/UInt = ..., kotlin/Function1<io.technoirlab.volk/VkCommandBufferInheritanceInfo, kotlin/Unit>? = ...) // io.technoirlab.vulkan.command/CommandBuffer.begin|begin(kotlin.UInt;kotlin.Function1<io.technoirlab.volk.VkCommandBufferInheritanceInfo,kotlin.Unit>?){}[0]
     final fun beginQuery(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.beginQuery|beginQuery(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt){}[0]
     final fun beginRendering(kotlin/Function1<io.technoirlab.volk/VkRenderingInfo, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.beginRendering|beginRendering(kotlin.Function1<io.technoirlab.volk.VkRenderingInfo,kotlin.Unit>){}[0]
     final fun bindDescriptorSets(kotlin/UInt = ..., io.technoirlab.vulkan.pipeline/PipelineLayout, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.descriptor/DescriptorSet>, kotlin.collections/List<kotlin/UInt> = ...) // io.technoirlab.vulkan.command/CommandBuffer.bindDescriptorSets|bindDescriptorSets(kotlin.UInt;io.technoirlab.vulkan.pipeline.PipelineLayout;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.descriptor.DescriptorSet>;kotlin.collections.List<kotlin.UInt>){}[0]
@@ -257,7 +257,7 @@ final class io.technoirlab.vulkan.command/CommandPool : io.technoirlab.vulkan/Vu
     final val type // io.technoirlab.vulkan.command/CommandPool.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.command/CommandPool.type.<get-type>|<get-type>(){}[0]
 
-    final fun allocateCommandBuffers(kotlin/Int): kotlin.collections/List<io.technoirlab.vulkan.command/CommandBuffer> // io.technoirlab.vulkan.command/CommandPool.allocateCommandBuffers|allocateCommandBuffers(kotlin.Int){}[0]
+    final fun allocateCommandBuffers(kotlin/Int, kotlin/UInt = ...): kotlin.collections/List<io.technoirlab.vulkan.command/CommandBuffer> // io.technoirlab.vulkan.command/CommandPool.allocateCommandBuffers|allocateCommandBuffers(kotlin.Int;kotlin.UInt){}[0]
     final fun close() // io.technoirlab.vulkan.command/CommandPool.close|close(){}[0]
     final fun freeCommandBuffers(kotlin.collections/List<io.technoirlab.vulkan.command/CommandBuffer>) // io.technoirlab.vulkan.command/CommandPool.freeCommandBuffers|freeCommandBuffers(kotlin.collections.List<io.technoirlab.vulkan.command.CommandBuffer>){}[0]
     final fun reset(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandPool.reset|reset(kotlin.UInt){}[0]

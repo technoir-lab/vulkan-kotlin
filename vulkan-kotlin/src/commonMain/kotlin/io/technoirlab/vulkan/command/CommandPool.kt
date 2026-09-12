@@ -4,6 +4,7 @@ import io.technoirlab.volk.VK_COMMAND_BUFFER_LEVEL_PRIMARY
 import io.technoirlab.volk.VK_OBJECT_TYPE_COMMAND_POOL
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
 import io.technoirlab.volk.VkCommandBufferAllocateInfo
+import io.technoirlab.volk.VkCommandBufferLevel
 import io.technoirlab.volk.VkCommandBufferVar
 import io.technoirlab.volk.VkCommandPool
 import io.technoirlab.volk.VkCommandPoolResetFlags
@@ -45,15 +46,18 @@ class CommandPool internal constructor(
     /**
      * Allocate command buffers from the command pool.
      *
+     * @param count Number of command buffers to allocate.
+     * @param level Command buffer level. Defaults to primary command buffers.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateCommandBuffers.html">vkAllocateCommandBuffers Manual Page</a>
      */
-    fun allocateCommandBuffers(count: Int): List<CommandBuffer> = memScoped {
+    fun allocateCommandBuffers(count: Int, level: VkCommandBufferLevel = VK_COMMAND_BUFFER_LEVEL_PRIMARY): List<CommandBuffer> = memScoped {
         assert(count > 0) { "count must be greater than 0" }
         val allocateInfo = alloc<VkCommandBufferAllocateInfo> {
             sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO
             commandPool = handle
             commandBufferCount = count.toUInt()
-            level = VK_COMMAND_BUFFER_LEVEL_PRIMARY
+            this.level = level
         }
         val commandBufferArray = allocArray<VkCommandBufferVar>(count)
         vkAllocateCommandBuffers!!(device, allocateInfo.ptr, commandBufferArray)

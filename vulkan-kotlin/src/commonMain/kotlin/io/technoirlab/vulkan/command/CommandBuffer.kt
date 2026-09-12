@@ -12,6 +12,7 @@ import io.technoirlab.volk.VK_QUERY_RESULT_64_BIT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2
@@ -36,6 +37,7 @@ import io.technoirlab.volk.VkClearDepthStencilValue
 import io.technoirlab.volk.VkClearRect
 import io.technoirlab.volk.VkCommandBuffer
 import io.technoirlab.volk.VkCommandBufferBeginInfo
+import io.technoirlab.volk.VkCommandBufferInheritanceInfo
 import io.technoirlab.volk.VkCommandBufferResetFlags
 import io.technoirlab.volk.VkCommandBufferUsageFlags
 import io.technoirlab.volk.VkCompareOp
@@ -201,16 +203,35 @@ class CommandBuffer internal constructor(
     /**
      * Start recording the command buffer.
      *
+     * Supply [inheritanceInfo] when recording a secondary command buffer, even if its body is empty.
+     * For secondary command buffers executed inside dynamic rendering, include
+     * `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT` in [usageFlags] and chain
+     * `VkCommandBufferInheritanceRenderingInfo` through `pNext`. Local-read attachment mappings can be included
+     * in the same chain using `VkRenderingAttachmentLocationInfo` and `VkRenderingInputAttachmentIndexInfo`.
+     * The chain and any arrays it references must remain valid until this function returns.
+     *
+     * @param usageFlags Command buffer recording usage flags.
+     * @param inheritanceInfo Configures secondary command buffer inheritance with `sType` initialized.
+     * The supplied `pNext` chain is preserved. If null, no inheritance information is supplied.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBeginCommandBuffer.html">vkBeginCommandBuffer Manual Page</a>
      */
-    fun begin(usageFlags: VkCommandBufferUsageFlags = 0u): Unit = memScoped {
-        val beginInfo = alloc<VkCommandBufferBeginInfo> {
-            sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
-            flags = usageFlags
+    fun begin(usageFlags: VkCommandBufferUsageFlags = 0u, inheritanceInfo: (VkCommandBufferInheritanceInfo.() -> Unit)? = null): Unit =
+        memScoped {
+            val inheritanceInfo = inheritanceInfo?.let {
+                alloc<VkCommandBufferInheritanceInfo> {
+                    sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
+                    it()
+                }
+            }
+            val beginInfo = alloc<VkCommandBufferBeginInfo> {
+                sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+                flags = usageFlags
+                pInheritanceInfo = inheritanceInfo?.ptr
+            }
+            vkBeginCommandBuffer!!(handle, beginInfo.ptr)
+                .checkResult("Failed to begin command buffer")
         }
-        vkBeginCommandBuffer!!(handle, beginInfo.ptr)
-            .checkResult("Failed to begin command buffer")
-    }
 
     /**
      * Begin a query.
