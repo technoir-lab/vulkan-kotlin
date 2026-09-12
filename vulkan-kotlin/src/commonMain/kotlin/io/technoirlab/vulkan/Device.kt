@@ -166,6 +166,7 @@ import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
+import kotlinx.cinterop.readValue
 import kotlinx.cinterop.value
 import kotlin.assert
 
@@ -752,12 +753,14 @@ class Device internal constructor(
     /**
      * Update descriptor sets.
      *
+     * The supplied structures and any memory referenced by their pointers must remain valid until this call returns.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkUpdateDescriptorSets.html">vkUpdateDescriptorSets Manual Page</a>
      */
     fun updateDescriptorSets(writes: List<VkWriteDescriptorSet>, copies: List<VkCopyDescriptorSet> = emptyList()): Unit = memScoped {
         val writesArray = if (writes.isNotEmpty()) {
             allocArray<VkWriteDescriptorSet>(writes.size) { index ->
-                writes[index]
+                writes[index].readValue().place(ptr)
             }
         } else {
             null
@@ -765,7 +768,7 @@ class Device internal constructor(
 
         val copiesArray = if (copies.isNotEmpty()) {
             allocArray<VkCopyDescriptorSet>(copies.size) { index ->
-                copies[index]
+                copies[index].readValue().place(ptr)
             }
         } else {
             null
