@@ -13,6 +13,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_BLIT_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_BUFFER_TO_IMAGE_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_COPY_IMAGE_INFO_2
@@ -38,6 +39,7 @@ import io.technoirlab.volk.VkClearRect
 import io.technoirlab.volk.VkCommandBuffer
 import io.technoirlab.volk.VkCommandBufferBeginInfo
 import io.technoirlab.volk.VkCommandBufferInheritanceInfo
+import io.technoirlab.volk.VkCommandBufferInheritanceRenderingInfo
 import io.technoirlab.volk.VkCommandBufferResetFlags
 import io.technoirlab.volk.VkCommandBufferUsageFlags
 import io.technoirlab.volk.VkCompareOp
@@ -66,6 +68,7 @@ import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPrimitiveTopology
 import io.technoirlab.volk.VkPushDescriptorSetInfo
 import io.technoirlab.volk.VkQueryControlFlags
+import io.technoirlab.volk.VkQueryPipelineStatisticFlags
 import io.technoirlab.volk.VkQueryResultFlags
 import io.technoirlab.volk.VkRect2D
 import io.technoirlab.volk.VkRenderingAttachmentLocationInfo
@@ -203,35 +206,97 @@ class CommandBuffer internal constructor(
     /**
      * Start recording the command buffer.
      *
-     * Supply [inheritanceInfo] when recording a secondary command buffer, even if its body is empty.
-     * For secondary command buffers executed inside dynamic rendering, include
-     * `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT` in [usageFlags] and chain
-     * `VkCommandBufferInheritanceRenderingInfo` through `pNext`. Local-read attachment mappings can be included
-     * in the same chain using `VkRenderingAttachmentLocationInfo` and `VkRenderingInputAttachmentIndexInfo`.
-     * The chain and any arrays it references must remain valid until this function returns.
+     * Query inheritance parameters are used by secondary command buffers. For secondary command buffers executed
+     * inside dynamic rendering, include `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT` in [usageFlags] and
+     * supply [renderingInheritance]. Native inheritance structures and their arrays are allocated internally.
      *
      * @param usageFlags Command buffer recording usage flags.
-     * @param inheritanceInfo Configures secondary command buffer inheritance with `sType` initialized.
-     * The supplied `pNext` chain is preserved. If null, no inheritance information is supplied.
-     *
+     * @param occlusionQueryEnable Whether execution inside an active occlusion query is permitted.
+     * @param queryFlags Flags permitted for the inherited occlusion query.
+     * @param pipelineStatistics Pipeline statistics permitted for inherited queries.
+     * @param renderingInheritance Attachment formats, samples, flags, and local-read mappings inherited during rendering.
+     * @param inheritanceExtensions Configures additional inheritance extensions through `pNext`, with `sType` initialized.
+     * Other fields are managed by the primitive parameters. The supplied chain is preserved after internally generated
+     * structures and must not duplicate them. Its structures and pointed memory must remain valid until this call returns.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkBeginCommandBuffer.html">vkBeginCommandBuffer Manual Page</a>
      */
-    fun begin(usageFlags: VkCommandBufferUsageFlags = 0u, inheritanceInfo: (VkCommandBufferInheritanceInfo.() -> Unit)? = null): Unit =
-        memScoped {
-            val inheritanceInfo = inheritanceInfo?.let {
-                alloc<VkCommandBufferInheritanceInfo> {
-                    sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
-                    it()
-                }
-            }
-            val beginInfo = alloc<VkCommandBufferBeginInfo> {
-                sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
-                flags = usageFlags
-                pInheritanceInfo = inheritanceInfo?.ptr
-            }
-            vkBeginCommandBuffer!!(handle, beginInfo.ptr)
-                .checkResult("Failed to begin command buffer")
+    fun begin(
+        usageFlags: VkCommandBufferUsageFlags = 0u,
+        occlusionQueryEnable: Boolean = false,
+        queryFlags: VkQueryControlFlags = 0u,
+        pipelineStatistics: VkQueryPipelineStatisticFlags = 0u,
+        renderingInheritance: RenderingInheritance? = null,
+        inheritanceExtensions: VkCommandBufferInheritanceInfo.() -> Unit = {},
+    ): Unit = memScoped {
+        val inheritanceInfo = alloc<VkCommandBufferInheritanceInfo> {
+            sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_INFO
+            inheritanceExtensions()
+            renderPass = null
+            subpass = 0u
+            framebuffer = null
+            this.occlusionQueryEnable = occlusionQueryEnable.toVkBool32()
+            this.queryFlags = queryFlags
+            this.pipelineStatistics = pipelineStatistics
         }
+        renderingInheritance?.let { rendering ->
+            val formats = rendering.colorAttachmentFormats
+            val renderingInfo = alloc<VkCommandBufferInheritanceRenderingInfo> {
+                sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_INHERITANCE_RENDERING_INFO
+                pNext = inheritanceInfo.pNext
+                flags = rendering.flags
+                viewMask = 0u
+                colorAttachmentCount = formats.size.toUInt()
+                pColorAttachmentFormats = if (formats.isNotEmpty()) {
+                    allocArray<UIntVar>(formats.size) { value = formats[it] }
+                } else {
+                    null
+                }
+                depthAttachmentFormat = rendering.depthAttachmentFormat
+                stencilAttachmentFormat = rendering.stencilAttachmentFormat
+                rasterizationSamples = rendering.rasterizationSamples
+            }
+            inheritanceInfo.pNext = renderingInfo.ptr
+            rendering.attachmentMappings?.let { mappings ->
+                val locations = mappings.colorAttachmentLocations
+                val inputIndices = mappings.colorAttachmentInputIndices
+                assert(locations == null || locations.size == formats.size) {
+                    "Color attachment locations must match the color attachment count"
+                }
+                assert(inputIndices == null || inputIndices.size == formats.size) {
+                    "Color input attachment indices must match the color attachment count"
+                }
+                val depthIndex = mappings.depthInputAttachmentIndex?.let { alloc<UIntVar> { value = it } }
+                val stencilIndex = mappings.stencilInputAttachmentIndex?.let { alloc<UIntVar> { value = it } }
+                val inputInfo = alloc<VkRenderingInputAttachmentIndexInfo> {
+                    sType = VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO
+                    pNext = inheritanceInfo.pNext
+                    colorAttachmentCount = formats.size.toUInt()
+                    pColorAttachmentInputIndices = inputIndices?.takeIf { it.isNotEmpty() }?.let { indices ->
+                        allocArray<UIntVar>(indices.size) { value = indices[it] }
+                    }
+                    pDepthInputAttachmentIndex = depthIndex?.ptr
+                    pStencilInputAttachmentIndex = stencilIndex?.ptr
+                }
+                inheritanceInfo.pNext = inputInfo.ptr
+                val locationInfo = alloc<VkRenderingAttachmentLocationInfo> {
+                    sType = VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO
+                    pNext = inheritanceInfo.pNext
+                    colorAttachmentCount = formats.size.toUInt()
+                    pColorAttachmentLocations = locations?.takeIf { it.isNotEmpty() }?.let { values ->
+                        allocArray<UIntVar>(values.size) { value = values[it] }
+                    }
+                }
+                inheritanceInfo.pNext = locationInfo.ptr
+            }
+        }
+        val beginInfo = alloc<VkCommandBufferBeginInfo> {
+            sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO
+            flags = usageFlags
+            pInheritanceInfo = inheritanceInfo.ptr
+        }
+        vkBeginCommandBuffer!!(handle, beginInfo.ptr)
+            .checkResult("Failed to begin command buffer")
+    }
 
     /**
      * Begin a query.

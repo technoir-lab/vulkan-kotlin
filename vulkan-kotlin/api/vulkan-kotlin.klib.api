@@ -177,7 +177,7 @@ final class io.technoirlab.vulkan.command/CommandBuffer : io.technoirlab.vulkan/
     final val type // io.technoirlab.vulkan.command/CommandBuffer.type|{}type[0]
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.command/CommandBuffer.type.<get-type>|<get-type>(){}[0]
 
-    final fun begin(kotlin/UInt = ..., kotlin/Function1<io.technoirlab.volk/VkCommandBufferInheritanceInfo, kotlin/Unit>? = ...) // io.technoirlab.vulkan.command/CommandBuffer.begin|begin(kotlin.UInt;kotlin.Function1<io.technoirlab.volk.VkCommandBufferInheritanceInfo,kotlin.Unit>?){}[0]
+    final fun begin(kotlin/UInt = ..., kotlin/Boolean = ..., kotlin/UInt = ..., kotlin/UInt = ..., io.technoirlab.vulkan.command/RenderingInheritance? = ..., kotlin/Function1<io.technoirlab.volk/VkCommandBufferInheritanceInfo, kotlin/Unit> = ...) // io.technoirlab.vulkan.command/CommandBuffer.begin|begin(kotlin.UInt;kotlin.Boolean;kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.command.RenderingInheritance?;kotlin.Function1<io.technoirlab.volk.VkCommandBufferInheritanceInfo,kotlin.Unit>){}[0]
     final fun beginQuery(io.technoirlab.vulkan.query/QueryPool, kotlin/UInt, kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandBuffer.beginQuery|beginQuery(io.technoirlab.vulkan.query.QueryPool;kotlin.UInt;kotlin.UInt){}[0]
     final fun beginRendering(kotlin/Function1<io.technoirlab.volk/VkRenderingInfo, kotlin/Unit>) // io.technoirlab.vulkan.command/CommandBuffer.beginRendering|beginRendering(kotlin.Function1<io.technoirlab.volk.VkRenderingInfo,kotlin.Unit>){}[0]
     final fun bindDescriptorSets(kotlin/UInt = ..., io.technoirlab.vulkan.pipeline/PipelineLayout, kotlin/UInt, kotlin.collections/List<io.technoirlab.vulkan.descriptor/DescriptorSet>, kotlin.collections/List<kotlin/UInt> = ...) // io.technoirlab.vulkan.command/CommandBuffer.bindDescriptorSets|bindDescriptorSets(kotlin.UInt;io.technoirlab.vulkan.pipeline.PipelineLayout;kotlin.UInt;kotlin.collections.List<io.technoirlab.vulkan.descriptor.DescriptorSet>;kotlin.collections.List<kotlin.UInt>){}[0]
@@ -262,6 +262,56 @@ final class io.technoirlab.vulkan.command/CommandPool : io.technoirlab.vulkan/Vu
     final fun freeCommandBuffers(kotlin.collections/List<io.technoirlab.vulkan.command/CommandBuffer>) // io.technoirlab.vulkan.command/CommandPool.freeCommandBuffers|freeCommandBuffers(kotlin.collections.List<io.technoirlab.vulkan.command.CommandBuffer>){}[0]
     final fun reset(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandPool.reset|reset(kotlin.UInt){}[0]
     final fun trim(kotlin/UInt = ...) // io.technoirlab.vulkan.command/CommandPool.trim|trim(kotlin.UInt){}[0]
+}
+
+final class io.technoirlab.vulkan.command/RenderingAttachmentMappings { // io.technoirlab.vulkan.command/RenderingAttachmentMappings|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/UInt>? = ..., kotlin.collections/List<kotlin/UInt>? = ..., kotlin/UInt? = ..., kotlin/UInt? = ...) // io.technoirlab.vulkan.command/RenderingAttachmentMappings.<init>|<init>(kotlin.collections.List<kotlin.UInt>?;kotlin.collections.List<kotlin.UInt>?;kotlin.UInt?;kotlin.UInt?){}[0]
+
+    final val colorAttachmentInputIndices // io.technoirlab.vulkan.command/RenderingAttachmentMappings.colorAttachmentInputIndices|{}colorAttachmentInputIndices[0]
+        final fun <get-colorAttachmentInputIndices>(): kotlin.collections/List<kotlin/UInt>? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.colorAttachmentInputIndices.<get-colorAttachmentInputIndices>|<get-colorAttachmentInputIndices>(){}[0]
+    final val colorAttachmentLocations // io.technoirlab.vulkan.command/RenderingAttachmentMappings.colorAttachmentLocations|{}colorAttachmentLocations[0]
+        final fun <get-colorAttachmentLocations>(): kotlin.collections/List<kotlin/UInt>? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.colorAttachmentLocations.<get-colorAttachmentLocations>|<get-colorAttachmentLocations>(){}[0]
+    final val depthInputAttachmentIndex // io.technoirlab.vulkan.command/RenderingAttachmentMappings.depthInputAttachmentIndex|{}depthInputAttachmentIndex[0]
+        final fun <get-depthInputAttachmentIndex>(): kotlin/UInt? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.depthInputAttachmentIndex.<get-depthInputAttachmentIndex>|<get-depthInputAttachmentIndex>(){}[0]
+    final val stencilInputAttachmentIndex // io.technoirlab.vulkan.command/RenderingAttachmentMappings.stencilInputAttachmentIndex|{}stencilInputAttachmentIndex[0]
+        final fun <get-stencilInputAttachmentIndex>(): kotlin/UInt? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.stencilInputAttachmentIndex.<get-stencilInputAttachmentIndex>|<get-stencilInputAttachmentIndex>(){}[0]
+
+    final fun component1(): kotlin.collections/List<kotlin/UInt>? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.component1|component1(){}[0]
+    final fun component2(): kotlin.collections/List<kotlin/UInt>? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.component3|component3(){}[0]
+    final fun component4(): kotlin/UInt? // io.technoirlab.vulkan.command/RenderingAttachmentMappings.component4|component4(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/UInt>? = ..., kotlin.collections/List<kotlin/UInt>? = ..., kotlin/UInt? = ..., kotlin/UInt? = ...): io.technoirlab.vulkan.command/RenderingAttachmentMappings // io.technoirlab.vulkan.command/RenderingAttachmentMappings.copy|copy(kotlin.collections.List<kotlin.UInt>?;kotlin.collections.List<kotlin.UInt>?;kotlin.UInt?;kotlin.UInt?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/RenderingAttachmentMappings.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/RenderingAttachmentMappings.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.command/RenderingAttachmentMappings.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.command/RenderingInheritance { // io.technoirlab.vulkan.command/RenderingInheritance|null[0]
+    constructor <init>(kotlin.collections/List<kotlin/UInt> = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ..., io.technoirlab.vulkan.command/RenderingAttachmentMappings? = ...) // io.technoirlab.vulkan.command/RenderingInheritance.<init>|<init>(kotlin.collections.List<kotlin.UInt>;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.command.RenderingAttachmentMappings?){}[0]
+
+    final val attachmentMappings // io.technoirlab.vulkan.command/RenderingInheritance.attachmentMappings|{}attachmentMappings[0]
+        final fun <get-attachmentMappings>(): io.technoirlab.vulkan.command/RenderingAttachmentMappings? // io.technoirlab.vulkan.command/RenderingInheritance.attachmentMappings.<get-attachmentMappings>|<get-attachmentMappings>(){}[0]
+    final val colorAttachmentFormats // io.technoirlab.vulkan.command/RenderingInheritance.colorAttachmentFormats|{}colorAttachmentFormats[0]
+        final fun <get-colorAttachmentFormats>(): kotlin.collections/List<kotlin/UInt> // io.technoirlab.vulkan.command/RenderingInheritance.colorAttachmentFormats.<get-colorAttachmentFormats>|<get-colorAttachmentFormats>(){}[0]
+    final val depthAttachmentFormat // io.technoirlab.vulkan.command/RenderingInheritance.depthAttachmentFormat|{}depthAttachmentFormat[0]
+        final fun <get-depthAttachmentFormat>(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.depthAttachmentFormat.<get-depthAttachmentFormat>|<get-depthAttachmentFormat>(){}[0]
+    final val flags // io.technoirlab.vulkan.command/RenderingInheritance.flags|{}flags[0]
+        final fun <get-flags>(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.flags.<get-flags>|<get-flags>(){}[0]
+    final val rasterizationSamples // io.technoirlab.vulkan.command/RenderingInheritance.rasterizationSamples|{}rasterizationSamples[0]
+        final fun <get-rasterizationSamples>(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.rasterizationSamples.<get-rasterizationSamples>|<get-rasterizationSamples>(){}[0]
+    final val stencilAttachmentFormat // io.technoirlab.vulkan.command/RenderingInheritance.stencilAttachmentFormat|{}stencilAttachmentFormat[0]
+        final fun <get-stencilAttachmentFormat>(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.stencilAttachmentFormat.<get-stencilAttachmentFormat>|<get-stencilAttachmentFormat>(){}[0]
+
+    final fun component1(): kotlin.collections/List<kotlin/UInt> // io.technoirlab.vulkan.command/RenderingInheritance.component1|component1(){}[0]
+    final fun component2(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.component2|component2(){}[0]
+    final fun component3(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.component3|component3(){}[0]
+    final fun component4(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.component4|component4(){}[0]
+    final fun component5(): kotlin/UInt // io.technoirlab.vulkan.command/RenderingInheritance.component5|component5(){}[0]
+    final fun component6(): io.technoirlab.vulkan.command/RenderingAttachmentMappings? // io.technoirlab.vulkan.command/RenderingInheritance.component6|component6(){}[0]
+    final fun copy(kotlin.collections/List<kotlin/UInt> = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ..., kotlin/UInt = ..., io.technoirlab.vulkan.command/RenderingAttachmentMappings? = ...): io.technoirlab.vulkan.command/RenderingInheritance // io.technoirlab.vulkan.command/RenderingInheritance.copy|copy(kotlin.collections.List<kotlin.UInt>;kotlin.UInt;kotlin.UInt;kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.command.RenderingAttachmentMappings?){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.command/RenderingInheritance.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.command/RenderingInheritance.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.command/RenderingInheritance.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.debug/DebugMessenger : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.debug/DebugMessenger|null[0]
