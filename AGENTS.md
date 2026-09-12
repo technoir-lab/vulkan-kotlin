@@ -15,6 +15,7 @@ Intentionally unsupported functionality:
 * Custom memory allocators (will be added in the future)
 * Raytracing (will be added in the future)
 * Multiview
+* Qualcomm-specific extensions (`VK_QCOM_*`)
 
 ## Supported targets
 
