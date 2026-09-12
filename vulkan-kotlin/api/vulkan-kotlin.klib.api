@@ -624,6 +624,22 @@ final class io.technoirlab.vulkan.memory/MemoryProperties { // io.technoirlab.vu
     final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryProperties.toString|toString(){}[0]
 }
 
+final class io.technoirlab.vulkan.memory/MemoryRegion { // io.technoirlab.vulkan.memory/MemoryRegion|null[0]
+    constructor <init>(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>, kotlin/ULong) // io.technoirlab.vulkan.memory/MemoryRegion.<init>|<init>(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>;kotlin.ULong){}[0]
+
+    final val address // io.technoirlab.vulkan.memory/MemoryRegion.address|{}address[0]
+        final fun <get-address>(): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.memory/MemoryRegion.address.<get-address>|<get-address>(){}[0]
+    final val size // io.technoirlab.vulkan.memory/MemoryRegion.size|{}size[0]
+        final fun <get-size>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRegion.size.<get-size>|<get-size>(){}[0]
+
+    final fun component1(): kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> // io.technoirlab.vulkan.memory/MemoryRegion.component1|component1(){}[0]
+    final fun component2(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRegion.component2|component2(){}[0]
+    final fun copy(kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed> = ..., kotlin/ULong = ...): io.technoirlab.vulkan.memory/MemoryRegion // io.technoirlab.vulkan.memory/MemoryRegion.copy|copy(kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>;kotlin.ULong){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryRegion.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryRegion.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryRegion.toString|toString(){}[0]
+}
+
 final class io.technoirlab.vulkan.memory/MemoryRequirements { // io.technoirlab.vulkan.memory/MemoryRequirements|null[0]
     final val alignment // io.technoirlab.vulkan.memory/MemoryRequirements.alignment|{}alignment[0]
         final fun <get-alignment>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryRequirements.alignment.<get-alignment>|<get-alignment>(){}[0]
@@ -722,7 +738,8 @@ final class io.technoirlab.vulkan.pipeline/PipelineCache : io.technoirlab.vulkan
         final fun <get-type>(): kotlin/UInt // io.technoirlab.vulkan.pipeline/PipelineCache.type.<get-type>|<get-type>(){}[0]
 
     final fun close() // io.technoirlab.vulkan.pipeline/PipelineCache.close|close(){}[0]
-    final fun getData(): kotlin/ByteArray // io.technoirlab.vulkan.pipeline/PipelineCache.getData|getData(){}[0]
+    final fun getData(io.technoirlab.vulkan.memory/MemoryRegion): io.technoirlab.vulkan/VulkanResult<kotlin/ULong> // io.technoirlab.vulkan.pipeline/PipelineCache.getData|getData(io.technoirlab.vulkan.memory.MemoryRegion){}[0]
+    final fun getDataSize(): kotlin/ULong // io.technoirlab.vulkan.pipeline/PipelineCache.getDataSize|getDataSize(){}[0]
     final fun merge(kotlin.collections/List<io.technoirlab.vulkan.pipeline/PipelineCache>) // io.technoirlab.vulkan.pipeline/PipelineCache.merge|merge(kotlin.collections.List<io.technoirlab.vulkan.pipeline.PipelineCache>){}[0]
 }
 
