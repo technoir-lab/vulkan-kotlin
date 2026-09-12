@@ -32,6 +32,7 @@ import io.technoirlab.volk.vkCmdSetAlphaToOneEnableEXT
 import io.technoirlab.volk.vkCmdSetColorBlendAdvancedEXT
 import io.technoirlab.volk.vkCmdSetColorBlendEnableEXT
 import io.technoirlab.volk.vkCmdSetColorBlendEquationEXT
+import io.technoirlab.volk.vkCmdSetColorWriteEnableEXT
 import io.technoirlab.volk.vkCmdSetColorWriteMaskEXT
 import io.technoirlab.volk.vkCmdSetConservativeRasterizationModeEXT
 import io.technoirlab.volk.vkCmdSetDepthBounds
@@ -261,6 +262,21 @@ fun CommandBuffer.setColorBlendEquation(firstAttachment: UInt, equations: List<C
         from(equations[index])
     }
     vkCmdSetColorBlendEquationEXT!!(handle, firstAttachment, equations.size.toUInt(), values)
+}
+
+/**
+ * Enable or disable color writes dynamically for attachments starting at attachment zero.
+ *
+ * Requires the `VK_EXT_color_write_enable` extension and its `colorWriteEnable` feature.
+ * When drawing with shader objects and this feature enabled, set a value for every active color attachment.
+ *
+ * @param enables Color write enable state for each attachment.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetColorWriteEnableEXT.html">vkCmdSetColorWriteEnableEXT Manual Page</a>
+ */
+fun CommandBuffer.setColorWriteEnable(enables: List<Boolean>): Unit = memScoped {
+    assert(enables.isNotEmpty()) { "enables must not be empty" }
+    val values = allocArray<UIntVar>(enables.size) { value = enables[it].toVkBool32() }
+    vkCmdSetColorWriteEnableEXT!!(handle, enables.size.toUInt(), values)
 }
 
 /**
