@@ -44,6 +44,7 @@ import io.technoirlab.volk.VkCopyBufferToImageInfo2
 import io.technoirlab.volk.VkCopyImageInfo2
 import io.technoirlab.volk.VkCopyImageToBufferInfo2
 import io.technoirlab.volk.VkCullModeFlags
+import io.technoirlab.volk.VkDependencyFlags
 import io.technoirlab.volk.VkDependencyInfo
 import io.technoirlab.volk.VkExtent2D
 import io.technoirlab.volk.VkFilter
@@ -397,14 +398,19 @@ class CommandBuffer internal constructor(
     /**
      * Insert a pipeline barrier for buffer memory.
      *
+     * [dependencyFlags] configures the dependency, including `VK_DEPENDENCY_BY_REGION_BIT` for framebuffer-local dependencies.
+     * Inside dynamic rendering, `dynamicRenderingLocalRead` must be enabled, stage masks must contain only framebuffer-space
+     * stages, and source and destination queue family indices must match.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
-    fun bufferMemoryBarrier(barrierInfo: VkBufferMemoryBarrier2.() -> Unit): Unit = memScoped {
+    fun bufferMemoryBarrier(dependencyFlags: VkDependencyFlags = 0u, barrierInfo: VkBufferMemoryBarrier2.() -> Unit): Unit = memScoped {
         val bufferMemoryBarrier = alloc<VkBufferMemoryBarrier2> {
             sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER_2
             barrierInfo()
         }
         pipelineBarrier {
+            this.dependencyFlags = dependencyFlags
             bufferMemoryBarrierCount = 1u
             pBufferMemoryBarriers = bufferMemoryBarrier.ptr
         }
@@ -809,14 +815,20 @@ class CommandBuffer internal constructor(
     /**
      * Insert a pipeline barrier for image memory.
      *
+     * [dependencyFlags] configures the dependency, including `VK_DEPENDENCY_BY_REGION_BIT` for framebuffer-local dependencies.
+     * Inside dynamic rendering, `dynamicRenderingLocalRead` must be enabled, stage masks must contain only framebuffer-space
+     * stages, and source and destination queue family indices must match. Image layouts must remain unchanged, and attachments
+     * must use `VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ` or `VK_IMAGE_LAYOUT_GENERAL`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
-    fun imageMemoryBarrier(barrierInfo: VkImageMemoryBarrier2.() -> Unit): Unit = memScoped {
+    fun imageMemoryBarrier(dependencyFlags: VkDependencyFlags = 0u, barrierInfo: VkImageMemoryBarrier2.() -> Unit): Unit = memScoped {
         val imageMemoryBarrier = alloc<VkImageMemoryBarrier2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2
             barrierInfo()
         }
         pipelineBarrier {
+            this.dependencyFlags = dependencyFlags
             imageMemoryBarrierCount = 1u
             pImageMemoryBarriers = imageMemoryBarrier.ptr
         }
