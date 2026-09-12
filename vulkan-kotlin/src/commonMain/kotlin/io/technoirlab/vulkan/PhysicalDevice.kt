@@ -97,6 +97,11 @@ class PhysicalDevice internal constructor(
     /**
      * Create a new device instance.
      *
+     * Set `pNext` in [createInfo] to supply a device creation extension chain. The chain is appended after
+     * the internally managed core feature structures without modifying the caller's structures. It must remain
+     * valid until this call returns and must not duplicate the core feature structures managed by this method.
+     * The core feature configuration lambdas configure feature values only; their `pNext` links are managed internally.
+     *
      * @param enabledExtensions Names of the device extensions to enable.
      * @param createInfo Configures device creation.
      * @param features Configures enabled Vulkan 1.0 features.
@@ -146,6 +151,7 @@ class PhysicalDevice internal constructor(
         val deviceCreateInfo = alloc<VkDeviceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
             createInfo()
+            features14.pNext = pNext
             pNext = features.ptr
             if (enabledExtensions.isNotEmpty()) {
                 enabledExtensionCount = enabledExtensions.size.toUInt()
