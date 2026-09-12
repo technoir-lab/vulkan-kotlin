@@ -1,6 +1,7 @@
 package io.technoirlab.vulkan.pipeline
 
 import io.technoirlab.volk.VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT
+import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT
@@ -56,10 +57,11 @@ import io.technoirlab.volk.vkDestroyShaderEXT
 import io.technoirlab.volk.vkGetShaderBinaryDataEXT
 import io.technoirlab.vulkan.Device
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.VulkanResult
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.command.CommandBuffer
 import io.technoirlab.vulkan.internal.toVkBool32
-import kotlinx.cinterop.ByteVar
+import io.technoirlab.vulkan.memory.MemoryRegion
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
@@ -68,8 +70,6 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.readBytes
-import kotlinx.cinterop.reinterpret
 import kotlinx.cinterop.value
 import kotlin.assert
 
@@ -151,24 +151,44 @@ fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -
 }
 
 /**
- * Retrieve the implementation-defined binary data for this shader object.
+ * Write the implementation-defined shader binary into caller-provided memory without allocating a blob buffer.
  *
+ * [destination] must remain valid and writable for the duration of the call, and its address must be aligned
+ * to 16 bytes. Use [getBinaryDataSize] to query the capacity needed for the complete binary.
+ *
+ * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
+ *
+ * @param destination The memory region receiving the shader binary.
+ * @return The number of bytes written and the Vulkan status. [VK_INCOMPLETE] indicates that the region was
+ * too small for the complete binary; no data is written and the returned byte count is zero.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetShaderBinaryDataEXT.html">vkGetShaderBinaryDataEXT Manual Page</a>
+ */
+fun Shader.getBinaryData(destination: MemoryRegion): VulkanResult<ULong> = memScoped {
+    assert(destination.address.rawValue.toLong() % 16L == 0L) { "destination address must be aligned to 16 bytes" }
+
+    val dataSize = alloc<ULongVar> { value = destination.size }
+    val result = vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, destination.address)
+    if (result == VK_INCOMPLETE) {
+        return VulkanResult(0uL, result)
+    }
+    result.checkResult("Failed to get shader binary data")
+    return VulkanResult(dataSize.value, result)
+}
+
+/**
+ * Get the size in bytes of this shader object's implementation-defined binary data.
+ *
+ * The binary data and its size remain unchanged for the lifetime of this shader object.
  * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetShaderBinaryDataEXT.html">vkGetShaderBinaryDataEXT Manual Page</a>
  */
-fun Shader.getBinaryData(): ByteArray = memScoped {
+fun Shader.getBinaryDataSize(): ULong = memScoped {
     val dataSize = alloc<ULongVar>()
     vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, null)
         .checkResult("Failed to get shader binary data size")
 
-    val size = dataSize.value
-    if (size == 0uL) return ByteArray(0)
-
-    val data = alloc(size.toLong(), 16).reinterpret<ByteVar>()
-    vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, data.ptr)
-        .checkResult("Failed to get shader binary data")
-    return data.ptr.readBytes(dataSize.value.toInt())
+    return dataSize.value
 }
 
 /**
