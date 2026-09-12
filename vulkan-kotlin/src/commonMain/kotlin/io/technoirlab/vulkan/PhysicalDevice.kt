@@ -401,7 +401,7 @@ class PhysicalDevice internal constructor(
      * @property features13 Vulkan 1.3 features.
      * @property features14 Vulkan 1.4 features.
      */
-    data class Features(
+    data class Features internal constructor(
         val features: VkPhysicalDeviceFeatures2,
         val features11: VkPhysicalDeviceVulkan11Features,
         val features12: VkPhysicalDeviceVulkan12Features,
@@ -418,7 +418,7 @@ class PhysicalDevice internal constructor(
      * @property properties13 Vulkan 1.3 properties.
      * @property properties14 Vulkan 1.4 properties.
      */
-    data class Properties(
+    data class Properties internal constructor(
         val properties: VkPhysicalDeviceProperties2,
         val properties11: VkPhysicalDeviceVulkan11Properties,
         val properties12: VkPhysicalDeviceVulkan12Properties,

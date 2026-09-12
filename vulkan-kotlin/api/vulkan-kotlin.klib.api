@@ -1177,8 +1177,6 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
     final fun getSurfaceSupport(io.technoirlab.vulkan.presentation/Surface, kotlin/UInt): kotlin/Boolean // io.technoirlab.vulkan/PhysicalDevice.getSurfaceSupport|getSurfaceSupport(io.technoirlab.vulkan.presentation.Surface;kotlin.UInt){}[0]
 
     final class Features { // io.technoirlab.vulkan/PhysicalDevice.Features|null[0]
-        constructor <init>(io.technoirlab.volk/VkPhysicalDeviceFeatures2, io.technoirlab.volk/VkPhysicalDeviceVulkan11Features, io.technoirlab.volk/VkPhysicalDeviceVulkan12Features, io.technoirlab.volk/VkPhysicalDeviceVulkan13Features, io.technoirlab.volk/VkPhysicalDeviceVulkan14Features) // io.technoirlab.vulkan/PhysicalDevice.Features.<init>|<init>(io.technoirlab.volk.VkPhysicalDeviceFeatures2;io.technoirlab.volk.VkPhysicalDeviceVulkan11Features;io.technoirlab.volk.VkPhysicalDeviceVulkan12Features;io.technoirlab.volk.VkPhysicalDeviceVulkan13Features;io.technoirlab.volk.VkPhysicalDeviceVulkan14Features){}[0]
-
         final val features // io.technoirlab.vulkan/PhysicalDevice.Features.features|{}features[0]
             final fun <get-features>(): io.technoirlab.volk/VkPhysicalDeviceFeatures2 // io.technoirlab.vulkan/PhysicalDevice.Features.features.<get-features>|<get-features>(){}[0]
         final val features11 // io.technoirlab.vulkan/PhysicalDevice.Features.features11|{}features11[0]
@@ -1195,15 +1193,12 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
         final fun component3(): io.technoirlab.volk/VkPhysicalDeviceVulkan12Features // io.technoirlab.vulkan/PhysicalDevice.Features.component3|component3(){}[0]
         final fun component4(): io.technoirlab.volk/VkPhysicalDeviceVulkan13Features // io.technoirlab.vulkan/PhysicalDevice.Features.component4|component4(){}[0]
         final fun component5(): io.technoirlab.volk/VkPhysicalDeviceVulkan14Features // io.technoirlab.vulkan/PhysicalDevice.Features.component5|component5(){}[0]
-        final fun copy(io.technoirlab.volk/VkPhysicalDeviceFeatures2 = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan11Features = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan12Features = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan13Features = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan14Features = ...): io.technoirlab.vulkan/PhysicalDevice.Features // io.technoirlab.vulkan/PhysicalDevice.Features.copy|copy(io.technoirlab.volk.VkPhysicalDeviceFeatures2;io.technoirlab.volk.VkPhysicalDeviceVulkan11Features;io.technoirlab.volk.VkPhysicalDeviceVulkan12Features;io.technoirlab.volk.VkPhysicalDeviceVulkan13Features;io.technoirlab.volk.VkPhysicalDeviceVulkan14Features){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/PhysicalDevice.Features.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/PhysicalDevice.Features.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // io.technoirlab.vulkan/PhysicalDevice.Features.toString|toString(){}[0]
     }
 
     final class Properties { // io.technoirlab.vulkan/PhysicalDevice.Properties|null[0]
-        constructor <init>(io.technoirlab.volk/VkPhysicalDeviceProperties2, io.technoirlab.volk/VkPhysicalDeviceVulkan11Properties, io.technoirlab.volk/VkPhysicalDeviceVulkan12Properties, io.technoirlab.volk/VkPhysicalDeviceVulkan13Properties, io.technoirlab.volk/VkPhysicalDeviceVulkan14Properties) // io.technoirlab.vulkan/PhysicalDevice.Properties.<init>|<init>(io.technoirlab.volk.VkPhysicalDeviceProperties2;io.technoirlab.volk.VkPhysicalDeviceVulkan11Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan12Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan13Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan14Properties){}[0]
-
         final val properties // io.technoirlab.vulkan/PhysicalDevice.Properties.properties|{}properties[0]
             final fun <get-properties>(): io.technoirlab.volk/VkPhysicalDeviceProperties2 // io.technoirlab.vulkan/PhysicalDevice.Properties.properties.<get-properties>|<get-properties>(){}[0]
         final val properties11 // io.technoirlab.vulkan/PhysicalDevice.Properties.properties11|{}properties11[0]
@@ -1220,7 +1215,6 @@ final class io.technoirlab.vulkan/PhysicalDevice : io.technoirlab.vulkan/VulkanO
         final fun component3(): io.technoirlab.volk/VkPhysicalDeviceVulkan12Properties // io.technoirlab.vulkan/PhysicalDevice.Properties.component3|component3(){}[0]
         final fun component4(): io.technoirlab.volk/VkPhysicalDeviceVulkan13Properties // io.technoirlab.vulkan/PhysicalDevice.Properties.component4|component4(){}[0]
         final fun component5(): io.technoirlab.volk/VkPhysicalDeviceVulkan14Properties // io.technoirlab.vulkan/PhysicalDevice.Properties.component5|component5(){}[0]
-        final fun copy(io.technoirlab.volk/VkPhysicalDeviceProperties2 = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan11Properties = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan12Properties = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan13Properties = ..., io.technoirlab.volk/VkPhysicalDeviceVulkan14Properties = ...): io.technoirlab.vulkan/PhysicalDevice.Properties // io.technoirlab.vulkan/PhysicalDevice.Properties.copy|copy(io.technoirlab.volk.VkPhysicalDeviceProperties2;io.technoirlab.volk.VkPhysicalDeviceVulkan11Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan12Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan13Properties;io.technoirlab.volk.VkPhysicalDeviceVulkan14Properties){}[0]
         final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan/PhysicalDevice.Properties.equals|equals(kotlin.Any?){}[0]
         final fun hashCode(): kotlin/Int // io.technoirlab.vulkan/PhysicalDevice.Properties.hashCode|hashCode(){}[0]
         final fun toString(): kotlin/String // io.technoirlab.vulkan/PhysicalDevice.Properties.toString|toString(){}[0]
