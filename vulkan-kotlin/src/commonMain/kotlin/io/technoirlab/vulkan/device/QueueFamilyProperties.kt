@@ -1,7 +1,9 @@
-package io.technoirlab.vulkan
+package io.technoirlab.vulkan.device
 
 import io.technoirlab.volk.VkQueueFamilyProperties
 import io.technoirlab.volk.VkQueueFlags
+import io.technoirlab.vulkan.Extent3D
+import io.technoirlab.vulkan.toExtent3D
 
 /**
  * Capabilities of a queue family on a physical device.

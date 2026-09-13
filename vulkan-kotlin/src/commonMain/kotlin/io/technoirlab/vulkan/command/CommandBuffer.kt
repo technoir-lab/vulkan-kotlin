@@ -1,7 +1,6 @@
 package io.technoirlab.vulkan.command
 
 import io.technoirlab.volk.VK_ATTACHMENT_UNUSED
-import io.technoirlab.volk.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT16
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT32
 import io.technoirlab.volk.VK_INDEX_TYPE_UINT8
@@ -25,7 +24,6 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_ATTACHMENT_LOCATION_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_INPUT_ATTACHMENT_INDEX_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_RESOLVE_IMAGE_INFO_2
-import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
 import io.technoirlab.volk.VK_WHOLE_SIZE
 import io.technoirlab.volk.VkBlitImageInfo2
 import io.technoirlab.volk.VkBufferCopy2
@@ -50,10 +48,7 @@ import io.technoirlab.volk.VkCopyImageToBufferInfo2
 import io.technoirlab.volk.VkCullModeFlags
 import io.technoirlab.volk.VkDependencyFlags
 import io.technoirlab.volk.VkDependencyInfo
-import io.technoirlab.volk.VkExtent2D
 import io.technoirlab.volk.VkFilter
-import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHR
-import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHRVar
 import io.technoirlab.volk.VkFrontFace
 import io.technoirlab.volk.VkImageBlit2
 import io.technoirlab.volk.VkImageCopy2
@@ -65,7 +60,6 @@ import io.technoirlab.volk.VkIndexType
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineBindPoint
 import io.technoirlab.volk.VkPipelineStageFlags2
-import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkPrimitiveTopology
 import io.technoirlab.volk.VkPushDescriptorSetInfo
 import io.technoirlab.volk.VkQueryControlFlags
@@ -77,9 +71,6 @@ import io.technoirlab.volk.VkRenderingInfo
 import io.technoirlab.volk.VkRenderingInputAttachmentIndexInfo
 import io.technoirlab.volk.VkResolveImageInfo2
 import io.technoirlab.volk.VkResolveImageModeInfoKHR
-import io.technoirlab.volk.VkSampleCountFlagBits
-import io.technoirlab.volk.VkSampleLocationEXT
-import io.technoirlab.volk.VkSampleLocationsInfoEXT
 import io.technoirlab.volk.VkShaderStageFlags
 import io.technoirlab.volk.VkStencilFaceFlags
 import io.technoirlab.volk.VkStencilOp
@@ -124,22 +115,17 @@ import io.technoirlab.volk.vkCmdSetBlendConstants
 import io.technoirlab.volk.vkCmdSetCullMode
 import io.technoirlab.volk.vkCmdSetDepthBias
 import io.technoirlab.volk.vkCmdSetDepthBiasEnable
-import io.technoirlab.volk.vkCmdSetDepthBoundsTestEnable
 import io.technoirlab.volk.vkCmdSetDepthCompareOp
 import io.technoirlab.volk.vkCmdSetDepthTestEnable
 import io.technoirlab.volk.vkCmdSetDepthWriteEnable
 import io.technoirlab.volk.vkCmdSetEvent2
-import io.technoirlab.volk.vkCmdSetFragmentShadingRateKHR
 import io.technoirlab.volk.vkCmdSetFrontFace
-import io.technoirlab.volk.vkCmdSetLineStipple
 import io.technoirlab.volk.vkCmdSetLineWidth
-import io.technoirlab.volk.vkCmdSetPolygonModeEXT
 import io.technoirlab.volk.vkCmdSetPrimitiveRestartEnable
 import io.technoirlab.volk.vkCmdSetPrimitiveTopology
 import io.technoirlab.volk.vkCmdSetRasterizerDiscardEnable
 import io.technoirlab.volk.vkCmdSetRenderingAttachmentLocations
 import io.technoirlab.volk.vkCmdSetRenderingInputAttachmentIndices
-import io.technoirlab.volk.vkCmdSetSampleLocationsEXT
 import io.technoirlab.volk.vkCmdSetScissor
 import io.technoirlab.volk.vkCmdSetScissorWithCount
 import io.technoirlab.volk.vkCmdSetStencilCompareMask
@@ -154,10 +140,11 @@ import io.technoirlab.volk.vkCmdWaitEvents2
 import io.technoirlab.volk.vkCmdWriteTimestamp2
 import io.technoirlab.volk.vkEndCommandBuffer
 import io.technoirlab.volk.vkResetCommandBuffer
-import io.technoirlab.vulkan.Extent2D
 import io.technoirlab.vulkan.Rect2D
-import io.technoirlab.vulkan.Viewport
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.buffer.Buffer
+import io.technoirlab.vulkan.buffer.BufferCopyRegion
+import io.technoirlab.vulkan.buffer.from
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.descriptor.DescriptorSet
 import io.technoirlab.vulkan.from
@@ -173,9 +160,9 @@ import io.technoirlab.vulkan.internal.nCopies
 import io.technoirlab.vulkan.internal.toVkBool32
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineLayout
-import io.technoirlab.vulkan.pipeline.SampleLocation
+import io.technoirlab.vulkan.pipeline.Viewport
+import io.technoirlab.vulkan.pipeline.from
 import io.technoirlab.vulkan.query.QueryPool
-import io.technoirlab.vulkan.resource.Buffer
 import io.technoirlab.vulkan.sync.Event
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.ULongVar
@@ -1088,15 +1075,6 @@ class CommandBuffer internal constructor(
     }
 
     /**
-     * Enable or disable depth bounds testing dynamically for the command buffer.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBoundsTestEnable.html">vkCmdSetDepthBoundsTestEnable Manual Page</a>
-     */
-    fun setDepthBoundsTestEnable(enable: Boolean) {
-        vkCmdSetDepthBoundsTestEnable!!(handle, enable.toVkBool32())
-    }
-
-    /**
      * Enable or disable depth testing dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthTestEnable.html">vkCmdSetDepthTestEnable Manual Page</a>
@@ -1124,39 +1102,6 @@ class CommandBuffer internal constructor(
     }
 
     /**
-     * Set the fragment shading rate and combiner operations dynamically.
-     *
-     * Requires the `VK_KHR_fragment_shading_rate` extension and at least one of its
-     * `pipelineFragmentShadingRate`, `primitiveFragmentShadingRate`, or `attachmentFragmentShadingRate` features.
-     * Applies to shader objects and pipelines with dynamic fragment shading rate enabled.
-     *
-     * @param fragmentSize Fragment width and height in pixels, each equal to 1, 2, or 4.
-     * @param primitiveCombinerOp Operation combining the pipeline and primitive shading rates.
-     * @param attachmentCombinerOp Operation combining that result with the attachment shading rate.
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetFragmentShadingRateKHR.html">vkCmdSetFragmentShadingRateKHR Manual Page</a>
-     */
-    fun setFragmentShadingRate(
-        fragmentSize: Extent2D,
-        primitiveCombinerOp: VkFragmentShadingRateCombinerOpKHR = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR,
-        attachmentCombinerOp: VkFragmentShadingRateCombinerOpKHR = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR,
-    ): Unit = memScoped {
-        assert(fragmentSize.width == 1u || fragmentSize.width == 2u || fragmentSize.width == 4u) {
-            "fragment width must be 1, 2, or 4"
-        }
-        assert(fragmentSize.height == 1u || fragmentSize.height == 2u || fragmentSize.height == 4u) {
-            "fragment height must be 1, 2, or 4"
-        }
-        val size = alloc<VkExtent2D> {
-            width = fragmentSize.width
-            height = fragmentSize.height
-        }
-        val combinerOps = allocArray<VkFragmentShadingRateCombinerOpKHRVar>(2) { index: Int ->
-            value = if (index == 0) primitiveCombinerOp else attachmentCombinerOp
-        }
-        vkCmdSetFragmentShadingRateKHR!!(handle, size.ptr, combinerOps)
-    }
-
-    /**
      * Set front face orientation dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetFrontFace.html">vkCmdSetFrontFace Manual Page</a>
@@ -1166,35 +1111,12 @@ class CommandBuffer internal constructor(
     }
 
     /**
-     * Set the line stipple repeat factor and bit pattern dynamically.
-     *
-     * @param factor Repeat factor in the range from 1 through 256.
-     * @param pattern The 16-bit line stipple pattern.
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineStipple.html">vkCmdSetLineStipple Manual Page</a>
-     */
-    fun setLineStipple(factor: UInt, pattern: UShort) {
-        assert(factor in 1u..256u) { "factor must be between 1 and 256" }
-        vkCmdSetLineStipple!!(handle, factor, pattern)
-    }
-
-    /**
      * Set line width dynamically for the command buffer.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineWidth.html">vkCmdSetLineWidth Manual Page</a>
      */
     fun setLineWidth(lineWidth: Float) {
         vkCmdSetLineWidth!!(handle, lineWidth)
-    }
-
-    /**
-     * Set polygon mode dynamically for the command buffer.
-     *
-     * Requires `VK_EXT_extended_dynamic_state3` or `VK_EXT_shader_object` extension.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPolygonModeEXT.html">vkCmdSetPolygonModeEXT Manual Page</a>
-     */
-    fun setPolygonMode(polygonMode: VkPolygonMode) {
-        vkCmdSetPolygonModeEXT!!(handle, polygonMode)
     }
 
     /**
@@ -1280,43 +1202,6 @@ class CommandBuffer internal constructor(
             pStencilInputAttachmentIndex = stencilIndex?.ptr
         }
         vkCmdSetRenderingInputAttachmentIndices!!(handle, inputAttachmentIndexInfo.ptr)
-    }
-
-    /**
-     * Set custom sample locations dynamically.
-     *
-     * Requires the `VK_EXT_sample_locations` extension.
-     *
-     * @param samples Number of sample locations per pixel.
-     * @param gridSize Dimensions of the sample location grid.
-     * @param sampleLocations Locations ordered by pixel in row-major order, then by sample index within each pixel.
-     * The list size must equal [samples] multiplied by the grid width and height.
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetSampleLocationsEXT.html">vkCmdSetSampleLocationsEXT Manual Page</a>
-     */
-    fun setSampleLocations(samples: VkSampleCountFlagBits, gridSize: Extent2D, sampleLocations: List<SampleLocation>): Unit = memScoped {
-        val pixelCount = gridSize.width.toULong() * gridSize.height.toULong()
-        assert(
-            samples > 0u && pixelCount <= Int.MAX_VALUE.toULong() &&
-                sampleLocations.size.toULong() == samples.toULong() * pixelCount,
-        ) { "sampleLocations must contain samples times grid width times grid height entries" }
-        val locations = if (sampleLocations.isNotEmpty()) {
-            allocArray<VkSampleLocationEXT>(sampleLocations.size) { index ->
-                x = sampleLocations[index].x
-                y = sampleLocations[index].y
-            }
-        } else {
-            null
-        }
-        val sampleLocationsInfo = alloc<VkSampleLocationsInfoEXT> {
-            sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
-            pNext = null
-            sampleLocationsPerPixel = samples
-            sampleLocationGridSize.width = gridSize.width
-            sampleLocationGridSize.height = gridSize.height
-            sampleLocationsCount = sampleLocations.size.toUInt()
-            pSampleLocations = locations
-        }
-        vkCmdSetSampleLocationsEXT!!(handle, sampleLocationsInfo.ptr)
     }
 
     /**

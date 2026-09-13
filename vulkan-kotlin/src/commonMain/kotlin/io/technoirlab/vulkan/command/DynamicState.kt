@@ -1,32 +1,29 @@
-package io.technoirlab.vulkan.pipeline
+package io.technoirlab.vulkan.command
 
 import io.technoirlab.volk.VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT
-import io.technoirlab.volk.VK_INCOMPLETE
-import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_EXT
-import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
+import io.technoirlab.volk.VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_VERTEX_INPUT_ATTRIBUTE_DESCRIPTION_2_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_VERTEX_INPUT_BINDING_DESCRIPTION_2_EXT
-import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VkColorBlendAdvancedEXT
 import io.technoirlab.volk.VkColorBlendEquationEXT
 import io.technoirlab.volk.VkColorComponentFlags
 import io.technoirlab.volk.VkConservativeRasterizationModeEXT
 import io.technoirlab.volk.VkDepthClampModeEXT
 import io.technoirlab.volk.VkDepthClampRangeEXT
-import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkExtent2D
+import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHR
+import io.technoirlab.volk.VkFragmentShadingRateCombinerOpKHRVar
 import io.technoirlab.volk.VkLineRasterizationModeEXT
 import io.technoirlab.volk.VkLogicOp
-import io.technoirlab.volk.VkObjectType
+import io.technoirlab.volk.VkPolygonMode
 import io.technoirlab.volk.VkProvokingVertexModeEXT
 import io.technoirlab.volk.VkSampleCountFlagBits
-import io.technoirlab.volk.VkShaderCreateInfoEXT
-import io.technoirlab.volk.VkShaderEXT
-import io.technoirlab.volk.VkShaderEXTVar
-import io.technoirlab.volk.VkShaderStageFlagBits
+import io.technoirlab.volk.VkSampleLocationEXT
+import io.technoirlab.volk.VkSampleLocationsInfoEXT
 import io.technoirlab.volk.VkTessellationDomainOrigin
 import io.technoirlab.volk.VkVertexInputAttributeDescription2EXT
 import io.technoirlab.volk.VkVertexInputBindingDescription2EXT
-import io.technoirlab.volk.vkCmdBindShadersEXT
 import io.technoirlab.volk.vkCmdSetAlphaToCoverageEnableEXT
 import io.technoirlab.volk.vkCmdSetAlphaToOneEnableEXT
 import io.technoirlab.volk.vkCmdSetColorBlendAdvancedEXT
@@ -36,160 +33,44 @@ import io.technoirlab.volk.vkCmdSetColorWriteEnableEXT
 import io.technoirlab.volk.vkCmdSetColorWriteMaskEXT
 import io.technoirlab.volk.vkCmdSetConservativeRasterizationModeEXT
 import io.technoirlab.volk.vkCmdSetDepthBounds
+import io.technoirlab.volk.vkCmdSetDepthBoundsTestEnable
 import io.technoirlab.volk.vkCmdSetDepthClampEnableEXT
 import io.technoirlab.volk.vkCmdSetDepthClampRangeEXT
 import io.technoirlab.volk.vkCmdSetDepthClipEnableEXT
 import io.technoirlab.volk.vkCmdSetDepthClipNegativeOneToOneEXT
 import io.technoirlab.volk.vkCmdSetExtraPrimitiveOverestimationSizeEXT
+import io.technoirlab.volk.vkCmdSetFragmentShadingRateKHR
 import io.technoirlab.volk.vkCmdSetLineRasterizationModeEXT
+import io.technoirlab.volk.vkCmdSetLineStipple
 import io.technoirlab.volk.vkCmdSetLineStippleEnableEXT
 import io.technoirlab.volk.vkCmdSetLogicOpEXT
 import io.technoirlab.volk.vkCmdSetLogicOpEnableEXT
 import io.technoirlab.volk.vkCmdSetPatchControlPointsEXT
+import io.technoirlab.volk.vkCmdSetPolygonModeEXT
 import io.technoirlab.volk.vkCmdSetProvokingVertexModeEXT
 import io.technoirlab.volk.vkCmdSetRasterizationSamplesEXT
 import io.technoirlab.volk.vkCmdSetRasterizationStreamEXT
+import io.technoirlab.volk.vkCmdSetSampleLocationsEXT
 import io.technoirlab.volk.vkCmdSetSampleLocationsEnableEXT
 import io.technoirlab.volk.vkCmdSetSampleMaskEXT
 import io.technoirlab.volk.vkCmdSetTessellationDomainOriginEXT
 import io.technoirlab.volk.vkCmdSetVertexInputEXT
-import io.technoirlab.volk.vkCreateShadersEXT
-import io.technoirlab.volk.vkDestroyShaderEXT
-import io.technoirlab.volk.vkGetShaderBinaryDataEXT
-import io.technoirlab.vulkan.Device
-import io.technoirlab.vulkan.VulkanObject
-import io.technoirlab.vulkan.VulkanResult
-import io.technoirlab.vulkan.checkResult
-import io.technoirlab.vulkan.command.CommandBuffer
+import io.technoirlab.vulkan.Extent2D
 import io.technoirlab.vulkan.internal.toVkBool32
-import io.technoirlab.vulkan.memory.MemoryRegion
+import io.technoirlab.vulkan.pipeline.ColorBlendAdvanced
+import io.technoirlab.vulkan.pipeline.ColorBlendEquation
+import io.technoirlab.vulkan.pipeline.SampleLocation
+import io.technoirlab.vulkan.pipeline.VertexInputAttribute
+import io.technoirlab.vulkan.pipeline.VertexInputBinding
+import io.technoirlab.vulkan.pipeline.from
 import kotlinx.cinterop.UIntVar
-import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
-import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlin.assert
-
-/**
- * Wrapper for [VkShaderEXT].
- *
- * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
- *
- * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkShaderEXT.html">VkShaderEXT Manual Page</a>
- */
-class Shader internal constructor(
-    internal val device: VkDevice,
-    override val handle: VkShaderEXT,
-) : VulkanObject,
-    AutoCloseable {
-
-    /**
-     * @inheritDoc
-     */
-    override val type: VkObjectType get() = VK_OBJECT_TYPE_SHADER_EXT
-
-    /**
-     * Destroy the shader object.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyShaderEXT.html">vkDestroyShaderEXT Manual Page</a>
-     */
-    override fun close() {
-        vkDestroyShaderEXT!!(device, handle, null)
-    }
-}
-
-/**
- * Bind shader objects to stages in the command buffer.
- *
- * A `null` shader unbinds the corresponding stage. If [shaders] itself is `null`, all specified stages are unbound.
- * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
- *
- * @param stages Shader stages affected by the binding operation.
- * @param shaders Shader objects to bind, or `null` to unbind every specified stage.
- * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindShadersEXT.html">vkCmdBindShadersEXT Manual Page</a>
- */
-fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List<Shader?>? = null): Unit = memScoped {
-    assert(stages.isNotEmpty()) { "stages must not be empty" }
-    assert(shaders == null || stages.size == shaders.size) { "stages and shaders must have the same size" }
-
-    val stageValues = allocArray<UIntVar>(stages.size) { value = stages[it] }
-    val shaderValues = shaders?.let { shaderList ->
-        allocArray<VkShaderEXTVar>(shaderList.size) { index -> value = shaderList[index]?.handle }
-    }
-    vkCmdBindShadersEXT!!(handle, stages.size.toUInt(), stageValues, shaderValues)
-}
-
-/**
- * Create one or more shader objects.
- *
- * Any shaders created before a batch creation failure are destroyed before the failure is reported.
- * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
- *
- * @param count Number of shader objects to create.
- * @param createInfo Configures each shader object using its zero-based index.
- * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateShadersEXT.html">vkCreateShadersEXT Manual Page</a>
- */
-fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -> Unit): List<Shader> = memScoped {
-    assert(count > 0u) { "count must be greater than 0" }
-    val createInfos = allocArray<VkShaderCreateInfoEXT>(count.toLong()) { index ->
-        sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
-        createInfo(index.toUInt())
-    }
-    val shaderHandles = allocArray<VkShaderEXTVar>(count.toLong())
-    val result = vkCreateShadersEXT!!(handle, count, createInfos, null, shaderHandles)
-    if (result != VK_SUCCESS) {
-        repeat(count.toInt()) { index ->
-            shaderHandles[index]?.let { vkDestroyShaderEXT!!(handle, it, null) }
-        }
-        result.checkResult("Failed to create shaders")
-    }
-    return (0 until count.toInt()).map { Shader(handle, shaderHandles[it]!!) }
-}
-
-/**
- * Write the implementation-defined shader binary into caller-provided memory without allocating a blob buffer.
- *
- * [destination] must remain valid and writable for the duration of the call, and its address must be aligned
- * to 16 bytes. Use [getBinaryDataSize] to query the capacity needed for the complete binary.
- *
- * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
- *
- * @param destination The memory region receiving the shader binary.
- * @return The number of bytes written and the Vulkan status. [VK_INCOMPLETE] indicates that the region was
- * too small for the complete binary; no data is written and the returned byte count is zero.
- * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetShaderBinaryDataEXT.html">vkGetShaderBinaryDataEXT Manual Page</a>
- */
-fun Shader.getBinaryData(destination: MemoryRegion): VulkanResult<ULong> = memScoped {
-    assert(destination.address.rawValue.toLong() % 16L == 0L) { "destination address must be aligned to 16 bytes" }
-
-    val dataSize = alloc<ULongVar> { value = destination.size }
-    val result = vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, destination.address)
-    if (result == VK_INCOMPLETE) {
-        return VulkanResult(0uL, result)
-    }
-    result.checkResult("Failed to get shader binary data")
-    return VulkanResult(dataSize.value, result)
-}
-
-/**
- * Get the size in bytes of this shader object's implementation-defined binary data.
- *
- * The binary data and its size remain unchanged for the lifetime of this shader object.
- * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
- *
- * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetShaderBinaryDataEXT.html">vkGetShaderBinaryDataEXT Manual Page</a>
- */
-fun Shader.getBinaryDataSize(): ULong = memScoped {
-    val dataSize = alloc<ULongVar>()
-    vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, null)
-        .checkResult("Failed to get shader binary data size")
-
-    return dataSize.value
-}
 
 /**
  * Enable or disable alpha-to-coverage multisampling state dynamically.
@@ -315,6 +196,17 @@ fun CommandBuffer.setDepthBounds(minDepthBounds: Float, maxDepthBounds: Float) {
 }
 
 /**
+ * Enable or disable depth bounds testing dynamically for the command buffer.
+ *
+ * Requires the `depthBounds` feature when [enable] is `true`. Disabling the test does not require the feature.
+ *
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBoundsTestEnable.html">vkCmdSetDepthBoundsTestEnable Manual Page</a>
+ */
+fun CommandBuffer.setDepthBoundsTestEnable(enable: Boolean) {
+    vkCmdSetDepthBoundsTestEnable!!(handle, enable.toVkBool32())
+}
+
+/**
  * Enable or disable depth clamping dynamically.
  *
  * Requires the `VK_EXT_shader_object` or `VK_EXT_extended_dynamic_state3` extension and corresponding feature.
@@ -395,6 +287,41 @@ fun CommandBuffer.setExtraPrimitiveOverestimationSize(size: Float) {
 }
 
 /**
+ * Set the fragment shading rate and combiner operations dynamically.
+ *
+ * Requires the `VK_KHR_fragment_shading_rate` extension and at least one of its
+ * `pipelineFragmentShadingRate`, `primitiveFragmentShadingRate`, or `attachmentFragmentShadingRate` features.
+ * A fragment size other than 1 by 1 requires `pipelineFragmentShadingRate`. Without `primitiveFragmentShadingRate`
+ * or `attachmentFragmentShadingRate`, the corresponding combiner operation must be `VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR`.
+ * Applies to shader objects and pipelines with dynamic fragment shading rate enabled.
+ *
+ * @param fragmentSize Fragment width and height in pixels, each equal to 1, 2, or 4.
+ * @param primitiveCombinerOp Operation combining the pipeline and primitive shading rates.
+ * @param attachmentCombinerOp Operation combining that result with the attachment shading rate.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetFragmentShadingRateKHR.html">vkCmdSetFragmentShadingRateKHR Manual Page</a>
+ */
+fun CommandBuffer.setFragmentShadingRate(
+    fragmentSize: Extent2D,
+    primitiveCombinerOp: VkFragmentShadingRateCombinerOpKHR = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR,
+    attachmentCombinerOp: VkFragmentShadingRateCombinerOpKHR = VK_FRAGMENT_SHADING_RATE_COMBINER_OP_KEEP_KHR,
+): Unit = memScoped {
+    assert(fragmentSize.width == 1u || fragmentSize.width == 2u || fragmentSize.width == 4u) {
+        "fragment width must be 1, 2, or 4"
+    }
+    assert(fragmentSize.height == 1u || fragmentSize.height == 2u || fragmentSize.height == 4u) {
+        "fragment height must be 1, 2, or 4"
+    }
+    val size = alloc<VkExtent2D> {
+        width = fragmentSize.width
+        height = fragmentSize.height
+    }
+    val combinerOps = allocArray<VkFragmentShadingRateCombinerOpKHRVar>(2) { index: Int ->
+        value = if (index == 0) primitiveCombinerOp else attachmentCombinerOp
+    }
+    vkCmdSetFragmentShadingRateKHR!!(handle, size.ptr, combinerOps)
+}
+
+/**
  * Set the line rasterization mode dynamically.
  *
  * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature, or
@@ -405,6 +332,22 @@ fun CommandBuffer.setExtraPrimitiveOverestimationSize(size: Float) {
  */
 fun CommandBuffer.setLineRasterizationMode(mode: VkLineRasterizationModeEXT) {
     vkCmdSetLineRasterizationModeEXT!!(handle, mode)
+}
+
+/**
+ * Set the line stipple repeat factor and bit pattern dynamically.
+ *
+ * Requires the matching `stippledRectangularLines`, `stippledBresenhamLines`, or `stippledSmoothLines` feature
+ * when using stippled lines with the selected line rasterization mode. Setting the repeat factor and bit pattern
+ * uses the Vulkan 1.4 core API and does not itself require a stippling feature.
+ *
+ * @param factor Repeat factor in the range from 1 through 256.
+ * @param pattern The 16-bit line stipple pattern.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineStipple.html">vkCmdSetLineStipple Manual Page</a>
+ */
+fun CommandBuffer.setLineStipple(factor: UInt, pattern: UShort) {
+    assert(factor in 1u..256u) { "factor must be between 1 and 256" }
+    vkCmdSetLineStipple!!(handle, factor, pattern)
 }
 
 /**
@@ -457,6 +400,19 @@ fun CommandBuffer.setPatchControlPoints(patchControlPoints: UInt) {
 }
 
 /**
+ * Set polygon mode dynamically for the command buffer.
+ *
+ * Requires the `VK_EXT_extended_dynamic_state3` extension and its `extendedDynamicState3PolygonMode` feature,
+ * or `VK_EXT_shader_object` and its `shaderObject` feature.
+ * Line and point modes additionally require `fillModeNonSolid`; rectangle fill requires `VK_NV_fill_rectangle`.
+ *
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPolygonModeEXT.html">vkCmdSetPolygonModeEXT Manual Page</a>
+ */
+fun CommandBuffer.setPolygonMode(polygonMode: VkPolygonMode) {
+    vkCmdSetPolygonModeEXT!!(handle, polygonMode)
+}
+
+/**
  * Set the provoking vertex mode dynamically.
  *
  * Requires `VK_EXT_provoking_vertex` together with `VK_EXT_shader_object` or
@@ -490,6 +446,44 @@ fun CommandBuffer.setRasterizationSamples(samples: VkSampleCountFlagBits) {
 fun CommandBuffer.setRasterizationStream(stream: UInt) {
     vkCmdSetRasterizationStreamEXT!!(handle, stream)
 }
+
+/**
+ * Set custom sample locations dynamically.
+ *
+ * Requires the `VK_EXT_sample_locations` extension.
+ *
+ * @param samples Number of sample locations per pixel.
+ * @param gridSize Dimensions of the sample location grid.
+ * @param sampleLocations Locations ordered by pixel in row-major order, then by sample index within each pixel.
+ * The list size must equal [samples] multiplied by the grid width and height.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetSampleLocationsEXT.html">vkCmdSetSampleLocationsEXT Manual Page</a>
+ */
+fun CommandBuffer.setSampleLocations(samples: VkSampleCountFlagBits, gridSize: Extent2D, sampleLocations: List<SampleLocation>): Unit =
+    memScoped {
+        val pixelCount = gridSize.width.toULong() * gridSize.height.toULong()
+        assert(
+            samples > 0u && pixelCount <= Int.MAX_VALUE.toULong() &&
+                sampleLocations.size.toULong() == samples.toULong() * pixelCount,
+        ) { "sampleLocations must contain samples times grid width times grid height entries" }
+        val locations = if (sampleLocations.isNotEmpty()) {
+            allocArray<VkSampleLocationEXT>(sampleLocations.size) { index ->
+                x = sampleLocations[index].x
+                y = sampleLocations[index].y
+            }
+        } else {
+            null
+        }
+        val sampleLocationsInfo = alloc<VkSampleLocationsInfoEXT> {
+            sType = VK_STRUCTURE_TYPE_SAMPLE_LOCATIONS_INFO_EXT
+            pNext = null
+            sampleLocationsPerPixel = samples
+            sampleLocationGridSize.width = gridSize.width
+            sampleLocationGridSize.height = gridSize.height
+            sampleLocationsCount = sampleLocations.size.toUInt()
+            pSampleLocations = locations
+        }
+        vkCmdSetSampleLocationsEXT!!(handle, sampleLocationsInfo.ptr)
+    }
 
 /**
  * Enable or disable custom sample locations dynamically.

@@ -36,9 +36,9 @@ Intentionally unsupported functionality:
 ## Project structure
 
 * `volk-kotlin` - Kotlin/Native C-interop wrapper for Vulkan API and Volk.
-* `vulkan-kotlin` - Kotlin Multiplatform bindings. Core objects remain in `io.technoirlab.vulkan`; other
-  object families live in the `command`, `debug`, `descriptor`, `image`, `memory`, `pipeline`, `presentation`, `query`,
-  `resource`, and `sync` subpackages.
+* `vulkan-kotlin` - Kotlin Multiplatform bindings. Bootstrap objects and shared types remain in `io.technoirlab.vulkan`;
+  object families live in the `buffer`, `command`, `debug`, `descriptor`, `device`, `image`, `memory`, `pipeline`,
+  `presentation`, `query`, `shader`, and `sync` subpackages.
 * `sample` - Kotlin Multiplatform sample application.
 
 ## Hardware requirements

@@ -1,21 +1,13 @@
 package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_INSTANCE
-import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
-import io.technoirlab.volk.VkDebugUtilsMessageSeverityFlagsEXT
-import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagsEXT
-import io.technoirlab.volk.VkDebugUtilsMessengerCreateInfoEXT
-import io.technoirlab.volk.VkDebugUtilsMessengerEXTVar
 import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDeviceVar
-import io.technoirlab.volk.vkCreateDebugUtilsMessengerEXT
 import io.technoirlab.volk.vkDestroyInstance
 import io.technoirlab.volk.vkEnumeratePhysicalDevices
 import io.technoirlab.volk.volkLoadInstanceOnly
-import io.technoirlab.vulkan.debug.DebugMessenger
-import io.technoirlab.vulkan.debug.debugMessengerCallback
-import kotlinx.cinterop.StableRef
+import io.technoirlab.vulkan.device.PhysicalDevice
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -23,9 +15,7 @@ import kotlinx.cinterop.get
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.staticCFunction
 import kotlinx.cinterop.value
-import kotlin.assert
 
 /**
  * Wrapper for [VkInstance].
@@ -46,33 +36,6 @@ class Instance internal constructor(
      * @inheritDoc
      */
     override val type: VkObjectType get() = VK_OBJECT_TYPE_INSTANCE
-
-    /**
-     * Create a debug messenger.
-     * Requires `VK_EXT_debug_utils` extension.
-     *
-     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDebugUtilsMessengerEXT.html">vkCreateDebugUtilsMessengerEXT Manual Page</a>
-     */
-    fun createDebugMessenger(
-        messageSeverity: VkDebugUtilsMessageSeverityFlagsEXT,
-        messageType: VkDebugUtilsMessageTypeFlagsEXT,
-        callback: DebugMessenger.Callback,
-    ): DebugMessenger = memScoped {
-        assert(messageSeverity != 0u) { "messageSeverity must not be 0" }
-        assert(messageType != 0u) { "messageType must not be 0" }
-        val callbackRef = StableRef.create(callback)
-        val debugUtilsMessengerCreateInfo = alloc<VkDebugUtilsMessengerCreateInfoEXT> {
-            sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
-            pfnUserCallback = staticCFunction(::debugMessengerCallback)
-            pUserData = callbackRef.asCPointer()
-            this.messageSeverity = messageSeverity
-            this.messageType = messageType
-        }
-        val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
-        vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
-            .checkResult("Failed to create a debug messenger")
-        return DebugMessenger(handle, messengerVar.value!!, callbackRef)
-    }
 
     /**
      * List the physical devices accessible to a Vulkan instance.

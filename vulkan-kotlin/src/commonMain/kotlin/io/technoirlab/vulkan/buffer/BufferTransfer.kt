@@ -1,4 +1,4 @@
-package io.technoirlab.vulkan.command
+package io.technoirlab.vulkan.buffer
 
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_COPY_2
 import io.technoirlab.volk.VkBufferCopy2
