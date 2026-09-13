@@ -198,6 +198,10 @@ class CommandBuffer internal constructor(
      * inside dynamic rendering, include `VK_COMMAND_BUFFER_USAGE_RENDER_PASS_CONTINUE_BIT` in [usageFlags] and
      * supply [renderingInheritance]. Native inheritance structures and their arrays are allocated internally.
      *
+     * For secondary command buffers, [occlusionQueryEnable] or nonzero [queryFlags] requires `inheritedQueries`.
+     * `VK_QUERY_CONTROL_PRECISE_BIT` additionally requires `occlusionQueryPrecise` and [occlusionQueryEnable].
+     * Nonzero [pipelineStatistics] requires `pipelineStatisticsQuery`. These features must be enabled on the device.
+     *
      * @param usageFlags Command buffer recording usage flags.
      * @param occlusionQueryEnable Whether execution inside an active occlusion query is permitted.
      * @param queryFlags Flags permitted for the inherited occlusion query.
@@ -289,6 +293,9 @@ class CommandBuffer internal constructor(
     /**
      * Begin a query.
      *
+     * Requires the `occlusionQueryPrecise` feature to be enabled on the device when [flags] includes
+     * `VK_QUERY_CONTROL_PRECISE_BIT`; the query pool must contain occlusion queries.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBeginQuery.html">vkCmdBeginQuery Manual Page</a>
      */
     fun beginQuery(queryPool: QueryPool, query: UInt, flags: VkQueryControlFlags = 0u) {
@@ -344,6 +351,8 @@ class CommandBuffer internal constructor(
 
     /**
      * Bind an index buffer to the command buffer.
+     *
+     * Requires the `indexTypeUint8` feature to be enabled on the device when [indexType] is `VK_INDEX_TYPE_UINT8`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindIndexBuffer2.html">vkCmdBindIndexBuffer2 Manual Page</a>
      */
@@ -714,6 +723,8 @@ class CommandBuffer internal constructor(
     /**
      * Execute secondary command buffers from the primary command buffer.
      *
+     * Requires the `inheritedQueries` feature to be enabled on the device when a query is active.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdExecuteCommands.html">vkCmdExecuteCommands Manual Page</a>
      */
     fun executeCommands(commandBuffers: List<CommandBuffer>): Unit = memScoped {
@@ -805,6 +816,9 @@ class CommandBuffer internal constructor(
     /**
      * Draw primitives with indexed vertices indirectly.
      *
+     * Requires the `multiDrawIndirect` feature to be enabled on the device when [drawCount] is greater than one.
+     * Nonzero `firstInstance` values in the indirect commands require `drawIndirectFirstInstance`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirect.html">vkCmdDrawIndexedIndirect Manual Page</a>
      */
     fun drawIndexedIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
@@ -817,6 +831,11 @@ class CommandBuffer internal constructor(
 
     /**
      * Draw indexed primitives indirectly with the draw count read from a buffer.
+     *
+     * Requires the `drawIndirectCount` feature to be enabled on the device.
+     *
+     * Nonzero `firstInstance` values in the indirect commands require the `drawIndirectFirstInstance` feature
+     * to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexedIndirectCount.html">vkCmdDrawIndexedIndirectCount Manual Page</a>
      */
@@ -850,6 +869,9 @@ class CommandBuffer internal constructor(
     /**
      * Draw primitives indirectly.
      *
+     * Requires the `multiDrawIndirect` feature to be enabled on the device when [drawCount] is greater than one.
+     * Nonzero `firstInstance` values in the indirect commands require `drawIndirectFirstInstance`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirect.html">vkCmdDrawIndirect Manual Page</a>
      */
     fun drawIndirect(buffer: Buffer, offset: ULong, drawCount: UInt, stride: UInt) {
@@ -862,6 +884,11 @@ class CommandBuffer internal constructor(
 
     /**
      * Draw primitives indirectly with the draw count read from a buffer.
+     *
+     * Requires the `drawIndirectCount` feature to be enabled on the device.
+     *
+     * Nonzero `firstInstance` values in the indirect commands require the `drawIndirectFirstInstance` feature
+     * to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndirectCount.html">vkCmdDrawIndirectCount Manual Page</a>
      */
@@ -893,6 +920,10 @@ class CommandBuffer internal constructor(
      * stages, and source and destination queue family indices must match. Image layouts must remain unchanged, and attachments
      * must use `VK_IMAGE_LAYOUT_RENDERING_LOCAL_READ` or `VK_IMAGE_LAYOUT_GENERAL`.
      *
+     * Using geometry or tessellation shader stages requires the `geometryShader` or `tessellationShader`
+     * feature, respectively, to be enabled on the device. Transitioning only one aspect of a combined
+     * depth/stencil image requires `separateDepthStencilLayouts`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
     fun imageMemoryBarrier(dependencyFlags: VkDependencyFlags = 0u, barrierInfo: VkImageMemoryBarrier2.() -> Unit): Unit = memScoped {
@@ -909,6 +940,10 @@ class CommandBuffer internal constructor(
 
     /**
      * Insert a pipeline barrier.
+     *
+     * Using geometry or tessellation shader stages in the barriers requires the `geometryShader` or
+     * `tessellationShader` feature, respectively, to be enabled on the device. Transitioning only one aspect
+     * of a combined depth/stencil image requires `separateDepthStencilLayouts`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPipelineBarrier2.html">vkCmdPipelineBarrier2 Manual Page</a>
      */
@@ -945,6 +980,8 @@ class CommandBuffer internal constructor(
     /**
      * Pushes descriptor updates into the command buffer.
      *
+     * Requires the `pushDescriptor` feature to be enabled on the device.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdPushDescriptorSet2.html">vkCmdPushDescriptorSet2 Manual Page</a>
      */
     fun pushDescriptorSet(pushInfo: VkPushDescriptorSetInfo.() -> Unit): Unit = memScoped {
@@ -967,6 +1004,9 @@ class CommandBuffer internal constructor(
 
     /**
      * Reset an event to a non-signaled state.
+     *
+     * Using geometry or tessellation shader stages in [stageMask] requires the `geometryShader` or
+     * `tessellationShader` feature, respectively, to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetEvent2.html">vkCmdResetEvent2 Manual Page</a>
      */
@@ -1046,6 +1086,10 @@ class CommandBuffer internal constructor(
     /**
      * Set an event with memory and execution dependencies.
      *
+     * Using geometry or tessellation shader stages in the barriers requires the `geometryShader` or
+     * `tessellationShader` feature, respectively, to be enabled on the device. Transitioning only one aspect
+     * of a combined depth/stencil image requires `separateDepthStencilLayouts`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetEvent2.html">vkCmdSetEvent2 Manual Page</a>
      */
     fun setEvent(event: Event, dependencyInfo: VkDependencyInfo.() -> Unit): Unit = memScoped {
@@ -1058,6 +1102,8 @@ class CommandBuffer internal constructor(
 
     /**
      * Set depth bias factors and clamp dynamically for the command buffer.
+     *
+     * Requires the `depthBiasClamp` feature to be enabled on the device when [clamp] is nonzero.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBias.html">vkCmdSetDepthBias Manual Page</a>
      */
@@ -1112,6 +1158,8 @@ class CommandBuffer internal constructor(
 
     /**
      * Set line width dynamically for the command buffer.
+     *
+     * Requires the `wideLines` feature to be enabled on the device when [lineWidth] is not `1.0f`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineWidth.html">vkCmdSetLineWidth Manual Page</a>
      */
@@ -1217,6 +1265,8 @@ class CommandBuffer internal constructor(
     /**
      * Set the scissor count and scissor rectangular bounds dynamically for the command buffer.
      *
+     * Requires the `multiViewport` feature to be enabled on the device when [scissors] contains more than one rectangle.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetScissorWithCount.html">vkCmdSetScissorWithCount Manual Page</a>
      */
     fun setScissorWithCount(scissors: List<Rect2D>): Unit = memScoped {
@@ -1294,6 +1344,8 @@ class CommandBuffer internal constructor(
     /**
      * Set the viewport count and viewports dynamically for the command buffer.
      *
+     * Requires the `multiViewport` feature to be enabled on the device when [viewports] contains more than one viewport.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetViewportWithCount.html">vkCmdSetViewportWithCount Manual Page</a>
      */
     fun setViewportWithCount(viewports: List<Viewport>): Unit = memScoped {
@@ -1322,6 +1374,10 @@ class CommandBuffer internal constructor(
     /**
      * Make the command buffer wait for one or more events to become signaled.
      *
+     * Using geometry or tessellation shader stages in the barriers requires the `geometryShader` or
+     * `tessellationShader` feature, respectively, to be enabled on the device. Transitioning only one aspect
+     * of a combined depth/stencil image requires `separateDepthStencilLayouts`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWaitEvents2.html">vkCmdWaitEvents2 Manual Page</a>
      */
     fun waitEvents(events: List<Event>, dependencyInfos: VkDependencyInfo.(UInt) -> Unit): Unit = memScoped {
@@ -1336,6 +1392,9 @@ class CommandBuffer internal constructor(
 
     /**
      * Write a device timestamp into a query object.
+     *
+     * Using geometry or tessellation shader stages in [stage] requires the `geometryShader` or
+     * `tessellationShader` feature, respectively, to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWriteTimestamp2.html">vkCmdWriteTimestamp2 Manual Page</a>
      */

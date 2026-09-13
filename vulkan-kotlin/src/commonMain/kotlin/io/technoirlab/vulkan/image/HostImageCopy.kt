@@ -142,6 +142,9 @@ fun Image.copyToMemory(sourceLayout: VkImageLayout, regions: List<HostImageCopyR
  * Requires the `hostImageCopy` feature to be enabled on the device. This command uses the Vulkan 1.4 core API.
  * The image must have been created with `VK_IMAGE_USAGE_HOST_TRANSFER_BIT` for the accessed aspects.
  *
+ * Transitioning only one aspect of a combined depth/stencil image additionally requires the
+ * `separateDepthStencilLayouts` feature to be enabled on the device.
+ *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkTransitionImageLayout.html">vkTransitionImageLayout Manual Page</a>
  */
 fun Image.transitionLayout(oldLayout: VkImageLayout, newLayout: VkImageLayout, subresourceRange: ImageSubresourceRange): Unit = memScoped {

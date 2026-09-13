@@ -47,6 +47,8 @@ class Semaphore internal constructor(
     /**
      * Get the current counter value of the timeline semaphore.
      *
+     * Requires a timeline semaphore and the `timelineSemaphore` feature to be enabled on the device.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetSemaphoreCounterValue.html">vkGetSemaphoreCounterValue Manual Page</a>
      */
     fun counterValue(): ULong = memScoped {
@@ -62,6 +64,8 @@ class Semaphore internal constructor(
 
     /**
      * Signal the timeline semaphore on the host.
+     *
+     * Requires a timeline semaphore and the `timelineSemaphore` feature to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkSignalSemaphore.html">vkSignalSemaphore Manual Page</a>
      */
@@ -81,6 +85,8 @@ class Semaphore internal constructor(
 
     /**
      * Wait for the timeline semaphore to reach at least the given value.
+     *
+     * Requires a timeline semaphore and the `timelineSemaphore` feature to be enabled on the device.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkWaitSemaphores.html">vkWaitSemaphores Manual Page</a>
      */

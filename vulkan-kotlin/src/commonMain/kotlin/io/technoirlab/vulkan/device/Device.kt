@@ -197,6 +197,11 @@ class Device internal constructor(
     /**
      * Allocate device memory.
      *
+     * Protected memory types require the `protectedMemory` feature to be enabled on the device.
+     * `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_BIT` and `VK_MEMORY_ALLOCATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT`
+     * in a chained `VkMemoryAllocateFlagsInfo` require `bufferDeviceAddress` and
+     * `bufferDeviceAddressCaptureReplay`, respectively.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkAllocateMemory.html">vkAllocateMemory Manual Page</a>
      */
     fun allocateMemory(allocateInfo: VkMemoryAllocateInfo.() -> Unit): DeviceMemory = memScoped {
@@ -212,6 +217,11 @@ class Device internal constructor(
 
     /**
      * Create a new buffer.
+     *
+     * Sparse binding, residency, and aliasing flags require the `sparseBinding`, `sparseResidencyBuffer`, and
+     * `sparseResidencyAliased` features, respectively, to be enabled on the device. Protected buffers require
+     * `protectedMemory`; `VK_BUFFER_CREATE_DEVICE_ADDRESS_CAPTURE_REPLAY_BIT` requires
+     * `bufferDeviceAddressCaptureReplay`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateBuffer.html">vkCreateBuffer Manual Page</a>
      */
@@ -245,6 +255,9 @@ class Device internal constructor(
     /**
      * Create a new command pool.
      *
+     * Requires the `protectedMemory` feature to be enabled on the device when [flags] includes
+     * `VK_COMMAND_POOL_CREATE_PROTECTED_BIT`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateCommandPool.html">vkCreateCommandPool Manual Page</a>
      */
     fun createCommandPool(queueFamilyIndex: UInt, flags: VkCommandPoolCreateFlags = 0u): CommandPool = memScoped {
@@ -261,6 +274,11 @@ class Device internal constructor(
 
     /**
      * Create a new compute pipeline.
+     *
+     * Pipeline flags that fail on compilation or return early on failure require `pipelineCreationCacheControl`.
+     * Protected-access restriction flags require `pipelineProtectedAccess`. These features must be enabled on the device.
+     * Shader stage flags for varying subgroup sizes require `subgroupSizeControl`; requiring full subgroups
+     * requires `computeFullSubgroups`. Explicit subgroup sizes also require `subgroupSizeControl`.
      *
      * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
@@ -319,6 +337,13 @@ class Device internal constructor(
     /**
      * Create a new descriptor set layout.
      *
+     * Push descriptor layouts require the `pushDescriptor` feature to be enabled on the device.
+     * Inline uniform block bindings require `inlineUniformBlock`. In a chained
+     * `VkDescriptorSetLayoutBindingFlagsCreateInfo`, partially bound bindings require `descriptorBindingPartiallyBound`,
+     * variable descriptor counts require `descriptorBindingVariableDescriptorCount`, and updating unused pending
+     * bindings requires `descriptorBindingUpdateUnusedWhilePending`. Update-after-bind bindings require the
+     * corresponding `descriptorBinding*UpdateAfterBind` feature for their descriptor type.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateDescriptorSetLayout.html">vkCreateDescriptorSetLayout Manual Page</a>
      */
     fun createDescriptorSetLayout(createInfo: VkDescriptorSetLayoutCreateInfo.() -> Unit): DescriptorSetLayout = memScoped {
@@ -351,6 +376,13 @@ class Device internal constructor(
     /**
      * Create a new image.
      *
+     * `VK_IMAGE_USAGE_HOST_TRANSFER_BIT` requires the `hostImageCopy` feature to be enabled on the device.
+     * Multisampled storage images require `shaderStorageImageMultisample`; protected images require `protectedMemory`.
+     * Sparse binding and aliasing flags require `sparseBinding` and `sparseResidencyAliased`, respectively.
+     * Sparse residency requires `sparseResidencyImage2D` or `sparseResidencyImage3D` for the image type, plus the
+     * matching `sparseResidency2Samples`, `sparseResidency4Samples`, `sparseResidency8Samples`, or
+     * `sparseResidency16Samples` feature for multisampled images.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateImage.html">vkCreateImage Manual Page</a>
      */
     fun createImage(createInfo: VkImageCreateInfo.() -> Unit): Image = memScoped {
@@ -366,6 +398,8 @@ class Device internal constructor(
 
     /**
      * Create an image view from an existing image.
+     *
+     * Requires the `imageCubeArray` feature to be enabled on the device when `viewType` is `VK_IMAGE_VIEW_TYPE_CUBE_ARRAY`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateImageView.html">vkCreateImageView Manual Page</a>
      */
@@ -398,6 +432,20 @@ class Device internal constructor(
 
     /**
      * Create a new graphics pipeline.
+     *
+     * Pipeline flags that fail on compilation or return early on failure require `pipelineCreationCacheControl`.
+     * Protected-access restriction flags require `pipelineProtectedAccess`. These features must be enabled on the device.
+     * Shader stage flags for varying subgroup sizes require `subgroupSizeControl`; requiring full subgroups
+     * requires `computeFullSubgroups`. Explicit subgroup sizes also require `subgroupSizeControl`.
+     *
+     * Optional pipeline state requires the corresponding features to be enabled: `geometryShader` and
+     * `tessellationShader` for those shader stages, `depthClamp` for depth clamping, `depthBiasClamp` for nonzero
+     * bias clamping, `fillModeNonSolid` for line or point polygon modes, and `wideLines` for line widths other than one.
+     * Sample shading requires `sampleRateShading`; alpha-to-one requires `alphaToOne`; depth bounds testing
+     * requires `depthBounds`. Multiple viewports or scissors require `multiViewport`. Distinct per-attachment
+     * blend states require `independentBlend`, `SRC1` blend factors require `dualSrcBlend`, and logical pixel
+     * operations require `logicOp`. Non-default line rasterization modes and line stippling require the matching
+     * `rectangularLines`, `bresenhamLines`, `smoothLines`, and `stippled*Lines` features.
      *
      * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
@@ -508,6 +556,9 @@ class Device internal constructor(
     /**
      * Create a new pipeline cache.
      *
+     * Requires the `pipelineCreationCacheControl` feature to be enabled on the device when `flags` includes
+     * `VK_PIPELINE_CACHE_CREATE_EXTERNALLY_SYNCHRONIZED_BIT`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreatePipelineCache.html">vkCreatePipelineCache Manual Page</a>
      */
     fun createPipelineCache(createInfo: VkPipelineCacheCreateInfo.() -> Unit = {}): PipelineCache = memScoped {
@@ -540,6 +591,9 @@ class Device internal constructor(
     /**
      * Create a new query pool.
      *
+     * Requires the `pipelineStatisticsQuery` feature to be enabled on the device when `queryType` is
+     * `VK_QUERY_TYPE_PIPELINE_STATISTICS`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateQueryPool.html">vkCreateQueryPool Manual Page</a>
      */
     fun createQueryPool(createInfo: VkQueryPoolCreateInfo.() -> Unit): QueryPool = memScoped {
@@ -556,6 +610,10 @@ class Device internal constructor(
     /**
      * Create a new sampler.
      *
+     * Enabling anisotropy requires the `samplerAnisotropy` feature to be enabled on the device.
+     * `VK_SAMPLER_ADDRESS_MODE_MIRROR_CLAMP_TO_EDGE` requires `samplerMirrorClampToEdge`.
+     * Minimum or maximum reduction modes in a chained `VkSamplerReductionModeCreateInfo` require `samplerFilterMinmax`.
+     *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSampler.html">vkCreateSampler Manual Page</a>
      */
     fun createSampler(createInfo: VkSamplerCreateInfo.() -> Unit): Sampler = memScoped {
@@ -571,6 +629,9 @@ class Device internal constructor(
 
     /**
      * Create a new semaphore.
+     *
+     * Requires the `timelineSemaphore` feature to be enabled on the device when [semaphoreType] is
+     * `VK_SEMAPHORE_TYPE_TIMELINE`.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateSemaphore.html">vkCreateSemaphore Manual Page</a>
      */

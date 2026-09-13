@@ -88,6 +88,8 @@ fun CommandBuffer.setAlphaToCoverageEnable(enable: Boolean) {
  *
  * Requires the `VK_EXT_shader_object` or `VK_EXT_extended_dynamic_state3` extension and corresponding feature.
  *
+ * Additionally requires the `alphaToOne` feature to be enabled on the device when [enable] is `true`.
+ *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetAlphaToOneEnableEXT.html">vkCmdSetAlphaToOneEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setAlphaToOneEnable(enable: Boolean) {
@@ -131,6 +133,8 @@ fun CommandBuffer.setColorBlendEnable(firstAttachment: UInt, enables: List<Boole
  * Set color blend equations dynamically for a range of attachments.
  *
  * Requires the `VK_EXT_shader_object` or `VK_EXT_extended_dynamic_state3` extension and corresponding feature.
+ *
+ * Using a `SRC1` blend factor requires the `dualSrcBlend` feature to be enabled on the device.
  *
  * @param firstAttachment First color attachment affected.
  * @param equations Blend equations for each affected attachment.
@@ -210,6 +214,8 @@ fun CommandBuffer.setDepthBoundsTestEnable(enable: Boolean) {
  * Enable or disable depth clamping dynamically.
  *
  * Requires the `VK_EXT_shader_object` or `VK_EXT_extended_dynamic_state3` extension and corresponding feature.
+ *
+ * Additionally requires the `depthClamp` feature to be enabled on the device when [enable] is `true`.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthClampEnableEXT.html">vkCmdSetDepthClampEnableEXT Manual Page</a>
  */
@@ -328,6 +334,10 @@ fun CommandBuffer.setFragmentShadingRate(
  * `VK_EXT_extended_dynamic_state3` and its `extendedDynamicState3LineRasterizationMode` feature.
  * Line rasterization is provided by the required Vulkan 1.4 core API.
  *
+ * Selecting `VK_LINE_RASTERIZATION_MODE_RECTANGULAR`, `VK_LINE_RASTERIZATION_MODE_BRESENHAM`, or
+ * `VK_LINE_RASTERIZATION_MODE_RECTANGULAR_SMOOTH` additionally requires the `rectangularLines`,
+ * `bresenhamLines`, or `smoothLines` feature, respectively, to be enabled on the device.
+ *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineRasterizationModeEXT.html">vkCmdSetLineRasterizationModeEXT Manual Page</a>
  */
 fun CommandBuffer.setLineRasterizationMode(mode: VkLineRasterizationModeEXT) {
@@ -358,6 +368,10 @@ fun CommandBuffer.setLineStipple(factor: UInt, pattern: UShort) {
  * Line rasterization is provided by the required Vulkan 1.4 core API.
  * Configure the repeat factor and bit pattern with [CommandBuffer.setLineStipple].
  *
+ * Using stippled lines requires the matching `stippledRectangularLines`, `stippledBresenhamLines`, or
+ * `stippledSmoothLines` feature to be enabled on the device for the selected rasterization mode.
+ * The default mode requires `stippledRectangularLines` and the `strictLines` property to be `VK_TRUE`.
+ *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineStippleEnableEXT.html">vkCmdSetLineStippleEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setLineStippleEnable(enable: Boolean) {
@@ -380,6 +394,8 @@ fun CommandBuffer.setLogicOp(logicOp: VkLogicOp) {
  * Enable or disable logical pixel operations dynamically.
  *
  * Requires the `VK_EXT_shader_object` or `VK_EXT_extended_dynamic_state3` extension and corresponding feature.
+ *
+ * Additionally requires the `logicOp` feature to be enabled on the device when [enable] is `true`.
  *
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLogicOpEnableEXT.html">vkCmdSetLogicOpEnableEXT Manual Page</a>
  */
