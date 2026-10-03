@@ -67,7 +67,7 @@ The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension
 ## Building and testing
 
 * A Vulkan SDK providing the headers and loader library is required. CI currently builds against Vulkan SDK
-  1.4.357.0; keep `.github/workflows/ci.yaml` and `.github/workflows/release.yaml` in sync when changing it.
+  1.4.363.0; keep `.github/workflows/ci.yaml` and `.github/workflows/release.yaml` in sync when changing it.
 * Run build, tests, ABI validation, and static analysis: `./gradlew check`.
 * Run `./gradlew` commands outside the filesystem sandbox so Gradle can access its cache.
 * CI builds on macOS 26 and Ubuntu 24.04. macOS Vulkan loader tests use `VULKAN_SDK` to set `DYLD_LIBRARY_PATH`.
