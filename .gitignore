@@ -1,6 +1,8 @@
 build/
 .gradle/
-.idea/
+.idea/*
+!.idea/externalDependencies.xml
+!.idea/ktlint-plugin.xml
 .kotlin/
 local.properties
 .DS_Store
