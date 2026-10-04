@@ -34,13 +34,8 @@ jobs:
         with:
           cache-provider: basic
 
-      - name: Cache Kotlin/Native toolchains
-        uses: actions/cache@v6.1.0
-        with:
-          path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('settings.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+      - name: Set up KMP
+        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
 
       - name: Install Vulkan SDK
         uses: technoir-lab/install-vulkan-sdk@v1.4.0
@@ -104,13 +99,8 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v6.0.0
 
-      - name: Cache Kotlin/Native toolchains
-        uses: actions/cache@v6.1.0
-        with:
-          path: ~/.konan
-          key: ${{ runner.os }}-konan-${{ hashFiles('settings.gradle.kts') }}
-          restore-keys: |
-            ${{ runner.os }}-konan-
+      - name: Set up KMP
+        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
 
       - name: Install Vulkan SDK
         uses: technoir-lab/install-vulkan-sdk@v1.4.0
