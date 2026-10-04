@@ -72,7 +72,11 @@ The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension
 * Run `./gradlew` commands outside the filesystem sandbox so Gradle can access its cache.
 * CI builds on macOS 26 and Ubuntu 24.04. macOS Vulkan loader tests use `VULKAN_SDK` to set `DYLD_LIBRARY_PATH`.
 
-## Pull requests
+## Commits and Pull Requests
 
-* Label created pull requests `breaking change` when they break compatibility with the ABI of the latest published release.
+- Use descriptive branch names without AI harness prefixes (such as `codex/`, `claude/`, `cursor/`, or `junie/`).
+- Keep commits focused and use short, imperative commit subjects.
+- Do not add a `Co-Authored-By` trailer.
+- PR descriptions should explain the problem, the changes made, and the resulting behavior. Include compatibility impacts, remaining limitations, and links to related issues when relevant. Do not include checks performed, validation commands, or validation results.
+- Label created pull requests `breaking change` when they break compatibility with the ABI of the latest published release.
   Compare against that release, not `main`; changes confined to ABI added after that release do not require this label.
