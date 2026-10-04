@@ -18,7 +18,6 @@ private class NCopiesList<T>(
     private val element: T,
 ) : AbstractList<T>(),
     RandomAccess {
-
     init {
         assert(size >= 0) { "size must be non-negative" }
     }

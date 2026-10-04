@@ -18,7 +18,6 @@ class Event internal constructor(
     override val handle: VkEvent,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

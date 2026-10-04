@@ -38,7 +38,6 @@ class Semaphore internal constructor(
     val semaphoreType: VkSemaphoreType,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

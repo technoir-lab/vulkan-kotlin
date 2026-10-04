@@ -31,7 +31,6 @@ class PipelineCache internal constructor(
     override val handle: VkPipelineCache,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

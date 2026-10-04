@@ -39,7 +39,6 @@ class Buffer internal constructor(
     val size: ULong,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

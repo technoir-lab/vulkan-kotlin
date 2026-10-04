@@ -18,7 +18,6 @@ class Pipeline internal constructor(
     override val handle: VkPipeline,
 ) : VulkanObject,
     AutoCloseable {
-
     override val type: VkObjectType get() = VK_OBJECT_TYPE_PIPELINE
 
     /**

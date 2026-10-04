@@ -92,7 +92,6 @@ import kotlinx.cinterop.value
 class PhysicalDevice internal constructor(
     override val handle: VkPhysicalDevice,
 ) : VulkanObject {
-
     /**
      * @inheritDoc
      */

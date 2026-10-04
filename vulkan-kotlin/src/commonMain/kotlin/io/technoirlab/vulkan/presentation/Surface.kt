@@ -30,7 +30,6 @@ class Surface internal constructor(
     override val handle: VkSurfaceKHR,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

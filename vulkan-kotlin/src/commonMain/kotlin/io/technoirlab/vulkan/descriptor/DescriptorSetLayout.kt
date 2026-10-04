@@ -18,7 +18,6 @@ class DescriptorSetLayout internal constructor(
     override val handle: VkDescriptorSetLayout,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

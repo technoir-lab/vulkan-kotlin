@@ -13,7 +13,6 @@ import io.technoirlab.vulkan.VulkanObject
 class DescriptorSet internal constructor(
     override val handle: VkDescriptorSet,
 ) : VulkanObject {
-
     /**
      * @inheritDoc
      */

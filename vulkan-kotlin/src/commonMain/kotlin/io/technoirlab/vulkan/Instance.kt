@@ -27,7 +27,6 @@ class Instance internal constructor(
     val enabledExtensions: Set<String>,
 ) : VulkanObject,
     AutoCloseable {
-
     init {
         volkLoadInstanceOnly(handle)
     }

@@ -37,7 +37,6 @@ class CommandPool internal constructor(
     override val handle: VkCommandPool,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

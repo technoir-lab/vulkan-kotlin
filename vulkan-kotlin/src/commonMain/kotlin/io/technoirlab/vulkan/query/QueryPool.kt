@@ -25,7 +25,6 @@ class QueryPool internal constructor(
     override val handle: VkQueryPool,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

@@ -184,7 +184,6 @@ class Device internal constructor(
     val enabledExtensions: Set<String>,
 ) : VulkanObject,
     AutoCloseable {
-
     init {
         volkLoadDevice(handle)
     }

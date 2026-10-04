@@ -18,7 +18,6 @@ class ImageView internal constructor(
     override val handle: VkImageView,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

@@ -39,7 +39,6 @@ class Swapchain internal constructor(
     override val handle: VkSwapchainKHR,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

@@ -18,7 +18,6 @@ class PipelineLayout internal constructor(
     override val handle: VkPipelineLayout,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

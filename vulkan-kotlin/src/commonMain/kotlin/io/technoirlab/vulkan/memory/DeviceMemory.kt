@@ -51,7 +51,6 @@ class DeviceMemory internal constructor(
     val size: ULong,
 ) : VulkanObject,
     AutoCloseable {
-
     private var mappedRange: MappedRange? = null
 
     /**

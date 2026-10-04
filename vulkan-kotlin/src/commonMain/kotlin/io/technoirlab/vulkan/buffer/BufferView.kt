@@ -18,7 +18,6 @@ class BufferView internal constructor(
     override val handle: VkBufferView,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

@@ -35,7 +35,6 @@ class DebugMessenger internal constructor(
     private val callbackRef: StableRef<Callback>,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

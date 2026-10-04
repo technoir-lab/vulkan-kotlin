@@ -35,7 +35,6 @@ class Image internal constructor(
     val destroyable: Boolean = true,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

@@ -36,7 +36,6 @@ class Queue internal constructor(
     override val handle: VkQueue,
     val familyIndex: UInt,
 ) : VulkanObject {
-
     /**
      * @inheritDoc
      */

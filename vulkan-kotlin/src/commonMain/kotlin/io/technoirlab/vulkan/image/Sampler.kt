@@ -18,7 +18,6 @@ class Sampler internal constructor(
     override val handle: VkSampler,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

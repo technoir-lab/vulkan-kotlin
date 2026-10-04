@@ -36,7 +36,6 @@ class DescriptorPool internal constructor(
     private val flags: VkDescriptorPoolCreateFlags,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

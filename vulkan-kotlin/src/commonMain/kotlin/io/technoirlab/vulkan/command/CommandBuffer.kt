@@ -185,7 +185,6 @@ import kotlin.assert
 class CommandBuffer internal constructor(
     override val handle: VkCommandBuffer,
 ) : VulkanObject {
-
     /**
      * @inheritDoc
      */

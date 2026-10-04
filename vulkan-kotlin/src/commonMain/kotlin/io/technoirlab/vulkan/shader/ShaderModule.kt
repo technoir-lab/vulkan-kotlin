@@ -18,7 +18,6 @@ class ShaderModule internal constructor(
     override val handle: VkShaderModule,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */

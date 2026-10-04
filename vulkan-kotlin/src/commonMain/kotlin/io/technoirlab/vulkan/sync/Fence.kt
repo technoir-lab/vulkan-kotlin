@@ -32,7 +32,6 @@ class Fence internal constructor(
     override val handle: VkFence,
 ) : VulkanObject,
     AutoCloseable {
-
     /**
      * @inheritDoc
      */
