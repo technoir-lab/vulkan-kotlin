@@ -64,13 +64,23 @@ The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension
 * Use only `kotlin.assert` for input and constraint validation; never use `require`, `requireNotNull`, `check`, or `checkNotNull`.
 * Every `public` class, function, and property must have a KDoc.
 
-## Building and testing
+## Build, Test, and Development Commands
+
+Run commands from the repository root. Use the Gradle wrapper; the daemon and CI use JDK 25.
+
+* `make check`: run standard checks.
+* `make test`: run multiplatform tests on available targets.
+* `make format`: apply KtLint formatting and sort dependencies.
+* `make docs`: generate Dokka API documentation in `vulkan-kotlin/build/dokka/html`.
+* `make abi`: regenerate Kotlin ABI snapshots after intentional public API changes; review the diff.
+* `make publish-local`: publish artifacts to Maven Local for consumer testing.
+
+Pass additional options with `make check GRADLE_ARGS="--info"`.
 
 * A Vulkan SDK providing the headers and loader library is required. CI currently builds against Vulkan SDK
   1.4.363.0; keep `.github/workflows/ci.yaml` and `.github/workflows/release.yaml` in sync when changing it.
-* Run build, tests, ABI validation, and static analysis: `./gradlew check`.
-* Run `./gradlew` commands outside the filesystem sandbox so Gradle can access its cache.
-* CI builds on macOS 26 and Ubuntu 24.04. macOS Vulkan loader tests use `VULKAN_SDK` to set `DYLD_LIBRARY_PATH`.
+* Run Make targets that invoke Gradle and direct `./gradlew` commands outside the filesystem sandbox so Gradle can access its cache.
+* CI builds on macOS 26 and Ubuntu 26.04. macOS Vulkan loader tests use `VULKAN_SDK` to set `DYLD_LIBRARY_PATH`.
 
 ## Commits and Pull Requests
 

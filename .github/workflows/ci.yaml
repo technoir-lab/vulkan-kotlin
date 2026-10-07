@@ -53,8 +53,8 @@ jobs:
           components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios
           cache: true
 
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Run checks
+        run: make check
 
       - name: Publish test report
         uses: mikepenz/action-junit-report@v6.5.0
