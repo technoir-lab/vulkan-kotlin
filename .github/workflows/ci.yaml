@@ -57,7 +57,7 @@ jobs:
         run: make check
 
       - name: Publish test report
-        uses: mikepenz/action-junit-report@v6.5.0
+        uses: mikepenz/action-junit-report@v6.6.0
         if: success() || failure()
         with:
           check_name: JUnit Test Report (${{ matrix.os }})
