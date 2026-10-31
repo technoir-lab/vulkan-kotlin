@@ -51,7 +51,7 @@ jobs:
         uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
 
       - name: Install Vulkan SDK
-        uses: technoir-lab/install-vulkan-sdk@v1.4.0
+        uses: technoir-lab/install-vulkan-sdk@v1.4.1
         with:
           version: ${{ env.VULKAN_SDK_VERSION }}
           components: com.lunarg.vulkan.volk
