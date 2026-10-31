@@ -9,7 +9,7 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        val conventionPluginsVersion = "v60"
+        val conventionPluginsVersion = "v61"
         id("io.technoirlab.conventions.kotlin-multiplatform-application") version conventionPluginsVersion
         id("io.technoirlab.conventions.kotlin-multiplatform-library") version conventionPluginsVersion
         id("io.technoirlab.conventions.root") version conventionPluginsVersion
