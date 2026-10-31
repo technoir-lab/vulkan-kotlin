@@ -27,6 +27,7 @@ jobs:
     permissions:
       contents: read
       checks: write
+      id-token: write
 
     steps:
       - name: Checkout
@@ -42,6 +43,9 @@ jobs:
         uses: gradle/actions/setup-gradle@v6.4.0
         with:
           cache-provider: basic
+
+      - name: Set up GCP Gradle build cache
+        uses: technoir-lab/actions/setup-gcp-gradle-build-cache@v1.2.1
 
       - name: Set up KMP
         uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
