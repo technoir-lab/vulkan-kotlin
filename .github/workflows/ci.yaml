@@ -54,7 +54,7 @@ jobs:
         uses: technoir-lab/install-vulkan-sdk@v1.4.0
         with:
           version: ${{ env.VULKAN_SDK_VERSION }}
-          components: com.lunarg.vulkan.volk com.lunarg.vulkan.ios
+          components: com.lunarg.vulkan.volk
           cache: true
 
       - name: Run checks
