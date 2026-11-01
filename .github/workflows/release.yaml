@@ -38,7 +38,7 @@ jobs:
         uses: technoir-lab/actions/setup-gcp-gradle-build-cache@v1.2.1
 
       - name: Set up KMP
-        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
+        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.2.1
 
       - name: Install Vulkan SDK
         uses: technoir-lab/install-vulkan-sdk@v1.4.1
@@ -79,7 +79,7 @@ jobs:
         uses: technoir-lab/actions/setup-gcp-gradle-build-cache@v1.2.1
 
       - name: Set up KMP
-        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
+        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.2.1
 
       - name: Install Vulkan SDK
         uses: technoir-lab/install-vulkan-sdk@v1.4.1
@@ -147,7 +147,7 @@ jobs:
         uses: actions/configure-pages@v6.0.0
 
       - name: Set up KMP
-        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.0.0
+        uses: technoir-lab/actions/setup-kotlin-multiplatform@v1.2.1
 
       - name: Install Vulkan SDK
         uses: technoir-lab/install-vulkan-sdk@v1.4.1

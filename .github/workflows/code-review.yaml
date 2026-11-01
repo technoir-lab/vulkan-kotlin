@@ -22,6 +22,6 @@ jobs:
 
     steps:
       - name: Review
-        uses: technoir-lab/actions/code-review@v1.1.2
+        uses: technoir-lab/actions/code-review@v1.2.1
         with:
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
