@@ -10,6 +10,9 @@ updates:
       interval: "weekly"
 
   - package-ecosystem: "github-actions"
+    cooldown:
+      exclude:
+        - "technoir-lab/*"
     directory: "/"
     schedule:
       interval: "monthly"
