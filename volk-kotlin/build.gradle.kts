@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.konan.target.HostManager
 
 plugins {
@@ -27,6 +28,22 @@ kotlin {
         commonTest.dependencies {
             implementation(kotlin("test"))
         }
+    }
+}
+
+kotlin {
+    swiftPMDependencies {
+        macosMinimumDeploymentTarget.set("26.0")
+        iosMinimumDeploymentTarget.set("26.0")
+        discoverClangModulesImplicitly.set(false)
+
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        swiftPackage(
+            packageName = "vulkan-swift",
+            products = listOf(product("VulkanDriver"), product("VulkanValidation")),
+            url = url("https://github.com/technoir-lab/vulkan-swift"),
+            version = exact("1.0.2"),
+        )
     }
 }
 
