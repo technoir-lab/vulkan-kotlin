@@ -431,6 +431,10 @@ class CommandBuffer internal constructor(
         strides: List<ULong>? = null,
     ): Unit = memScoped {
         assert(sizes == null && strides == null || vertexBuffers.isNotEmpty()) { "vertexBuffers must not be empty" }
+        assert(offsets.size == vertexBuffers.size) { "offsets must have the same size as vertexBuffers" }
+        assert(sizes == null || sizes.size == vertexBuffers.size) { "sizes must have the same size as vertexBuffers" }
+        assert(strides == null || strides.size == vertexBuffers.size) { "strides must have the same size as vertexBuffers" }
+        if (vertexBuffers.isEmpty()) return
         val vertexBufferHandles = allocArrayOf(vertexBuffers.map { it.handle })
         val offsetsArray = allocArray<ULongVar>(offsets.size) { value = offsets[it] }
         val sizesArray = sizes?.let { allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
