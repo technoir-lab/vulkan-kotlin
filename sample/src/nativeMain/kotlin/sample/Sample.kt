@@ -1,15 +1,22 @@
 package sample
 
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+import io.technoirlab.volk.VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
 import io.technoirlab.volk.VK_VERSION_MAJOR
 import io.technoirlab.volk.VK_VERSION_MINOR
 import io.technoirlab.volk.VK_VERSION_PATCH
+import io.technoirlab.volk.VkDeviceQueueCreateInfo
 import io.technoirlab.vulkan.ApplicationInfo
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.Vulkan
 import io.technoirlab.vulkan.device.Device
+import kotlinx.cinterop.FloatVar
+import kotlinx.cinterop.alloc
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toKString
+import kotlinx.cinterop.value
 import kotlin.experimental.ExperimentalNativeApi
 
 @OptIn(ExperimentalNativeApi::class)
@@ -48,7 +55,33 @@ class Sample : AutoCloseable {
         val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
         println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.name }}")
 
-        device = physicalDevice.createDevice()
+        val enabledDeviceExtensions = buildList {
+            if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
+                add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)
+            }
+        }
+        val queueFamilyIndex = physicalDevice.getQueueFamilyProperties()
+            .indexOfFirst { it.queueCount > 0u }
+            .takeIf { it >= 0 }
+            ?.toUInt()
+            ?: error("No queue families found")
+
+        device = memScoped {
+            val queuePriority = alloc<FloatVar> { value = 1.0f }
+            val queueCreateInfo = alloc<VkDeviceQueueCreateInfo> {
+                sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+                this.queueFamilyIndex = queueFamilyIndex
+                queueCount = 1u
+                pQueuePriorities = queuePriority.ptr
+            }
+            physicalDevice.createDevice(
+                enabledExtensions = enabledDeviceExtensions,
+                createInfo = {
+                    queueCreateInfoCount = 1u
+                    pQueueCreateInfos = queueCreateInfo.ptr
+                },
+            )
+        }
         println("Created logical device for $deviceName")
     }
 
