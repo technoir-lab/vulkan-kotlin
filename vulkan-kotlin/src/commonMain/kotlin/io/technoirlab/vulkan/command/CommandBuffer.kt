@@ -1398,7 +1398,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdWriteTimestamp2.html">vkCmdWriteTimestamp2 Manual Page</a>
      */
     fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
-        assert(stage.countOneBits() == 1) { "stage must only include a single pipeline stage" }
+        assert(stage.countOneBits() <= 1) { "stage must only include a single pipeline stage" }
         vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
     }
 
