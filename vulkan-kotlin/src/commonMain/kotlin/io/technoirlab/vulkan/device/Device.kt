@@ -3,6 +3,9 @@ package io.technoirlab.vulkan.device
 import io.technoirlab.volk.VK_FORMAT_UNDEFINED
 import io.technoirlab.volk.VK_KHR_SWAPCHAIN_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
+import io.technoirlab.volk.VK_QUERY_TYPE_PIPELINE_STATISTICS
+import io.technoirlab.volk.VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR
+import io.technoirlab.volk.VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_BINARY
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
@@ -605,7 +608,13 @@ class Device internal constructor(
         val queryPoolVar = alloc<VkQueryPoolVar>()
         vkCreateQueryPool!!(handle, queryPoolCreateInfo.ptr, null, queryPoolVar.ptr)
             .checkResult("Failed to create query pool")
-        return QueryPool(handle, queryPoolVar.value!!)
+        val valuesPerQuery = when (queryPoolCreateInfo.queryType) {
+            VK_QUERY_TYPE_PIPELINE_STATISTICS -> queryPoolCreateInfo.pipelineStatistics.countOneBits()
+            VK_QUERY_TYPE_TRANSFORM_FEEDBACK_STREAM_EXT -> 2
+            VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR -> 0
+            else -> 1
+        }
+        return QueryPool(handle, queryPoolVar.value!!, valuesPerQuery)
     }
 
     /**
