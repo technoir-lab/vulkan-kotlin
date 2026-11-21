@@ -300,6 +300,7 @@ class Device internal constructor(
             pNext = flagsCreateInfo.ptr
             this.layout = layout?.handle
             basePipelineHandle = basePipeline?.handle
+            basePipelineIndex = -1
             stage.apply {
                 sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
                 shaderStage()
@@ -539,6 +540,7 @@ class Device internal constructor(
             pDynamicState = dynamicStateCreateInfo.ptr
             pNext = flagsCreateInfo.ptr
             basePipelineHandle = basePipeline?.handle
+            basePipelineIndex = -1
         }
         val pipelineVar = alloc<VkPipelineVar>()
         vkCreateGraphicsPipelines!!(
