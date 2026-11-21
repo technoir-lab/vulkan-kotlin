@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan.debug
 
+import io.technoirlab.volk.VK_EXT_DEBUG_UTILS_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_LABEL_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT
@@ -48,20 +49,28 @@ fun Instance.createDebugMessenger(
     messageType: VkDebugUtilsMessageTypeFlagsEXT,
     callback: DebugMessenger.Callback,
 ): DebugMessenger = memScoped {
+    assert(VK_EXT_DEBUG_UTILS_EXTENSION_NAME in enabledExtensions) {
+        "Creating a debug messenger requires VK_EXT_debug_utils"
+    }
     assert(messageSeverity != 0u) { "messageSeverity must not be 0" }
     assert(messageType != 0u) { "messageType must not be 0" }
     val callbackRef = StableRef.create(callback)
-    val debugUtilsMessengerCreateInfo = alloc<VkDebugUtilsMessengerCreateInfoEXT> {
-        sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
-        pfnUserCallback = staticCFunction(::debugMessengerCallback)
-        pUserData = callbackRef.asCPointer()
-        this.messageSeverity = messageSeverity
-        this.messageType = messageType
+    try {
+        val debugUtilsMessengerCreateInfo = alloc<VkDebugUtilsMessengerCreateInfoEXT> {
+            sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT
+            pfnUserCallback = staticCFunction(::debugMessengerCallback)
+            pUserData = callbackRef.asCPointer()
+            this.messageSeverity = messageSeverity
+            this.messageType = messageType
+        }
+        val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
+        vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
+            .checkResult("Failed to create a debug messenger")
+        return DebugMessenger(handle, messengerVar.value!!, callbackRef)
+    } catch (e: Throwable) {
+        callbackRef.dispose()
+        throw e
     }
-    val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
-    vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
-        .checkResult("Failed to create a debug messenger")
-    return DebugMessenger(handle, messengerVar.value!!, callbackRef)
 }
 
 /**
