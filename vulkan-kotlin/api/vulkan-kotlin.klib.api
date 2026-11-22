@@ -1165,7 +1165,7 @@ final class io.technoirlab.vulkan.sync/Fence : io.technoirlab.vulkan/VulkanObjec
 
     final fun close() // io.technoirlab.vulkan.sync/Fence.close|close(){}[0]
     final fun reset() // io.technoirlab.vulkan.sync/Fence.reset|reset(){}[0]
-    final fun wait(kotlin.time/Duration = ...) // io.technoirlab.vulkan.sync/Fence.wait|wait(kotlin.time.Duration){}[0]
+    final fun wait(kotlin.time/Duration = ...): kotlin/Boolean // io.technoirlab.vulkan.sync/Fence.wait|wait(kotlin.time.Duration){}[0]
 }
 
 final class io.technoirlab.vulkan.sync/Semaphore : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.sync/Semaphore|null[0]
@@ -1179,7 +1179,7 @@ final class io.technoirlab.vulkan.sync/Semaphore : io.technoirlab.vulkan/VulkanO
     final fun close() // io.technoirlab.vulkan.sync/Semaphore.close|close(){}[0]
     final fun counterValue(): kotlin/ULong // io.technoirlab.vulkan.sync/Semaphore.counterValue|counterValue(){}[0]
     final fun signal(kotlin/ULong) // io.technoirlab.vulkan.sync/Semaphore.signal|signal(kotlin.ULong){}[0]
-    final fun wait(kotlin/ULong, kotlin.time/Duration = ...) // io.technoirlab.vulkan.sync/Semaphore.wait|wait(kotlin.ULong;kotlin.time.Duration){}[0]
+    final fun wait(kotlin/ULong, kotlin.time/Duration = ...): kotlin/Boolean // io.technoirlab.vulkan.sync/Semaphore.wait|wait(kotlin.ULong;kotlin.time.Duration){}[0]
 }
 
 final class io.technoirlab.vulkan/ApplicationInfo { // io.technoirlab.vulkan/ApplicationInfo|null[0]

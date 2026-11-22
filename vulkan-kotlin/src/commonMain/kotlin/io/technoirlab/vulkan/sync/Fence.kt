@@ -3,6 +3,7 @@ package io.technoirlab.vulkan.sync
 import io.technoirlab.volk.VK_NOT_READY
 import io.technoirlab.volk.VK_OBJECT_TYPE_FENCE
 import io.technoirlab.volk.VK_SUCCESS
+import io.technoirlab.volk.VK_TIMEOUT
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkFence
@@ -65,14 +66,17 @@ class Fence internal constructor(
     /**
      * Wait for the fence to become signaled.
      *
+     * @return `true` if the fence became signaled, or `false` if [timeout] expired first.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkWaitForFences.html">vkWaitForFences Manual Page</a>
      */
-    fun wait(timeout: Duration = Duration.INFINITE): Unit = memScoped {
+    fun wait(timeout: Duration = Duration.INFINITE): Boolean = memScoped {
         val fenceVar = alloc<VkFenceVar> {
             value = handle
         }
-        vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanosecondsULong)
-            .checkResult("Failed to wait for fence")
+        when (val result = vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanosecondsULong)) {
+            VK_TIMEOUT -> false
+            else -> result.checkResult("Failed to wait for fence")
+        }
     }
 
     /**
