@@ -4,6 +4,7 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_SEMAPHORE
 import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO
+import io.technoirlab.volk.VK_TIMEOUT
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSemaphore
@@ -87,9 +88,10 @@ class Semaphore internal constructor(
      *
      * Requires a timeline semaphore and the `timelineSemaphore` feature to be enabled on the device.
      *
+     * @return `true` if the semaphore reached [value], or `false` if [timeout] expired first.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkWaitSemaphores.html">vkWaitSemaphores Manual Page</a>
      */
-    fun wait(value: ULong, timeout: Duration = Duration.INFINITE): Unit = memScoped {
+    fun wait(value: ULong, timeout: Duration = Duration.INFINITE): Boolean = memScoped {
         assert(semaphoreType == VK_SEMAPHORE_TYPE_TIMELINE) {
             "semaphoreType must be VK_SEMAPHORE_TYPE_TIMELINE"
         }
@@ -102,8 +104,10 @@ class Semaphore internal constructor(
             pValues = valueVar.ptr
             flags = 0u
         }
-        vkWaitSemaphores!!(device, waitInfo.ptr, timeout.inWholeNanosecondsULong)
-            .checkResult("Failed to wait for timeline semaphore")
+        when (val result = vkWaitSemaphores!!(device, waitInfo.ptr, timeout.inWholeNanosecondsULong)) {
+            VK_TIMEOUT -> false
+            else -> result.checkResult("Failed to wait for timeline semaphore")
+        }
     }
 
     /**
