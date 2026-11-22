@@ -15,7 +15,7 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/technoir-lab/vulkan-swift",
-      exact: "1.0.2"
+      exact: "1.1.0"
     )
   ],
   targets: [

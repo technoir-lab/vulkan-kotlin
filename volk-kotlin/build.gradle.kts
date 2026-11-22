@@ -42,7 +42,7 @@ kotlin {
             packageName = "vulkan-swift",
             products = listOf(product("VulkanDriver"), product("VulkanValidation")),
             url = url("https://github.com/technoir-lab/vulkan-swift"),
-            version = exact("1.0.2"),
+            version = exact("1.1.0"),
         )
     }
 }
