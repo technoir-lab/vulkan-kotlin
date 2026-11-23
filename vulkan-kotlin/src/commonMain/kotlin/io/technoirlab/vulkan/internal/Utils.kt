@@ -2,11 +2,28 @@ package io.technoirlab.vulkan.internal
 
 import io.technoirlab.volk.VK_FALSE
 import io.technoirlab.volk.VK_TRUE
+import io.technoirlab.volk.VkBaseInStructure
 import io.technoirlab.volk.VkBool32
+import io.technoirlab.volk.VkStructureType
+import kotlinx.cinterop.COpaquePointer
+import kotlinx.cinterop.pointed
+import kotlinx.cinterop.reinterpret
 import kotlin.assert
 import kotlin.time.Duration
 
 internal inline fun Boolean.toVkBool32(): VkBool32 = if (this) VK_TRUE else VK_FALSE
+
+/**
+ * Returns whether the `pNext` chain starting at this pointer contains a structure of the given [type].
+ */
+internal fun COpaquePointer?.containsStructure(type: VkStructureType): Boolean {
+    var structure = this?.reinterpret<VkBaseInStructure>()
+    while (structure != null) {
+        if (structure.pointed.sType == type) return true
+        structure = structure.pointed.pNext
+    }
+    return false
+}
 
 internal inline val Duration.inWholeNanosecondsULong: ULong
     get() = when {
