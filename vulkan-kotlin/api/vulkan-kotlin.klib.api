@@ -1366,8 +1366,8 @@ final class io.technoirlab.vulkan/Vulkan : kotlin/AutoCloseable { // io.technoir
         final fun <get-instanceVersion>(): kotlin/UInt // io.technoirlab.vulkan/Vulkan.instanceVersion.<get-instanceVersion>|<get-instanceVersion>(){}[0]
 
     final fun close() // io.technoirlab.vulkan/Vulkan.close|close(){}[0]
-    final fun createInstance(io.technoirlab.vulkan/ApplicationInfo, kotlin.collections/List<kotlin/String> = ..., kotlin.collections/List<kotlin/String> = ...): io.technoirlab.vulkan/Instance // io.technoirlab.vulkan/Vulkan.createInstance|createInstance(io.technoirlab.vulkan.ApplicationInfo;kotlin.collections.List<kotlin.String>;kotlin.collections.List<kotlin.String>){}[0]
-    final fun enumerateInstanceExtensionProperties(): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceExtensionProperties|enumerateInstanceExtensionProperties(){}[0]
+    final fun createInstance(io.technoirlab.vulkan/ApplicationInfo, kotlin.collections/List<kotlin/String> = ..., kotlin.collections/List<kotlin/String> = ..., kotlinx.cinterop/CPointer<out kotlinx.cinterop/CPointed>? = ...): io.technoirlab.vulkan/Instance // io.technoirlab.vulkan/Vulkan.createInstance|createInstance(io.technoirlab.vulkan.ApplicationInfo;kotlin.collections.List<kotlin.String>;kotlin.collections.List<kotlin.String>;kotlinx.cinterop.CPointer<out|kotlinx.cinterop.CPointed>?){}[0]
+    final fun enumerateInstanceExtensionProperties(kotlin/String? = ...): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceExtensionProperties|enumerateInstanceExtensionProperties(kotlin.String?){}[0]
     final fun enumerateInstanceLayerProperties(): kotlin.collections/List<io.technoirlab.vulkan/LayerProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceLayerProperties|enumerateInstanceLayerProperties(){}[0]
 }
 

@@ -2,6 +2,7 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+import io.technoirlab.volk.VK_EXT_LAYER_SETTINGS_EXTENSION_NAME
 import io.technoirlab.volk.VK_EXT_MEMORY_BUDGET_EXTENSION_NAME
 import io.technoirlab.volk.VK_FORMAT_R8G8B8A8_UNORM
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_UNDEFINED
@@ -10,14 +11,21 @@ import io.technoirlab.volk.VK_IMAGE_TYPE_2D
 import io.technoirlab.volk.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
+import io.technoirlab.volk.VK_LAYER_SETTING_TYPE_BOOL32_EXT
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
 import io.technoirlab.volk.VK_SHARING_MODE_EXCLUSIVE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT
+import io.technoirlab.volk.VK_TRUE
+import io.technoirlab.volk.VkBool32Var
 import io.technoirlab.volk.VkDeviceQueueCreateInfo
+import io.technoirlab.volk.VkLayerSettingEXT
+import io.technoirlab.volk.VkLayerSettingsCreateInfoEXT
 import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.device.PhysicalDevice
 import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.alloc
+import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
@@ -41,6 +49,48 @@ class VulkanTest {
     }
 
     @Test
+    fun `create instance with layer settings extension chain`() {
+        val validationLayer = "VK_LAYER_KHRONOS_validation"
+        val hasValidationLayer = vulkan.enumerateInstanceLayerProperties().any { it.name == validationLayer }
+        if (!hasValidationLayer) return
+        val hasLayerSettings = vulkan.enumerateInstanceExtensionProperties(validationLayer).any {
+            it.name == VK_EXT_LAYER_SETTINGS_EXTENSION_NAME
+        }
+        if (!hasLayerSettings) return
+
+        val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
+            it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
+        }
+        val extensions = buildList {
+            if (hasPortabilityExtension) add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
+            add(VK_EXT_LAYER_SETTINGS_EXTENSION_NAME)
+        }
+        memScoped {
+            val validateSync = alloc<VkBool32Var> { value = VK_TRUE }
+            val layerSetting = alloc<VkLayerSettingEXT> {
+                pLayerName = validationLayer.cstr.ptr
+                pSettingName = "validate_sync".cstr.ptr
+                type = VK_LAYER_SETTING_TYPE_BOOL32_EXT
+                valueCount = 1u
+                pValues = validateSync.ptr
+            }
+            val layerSettingsCreateInfo = alloc<VkLayerSettingsCreateInfoEXT> {
+                sType = VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT
+                settingCount = 1u
+                pSettings = layerSetting.ptr
+            }
+            vulkan.createInstance(
+                applicationInfo = ApplicationInfo(),
+                enabledLayers = listOf(validationLayer),
+                enabledExtensions = extensions,
+                extensions = layerSettingsCreateInfo.ptr,
+            ).use { instance ->
+                assertTrue(VK_EXT_LAYER_SETTINGS_EXTENSION_NAME in instance.enabledExtensions)
+            }
+        }
+    }
+
+    @Test
     fun `get instance version`() {
         val instanceVersion = vulkan.instanceVersion
 
@@ -53,6 +103,16 @@ class VulkanTest {
 
         assertTrue(extensions.isNotEmpty())
         assertTrue(extensions.all { it.name.startsWith("VK_") && it.specVersion > 0u })
+    }
+
+    @Test
+    fun `enumerate instance extensions provided by a layer`() {
+        val layers = vulkan.enumerateInstanceLayerProperties()
+
+        layers.forEach { layer ->
+            val extensions = vulkan.enumerateInstanceExtensionProperties(layer.name)
+            assertTrue(extensions.all { it.name.startsWith("VK_") })
+        }
     }
 
     @Test
