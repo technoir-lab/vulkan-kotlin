@@ -1,11 +1,13 @@
 package io.technoirlab.vulkan.shader
 
+import io.technoirlab.volk.VK_INCOMPATIBLE_SHADER_BINARY_EXT
 import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
+import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkShaderCreateInfoEXT
 import io.technoirlab.volk.VkShaderEXT
 import io.technoirlab.volk.VkShaderEXTVar
@@ -85,11 +87,18 @@ fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List
  * Any shaders created before a batch creation failure are destroyed before the failure is reported.
  * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
  *
+ * Binary shader code is guaranteed to be usable only on a device that reports the same `shaderBinaryUUID` and the
+ * same or a higher `shaderBinaryVersion` as the device it was retrieved from. For any other binary the
+ * implementation decides whether it is usable.
+ *
  * @param count Number of shader objects to create.
  * @param createInfo Configures each shader object using its zero-based index.
+ * @return The created shader objects in [createInfo] order, or `null` if the implementation reported
+ * `VK_INCOMPATIBLE_SHADER_BINARY_EXT` because binary shader code supplied through [createInfo] is not compatible
+ * with the device. No shader object of the batch is kept in that case, so create the shaders from SPIR-V instead.
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateShadersEXT.html">vkCreateShadersEXT Manual Page</a>
  */
-fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -> Unit): List<Shader> = memScoped {
+fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -> Unit): List<Shader>? = memScoped {
     assert(count > 0u) { "count must be greater than 0" }
     val createInfos = allocArray<VkShaderCreateInfoEXT>(count.toLong()) { index ->
         sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
@@ -98,12 +107,12 @@ fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -
     val shaderHandles = allocArray<VkShaderEXTVar>(count.toLong())
     val result = vkCreateShadersEXT!!(handle, count, createInfos, null, shaderHandles)
     if (result != VK_SUCCESS) {
+        // Whatever the result, every element is either null or a valid handle that nothing else will release.
         repeat(count.toInt()) { index ->
             shaderHandles[index]?.let { vkDestroyShaderEXT!!(handle, it, null) }
         }
-        result.checkResult("Failed to create shaders")
     }
-    return (0 until count.toInt()).map { Shader(handle, shaderHandles[it]!!) }
+    return result.toShadersOrNull(handle, List(count.toInt()) { shaderHandles[it] }, "Failed to create shaders")
 }
 
 /**
@@ -145,4 +154,22 @@ fun Shader.getBinaryDataSize(): ULong = memScoped {
         .checkResult("Failed to get shader binary data size")
 
     return dataSize.value
+}
+
+/**
+ * Interprets the result of a command that creates a batch of shader objects.
+ *
+ * `VK_INCOMPATIBLE_SHADER_BINARY_EXT` is a success code reporting that supplied binary shader code is not compatible
+ * with the device, so it is not a failure. The caller releases the handles of a batch that is not returned.
+ *
+ * @param device The device the shader objects were created on.
+ * @param shaders The handles the command wrote, all of which are non-null when the command returned `VK_SUCCESS`.
+ * @param message Describes the failure when this result is neither `VK_SUCCESS` nor
+ * `VK_INCOMPATIBLE_SHADER_BINARY_EXT`.
+ * @return The created shader objects in [shaders] order, or `null` for `VK_INCOMPATIBLE_SHADER_BINARY_EXT`.
+ */
+internal fun VkResult.toShadersOrNull(device: VkDevice, shaders: List<VkShaderEXT?>, message: String): List<Shader>? {
+    if (this == VK_INCOMPATIBLE_SHADER_BINARY_EXT) return null
+    checkResult(message)
+    return shaders.map { Shader(device, it!!) }
 }
