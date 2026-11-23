@@ -17,25 +17,15 @@ import io.technoirlab.volk.vkMapMemory
 import io.technoirlab.volk.vkUnmapMemory
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
-import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
-import kotlinx.cinterop.addressOf
 import kotlinx.cinterop.alloc
-import kotlinx.cinterop.convert
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
-import kotlinx.cinterop.plus
 import kotlinx.cinterop.ptr
-import kotlinx.cinterop.reinterpret
-import kotlinx.cinterop.usePinned
 import kotlinx.cinterop.value
-import kotlinx.io.EOFException
-import kotlinx.io.Source
-import platform.posix.memcpy
 import kotlin.assert
-import kotlin.math.min
 
 /**
  * Wrapper for [VkDeviceMemory].
@@ -65,46 +55,6 @@ class DeviceMemory internal constructor(
      */
     override fun close() {
         vkFreeMemory!!(device, handle, null)
-    }
-
-    /**
-     * Copy data from a source to the device memory.
-     *
-     * The copied range is flushed before the memory is unmapped, making this method suitable for non-coherent
-     * host-visible memory without requiring the caller to align [offset] or [expectedSize] to `nonCoherentAtomSize`.
-     * The whole memory allocation is temporarily mapped and flushed to support unaligned copies. The allocation
-     * must be host-visible and not already mapped. The caller must synchronize device accesses to the allocation
-     * and externally synchronize host mapping operations. Flushing does not wait for device execution.
-     */
-    fun copyData(source: Source, expectedSize: ULong, offset: ULong = 0uL) {
-        assert(expectedSize > 0uL) { "Size must be greater than 0" }
-        validateRange(offset, expectedSize)
-        assert(offset <= Long.MAX_VALUE.toULong() && expectedSize <= Long.MAX_VALUE.toULong() - offset) {
-            "Copy range $offset + $expectedSize cannot be represented as a native pointer offset"
-        }
-
-        val mappedPtr = map(size).reinterpret<ByteVar>()
-        try {
-            val buffer = ByteArray(READ_BUFFER_SIZE)
-            var totalRead = 0uL
-            while (totalRead < expectedSize) {
-                val remaining = expectedSize - totalRead
-                val toRead = min(READ_BUFFER_SIZE.toULong(), remaining)
-                val read = source.readAtMostTo(buffer, 0, toRead.convert())
-                if (read <= 0) break
-                buffer.usePinned { pinned ->
-                    val destPtr = mappedPtr + offset.toLong() + totalRead.toLong()
-                    memcpy(destPtr, pinned.addressOf(0), read.convert())
-                }
-                totalRead += read.toULong()
-            }
-            if (totalRead != expectedSize) {
-                throw EOFException("Not enough data in source: expected $expectedSize bytes, but read $totalRead bytes")
-            }
-            flush()
-        } finally {
-            unmap()
-        }
     }
 
     /**
@@ -245,6 +195,5 @@ class DeviceMemory internal constructor(
      */
     companion object {
         private const val DEFAULT_MAPPING_OFFSET = VK_WHOLE_SIZE
-        private const val READ_BUFFER_SIZE = 64 * 1024
     }
 }

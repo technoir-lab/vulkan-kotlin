@@ -30,7 +30,6 @@ Intentionally unsupported functionality:
 ## Dependencies
 
 * [kotlinx-datetime](https://github.com/Kotlin/kotlinx-datetime) - multiplatform date and time library.
-* [kotlinx-io](https://github.com/Kotlin/kotlinx-io) - multiplatform I/O library.
 * [volk](https://github.com/zeux/volk) - meta loader for Vulkan API.
 
 ## Project structure
