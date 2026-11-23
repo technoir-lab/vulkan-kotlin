@@ -177,10 +177,11 @@ import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCache
+import io.technoirlab.vulkan.pipeline.PipelineCreationResult
 import io.technoirlab.vulkan.pipeline.PipelineLayout
-import io.technoirlab.vulkan.pipeline.PipelineWithCreationFeedback
 import io.technoirlab.vulkan.pipeline.allocPipelineCreationFeedbackCreateInfo
-import io.technoirlab.vulkan.pipeline.toPipelineWithCreationFeedback
+import io.technoirlab.vulkan.pipeline.toPipelineCreationResult
+import io.technoirlab.vulkan.pipeline.toPipelineOrNull
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.query.QueryPool
 import io.technoirlab.vulkan.shader.ShaderModule
@@ -308,6 +309,9 @@ class Device internal constructor(
      * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
      * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
+     * @return The created pipeline, or `null` if [flags] includes
+     * `VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT` and the implementation reported
+     * `VK_PIPELINE_COMPILE_REQUIRED` because it would have had to compile the pipeline.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateComputePipelines.html">vkCreateComputePipelines Manual Page</a>
      */
     fun createComputePipeline(
@@ -316,7 +320,7 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): Pipeline = createComputePipelineImpl(layout, shaderStage, flags, basePipeline, cache, creationFeedbackCreateInfo = null)
+    ): Pipeline? = createComputePipelineImpl(layout, shaderStage, flags, basePipeline, cache, creationFeedbackCreateInfo = null)
 
     /**
      * Create a new compute pipeline and report the implementation's feedback about its creation.
@@ -329,7 +333,9 @@ class Device internal constructor(
      * a failure.
      *
      * @return The created pipeline, which the caller owns and must close, with the feedback about the pipeline
-     * and about its compute stage.
+     * and about its compute stage. The pipeline is `null`, and the feedback is still reported, if [flags] includes
+     * `VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT` and the implementation reported
+     * `VK_PIPELINE_COMPILE_REQUIRED`.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateComputePipelines.html">vkCreateComputePipelines Manual Page</a>
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCreationFeedbackCreateInfo.html">VkPipelineCreationFeedbackCreateInfo Manual Page</a>
      */
@@ -339,10 +345,10 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): PipelineWithCreationFeedback = memScoped {
+    ): PipelineCreationResult = memScoped {
         val creationFeedbackCreateInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 1u)
         val pipeline = createComputePipelineImpl(layout, shaderStage, flags, basePipeline, cache, creationFeedbackCreateInfo)
-        return creationFeedbackCreateInfo.toPipelineWithCreationFeedback(pipeline)
+        return creationFeedbackCreateInfo.toPipelineCreationResult(pipeline)
     }
 
     /**
@@ -480,6 +486,9 @@ class Device internal constructor(
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
      * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
      * Do not also chain this structure through [renderingCreateInfo].
+     * @return The created pipeline, or `null` if [flags] includes
+     * `VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT` and the implementation reported
+     * `VK_PIPELINE_COMPILE_REQUIRED` because it would have had to compile the pipeline.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
      */
     fun createGraphicsPipeline(
@@ -499,7 +508,7 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): Pipeline = createGraphicsPipelineImpl(
+    ): Pipeline? = createGraphicsPipelineImpl(
         layout,
         stageCount,
         stages,
@@ -532,7 +541,10 @@ class Device internal constructor(
      * @param renderingCreateInfo Configures dynamic rendering. Structures chained through it are preserved, but
      * it must not chain [VkPipelineCreationFeedbackCreateInfo].
      * @return The created pipeline, which the caller owns and must close, with the feedback about the pipeline
-     * and about each of its [stageCount] stages in the order [stages] configures them.
+     * and about each of its [stageCount] stages in the order [stages] configures them. The pipeline is `null`,
+     * and the feedback is still reported, if [flags] includes
+     * `VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT` and the implementation reported
+     * `VK_PIPELINE_COMPILE_REQUIRED`.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCreationFeedbackCreateInfo.html">VkPipelineCreationFeedbackCreateInfo Manual Page</a>
      */
@@ -553,7 +565,7 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): PipelineWithCreationFeedback = memScoped {
+    ): PipelineCreationResult = memScoped {
         val creationFeedbackCreateInfo = allocPipelineCreationFeedbackCreateInfo(stageCount)
         val pipeline = createGraphicsPipelineImpl(
             layout,
@@ -574,7 +586,7 @@ class Device internal constructor(
             cache,
             creationFeedbackCreateInfo,
         )
-        return creationFeedbackCreateInfo.toPipelineWithCreationFeedback(pipeline)
+        return creationFeedbackCreateInfo.toPipelineCreationResult(pipeline)
     }
 
     /**
@@ -970,7 +982,7 @@ class Device internal constructor(
         basePipeline: Pipeline?,
         cache: PipelineCache?,
         creationFeedbackCreateInfo: VkPipelineCreationFeedbackCreateInfo?,
-    ): Pipeline = memScoped {
+    ): Pipeline? = memScoped {
         val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
             sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
             this.flags = flags
@@ -988,15 +1000,15 @@ class Device internal constructor(
             }
         }
         val pipelineVar = alloc<VkPipelineVar>()
-        vkCreateComputePipelines!!(
+        val result = vkCreateComputePipelines!!(
             handle,
             cache?.handle,
             1u,
             computePipelineCreateInfo.ptr,
             null,
             pipelineVar.ptr,
-        ).checkResult("Failed to create compute pipeline")
-        return Pipeline(handle, pipelineVar.value!!)
+        )
+        return result.toPipelineOrNull(handle, pipelineVar.value, "Failed to create compute pipeline")
     }
 
     /**
@@ -1020,7 +1032,7 @@ class Device internal constructor(
         basePipeline: Pipeline?,
         cache: PipelineCache?,
         creationFeedbackCreateInfo: VkPipelineCreationFeedbackCreateInfo?,
-    ): Pipeline = memScoped {
+    ): Pipeline? = memScoped {
         val shaderStageCreateInfo = if (stageCount > 0u) {
             allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
                 sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
@@ -1100,14 +1112,14 @@ class Device internal constructor(
             basePipelineIndex = -1
         }
         val pipelineVar = alloc<VkPipelineVar>()
-        vkCreateGraphicsPipelines!!(
+        val result = vkCreateGraphicsPipelines!!(
             handle,
             cache?.handle,
             1u,
             graphicsPipelineCreateInfo.ptr,
             null,
             pipelineVar.ptr,
-        ).checkResult("Failed to create graphics pipeline")
-        return Pipeline(handle, pipelineVar.value!!)
+        )
+        return result.toPipelineOrNull(handle, pipelineVar.value, "Failed to create graphics pipeline")
     }
 }

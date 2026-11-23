@@ -17,7 +17,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertSame
 
-class PipelineWithCreationFeedbackTest {
+class PipelineCreationResultTest {
     @Test
     fun `feedback request has zero-filled storage for the pipeline and every stage`(): Unit = memScoped {
         val createInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 3u)
@@ -43,7 +43,7 @@ class PipelineWithCreationFeedbackTest {
     fun `feedback the implementation never wrote is absent`(): Unit = memScoped {
         val createInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 2u)
 
-        val result = createInfo.toPipelineWithCreationFeedback(fakePipeline())
+        val result = createInfo.toPipelineCreationResult(fakePipeline())
 
         assertNull(result.pipelineCreationFeedback)
         assertEquals(listOf(null, null), result.pipelineStageCreationFeedbacks)
@@ -67,7 +67,7 @@ class PipelineWithCreationFeedbackTest {
             duration = 3uL
         }
 
-        val result = createInfo.toPipelineWithCreationFeedback(pipeline)
+        val result = createInfo.toPipelineCreationResult(pipeline)
 
         assertSame(pipeline, result.pipeline)
         assertNull(result.pipelineCreationFeedback)
@@ -92,7 +92,7 @@ class PipelineWithCreationFeedbackTest {
             duration = 7uL
         }
 
-        val result = createInfo.toPipelineWithCreationFeedback(fakePipeline())
+        val result = createInfo.toPipelineCreationResult(fakePipeline())
 
         assertEquals(
             PipelineCreationFeedback(
@@ -105,10 +105,25 @@ class PipelineWithCreationFeedbackTest {
     }
 
     @Test
+    fun `feedback is reported when no pipeline was created`(): Unit = memScoped {
+        val createInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 1u)
+        createInfo.pPipelineCreationFeedback?.pointed?.apply {
+            flags = VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT
+            duration = 5uL
+        }
+
+        val result = createInfo.toPipelineCreationResult(pipeline = null)
+
+        assertNull(result.pipeline)
+        assertEquals(PipelineCreationFeedback(VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT, 5uL), result.pipelineCreationFeedback)
+        assertEquals(listOf(null), result.pipelineStageCreationFeedbacks)
+    }
+
+    @Test
     fun `pipeline without stages has no stage feedback`(): Unit = memScoped {
         val createInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 0u)
 
-        val result = createInfo.toPipelineWithCreationFeedback(fakePipeline())
+        val result = createInfo.toPipelineCreationResult(fakePipeline())
 
         assertEquals(emptyList(), result.pipelineStageCreationFeedbacks)
     }

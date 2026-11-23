@@ -26,8 +26,12 @@ data class PipelineCreationFeedback internal constructor(
      * creation call.
      *
      * `false` means only that no hit was reported. Caches internal to the implementation are not reported here,
-     * and a short [duration] does not establish that one was used. An implementation that reports a hit for a
-     * whole pipeline may leave it unreported for the stages.
+     * and a short [duration] does not establish that one was used.
+     *
+     * A hit is reported separately for the pipeline and for each of its stages, and neither implies the other.
+     * An implementation may report a hit for the whole pipeline and none for its stages, or hits for individual
+     * stages and none for the pipeline. Check the pipeline feedback and every stage feedback to learn whether
+     * the cache was used at all.
      */
     val applicationPipelineCacheHit: Boolean
         get() = flags and VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT != 0u

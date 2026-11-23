@@ -7,12 +7,15 @@ import io.technoirlab.volk.VK_COLOR_COMPONENT_R_BIT
 import io.technoirlab.volk.VK_DYNAMIC_STATE_SCISSOR
 import io.technoirlab.volk.VK_DYNAMIC_STATE_VIEWPORT
 import io.technoirlab.volk.VK_FORMAT_R8G8B8A8_UNORM
+import io.technoirlab.volk.VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT
 import io.technoirlab.volk.VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_FRAGMENT_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_VERTEX_BIT
+import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkPipelineColorBlendAttachmentState
 import io.technoirlab.volk.VkPipelineColorBlendStateCreateInfo
+import io.technoirlab.volk.VkPipelineCreateFlags2
 import io.technoirlab.volk.VkPipelineDynamicStateCreateInfo
 import io.technoirlab.volk.VkPipelineInputAssemblyStateCreateInfo
 import io.technoirlab.volk.VkPipelineMultisampleStateCreateInfo
@@ -22,7 +25,7 @@ import io.technoirlab.volk.VkPipelineShaderStageCreateInfo
 import io.technoirlab.volk.VkPipelineViewportStateCreateInfo
 import io.technoirlab.vulkan.Vulkan
 import io.technoirlab.vulkan.pipeline.Pipeline
-import io.technoirlab.vulkan.pipeline.PipelineWithCreationFeedback
+import io.technoirlab.vulkan.pipeline.PipelineCreationResult
 import io.technoirlab.vulkan.pipeline.allocPipelineCreationFeedbackCreateInfo
 import io.technoirlab.vulkan.withTestDevice
 import kotlinx.cinterop.COpaquePointer
@@ -38,6 +41,7 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 
 class GraphicsPipelineCreationTest {
     private val vulkan = Vulkan()
@@ -49,14 +53,31 @@ class GraphicsPipelineCreationTest {
 
     @Test
     fun `createGraphicsPipeline creates a pipeline`() = withPipelineFixture { fixture ->
-        fixture.createPipeline().use { }
+        val pipeline = fixture.createPipeline()
+
+        assertNotNull(pipeline).close()
+    }
+
+    @Test
+    fun `createGraphicsPipeline accepts failing on a required compile`() = withPipelineFixture { fixture ->
+        val pipeline = fixture.createPipeline(VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
+
+        pipeline?.close()
     }
 
     @Test
     fun `createGraphicsPipelineWithFeedback reports feedback for every stage`() = withPipelineFixture { fixture ->
         val result = fixture.createPipelineWithFeedback()
-        result.pipeline.close()
 
+        assertNotNull(result.pipeline).close()
+        assertEquals(STAGE_COUNT.toInt(), result.pipelineStageCreationFeedbacks.size)
+    }
+
+    @Test
+    fun `createGraphicsPipelineWithFeedback reports feedback when failing on a required compile`() = withPipelineFixture { fixture ->
+        val result = fixture.createPipelineWithFeedback(flags = VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
+
+        result.pipeline?.close()
         assertEquals(STAGE_COUNT.toInt(), result.pipelineStageCreationFeedbacks.size)
     }
 
@@ -68,7 +89,7 @@ class GraphicsPipelineCreationTest {
     }
 
     private fun withPipelineFixture(block: MemScope.(GraphicsPipelineFixture) -> Unit) {
-        vulkan.withTestDevice { _, device ->
+        vulkan.withTestDevice(features13 = { pipelineCreationCacheControl = VK_TRUE }) { _, device ->
             memScoped {
                 GraphicsPipelineFixture(device, scope = this).use { block(it) }
             }
@@ -124,7 +145,7 @@ private class GraphicsPipelineFixture(
         pDynamicStates = dynamicStates
     }
 
-    fun createPipeline(): Pipeline = device.createGraphicsPipeline(
+    fun createPipeline(flags: VkPipelineCreateFlags2 = 0uL): Pipeline? = device.createGraphicsPipeline(
         layout,
         STAGE_COUNT,
         stages,
@@ -135,9 +156,10 @@ private class GraphicsPipelineFixture(
         colorBlendState = colorBlendState,
         dynamicState = dynamicState,
         renderingCreateInfo = renderingCreateInfo(extensions = null),
+        flags = flags,
     )
 
-    fun createPipelineWithFeedback(extensions: COpaquePointer? = null): PipelineWithCreationFeedback =
+    fun createPipelineWithFeedback(extensions: COpaquePointer? = null, flags: VkPipelineCreateFlags2 = 0uL): PipelineCreationResult =
         device.createGraphicsPipelineWithFeedback(
             layout,
             STAGE_COUNT,
@@ -149,6 +171,7 @@ private class GraphicsPipelineFixture(
             colorBlendState = colorBlendState,
             dynamicState = dynamicState,
             renderingCreateInfo = renderingCreateInfo(extensions),
+            flags = flags,
         )
 
     override fun close() {
