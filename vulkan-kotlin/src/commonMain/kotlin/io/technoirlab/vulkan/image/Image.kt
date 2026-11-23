@@ -3,11 +3,13 @@ package io.technoirlab.vulkan.image
 import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
 import io.technoirlab.volk.VkBindImageMemoryInfo
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImage
 import io.technoirlab.volk.VkImageMemoryRequirementsInfo2
+import io.technoirlab.volk.VkMemoryDedicatedRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindImageMemory2
@@ -70,7 +72,7 @@ class Image internal constructor(
     }
 
     /**
-     * Determine memory requirements for the image.
+     * Determine memory requirements for the image, including dedicated-allocation flags.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetImageMemoryRequirements2.html">vkGetImageMemoryRequirements2 Manual Page</a>
      */
@@ -79,10 +81,14 @@ class Image internal constructor(
             sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
             image = handle
         }
+        val dedicatedRequirements = alloc<VkMemoryDedicatedRequirements> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
+        }
         val memoryRequirements = alloc<VkMemoryRequirements2> {
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
+            pNext = dedicatedRequirements.ptr
         }
         vkGetImageMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
-        return memoryRequirements.memoryRequirements.toMemoryRequirements()
+        return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 }

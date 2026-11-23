@@ -4,12 +4,14 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_BUFFER
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
 import io.technoirlab.volk.VkBindBufferMemoryInfo
 import io.technoirlab.volk.VkBuffer
 import io.technoirlab.volk.VkBufferDeviceAddressInfo
 import io.technoirlab.volk.VkBufferMemoryRequirementsInfo2
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkMemoryDedicatedRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkBindBufferMemory2
@@ -81,7 +83,7 @@ class Buffer internal constructor(
     }
 
     /**
-     * Determine memory requirements for the buffer.
+     * Determine memory requirements for the buffer, including dedicated-allocation flags.
      *
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetBufferMemoryRequirements2.html">vkGetBufferMemoryRequirements2 Manual Page</a>
      */
@@ -90,11 +92,15 @@ class Buffer internal constructor(
             sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_REQUIREMENTS_INFO_2
             buffer = handle
         }
+        val dedicatedRequirements = alloc<VkMemoryDedicatedRequirements> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
+        }
         val memoryRequirements = alloc<VkMemoryRequirements2> {
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
+            pNext = dedicatedRequirements.ptr
         }
         vkGetBufferMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
-        return memoryRequirements.memoryRequirements.toMemoryRequirements()
+        return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 
     /**

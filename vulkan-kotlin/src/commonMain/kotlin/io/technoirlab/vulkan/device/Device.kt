@@ -1,6 +1,8 @@
 package io.technoirlab.vulkan.device
 
 import io.technoirlab.volk.VK_FORMAT_UNDEFINED
+import io.technoirlab.volk.VK_IMAGE_ASPECT_NONE
+import io.technoirlab.volk.VK_IMAGE_CREATE_DISJOINT_BIT
 import io.technoirlab.volk.VK_KHR_SWAPCHAIN_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE
 import io.technoirlab.volk.VK_QUERY_TYPE_PIPELINE_STATISTICS
@@ -15,6 +17,8 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_IMAGE_SUBRESOURCE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_EVENT_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FENCE_CREATE_INFO
@@ -23,6 +27,8 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_SUBRESOURCE_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
@@ -62,6 +68,8 @@ import io.technoirlab.volk.VkDescriptorSetLayoutCreateInfo
 import io.technoirlab.volk.VkDescriptorSetLayoutSupport
 import io.technoirlab.volk.VkDescriptorSetLayoutVar
 import io.technoirlab.volk.VkDevice
+import io.technoirlab.volk.VkDeviceBufferMemoryRequirements
+import io.technoirlab.volk.VkDeviceImageMemoryRequirements
 import io.technoirlab.volk.VkDeviceImageSubresourceInfo
 import io.technoirlab.volk.VkDeviceMemoryVar
 import io.technoirlab.volk.VkEventCreateFlags
@@ -72,6 +80,7 @@ import io.technoirlab.volk.VkFenceCreateInfo
 import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.VkFormat
 import io.technoirlab.volk.VkGraphicsPipelineCreateInfo
+import io.technoirlab.volk.VkImageAspectFlagBits
 import io.technoirlab.volk.VkImageAspectFlags
 import io.technoirlab.volk.VkImageCreateInfo
 import io.technoirlab.volk.VkImageSubresource2
@@ -79,6 +88,8 @@ import io.technoirlab.volk.VkImageVar
 import io.technoirlab.volk.VkImageViewCreateInfo
 import io.technoirlab.volk.VkImageViewVar
 import io.technoirlab.volk.VkMemoryAllocateInfo
+import io.technoirlab.volk.VkMemoryDedicatedRequirements
+import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineCacheCreateInfo
 import io.technoirlab.volk.VkPipelineCacheVar
@@ -137,6 +148,8 @@ import io.technoirlab.volk.vkCreateSwapchainKHR
 import io.technoirlab.volk.vkDestroyDevice
 import io.technoirlab.volk.vkDeviceWaitIdle
 import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
+import io.technoirlab.volk.vkGetDeviceBufferMemoryRequirements
+import io.technoirlab.volk.vkGetDeviceImageMemoryRequirements
 import io.technoirlab.volk.vkGetDeviceImageSubresourceLayout
 import io.technoirlab.volk.vkGetDeviceQueue
 import io.technoirlab.volk.vkGetImageSubresourceLayout2
@@ -157,6 +170,8 @@ import io.technoirlab.vulkan.image.ImageView
 import io.technoirlab.vulkan.image.Sampler
 import io.technoirlab.vulkan.image.toImageSubresourceLayout
 import io.technoirlab.vulkan.memory.DeviceMemory
+import io.technoirlab.vulkan.memory.MemoryRequirements
+import io.technoirlab.vulkan.memory.toMemoryRequirements
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCache
 import io.technoirlab.vulkan.pipeline.PipelineLayout
@@ -714,6 +729,70 @@ class Device internal constructor(
         }
         vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
         return layoutSupport.supported == VK_TRUE
+    }
+
+    /**
+     * Determine memory requirements for a buffer without creating one, including dedicated-allocation flags.
+     *
+     * @param createInfo Configures the buffer creation parameters to query.
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceBufferMemoryRequirements.html">vkGetDeviceBufferMemoryRequirements Manual Page</a>
+     */
+    fun getDeviceBufferMemoryRequirements(createInfo: VkBufferCreateInfo.() -> Unit): MemoryRequirements = memScoped {
+        val bufferCreateInfo = alloc<VkBufferCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO
+            createInfo()
+        }
+        val requirementsInfo = alloc<VkDeviceBufferMemoryRequirements> {
+            sType = VK_STRUCTURE_TYPE_DEVICE_BUFFER_MEMORY_REQUIREMENTS
+            pCreateInfo = bufferCreateInfo.ptr
+        }
+        val dedicatedRequirements = alloc<VkMemoryDedicatedRequirements> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
+        }
+        val memoryRequirements = alloc<VkMemoryRequirements2> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
+            pNext = dedicatedRequirements.ptr
+        }
+        vkGetDeviceBufferMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
+        return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
+    }
+
+    /**
+     * Determine memory requirements for an image without creating one, including dedicated-allocation flags.
+     *
+     * When [createInfo] specifies a multi-planar format with `VK_IMAGE_CREATE_DISJOINT_BIT`, [planeAspect] must
+     * specify a single valid multi-planar aspect bit (such as `VK_IMAGE_ASPECT_PLANE_0_BIT`). Otherwise, pass
+     * `VK_IMAGE_ASPECT_NONE`.
+     *
+     * @param planeAspect The aspect of the disjoint multi-planar image plane to query, or `VK_IMAGE_ASPECT_NONE`.
+     * @param createInfo Configures the image creation parameters to query.
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceImageMemoryRequirements.html">vkGetDeviceImageMemoryRequirements Manual Page</a>
+     */
+    fun getDeviceImageMemoryRequirements(
+        planeAspect: VkImageAspectFlagBits = VK_IMAGE_ASPECT_NONE,
+        createInfo: VkImageCreateInfo.() -> Unit,
+    ): MemoryRequirements = memScoped {
+        val imageCreateInfo = alloc<VkImageCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO
+            createInfo()
+        }
+        assert(imageCreateInfo.flags and VK_IMAGE_CREATE_DISJOINT_BIT == 0u || planeAspect != VK_IMAGE_ASPECT_NONE) {
+            "planeAspect must not be VK_IMAGE_ASPECT_NONE when VK_IMAGE_CREATE_DISJOINT_BIT is set"
+        }
+        val requirementsInfo = alloc<VkDeviceImageMemoryRequirements> {
+            sType = VK_STRUCTURE_TYPE_DEVICE_IMAGE_MEMORY_REQUIREMENTS
+            pCreateInfo = imageCreateInfo.ptr
+            this.planeAspect = planeAspect
+        }
+        val dedicatedRequirements = alloc<VkMemoryDedicatedRequirements> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
+        }
+        val memoryRequirements = alloc<VkMemoryRequirements2> {
+            sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
+            pNext = dedicatedRequirements.ptr
+        }
+        vkGetDeviceImageMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
+        return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 
     /**

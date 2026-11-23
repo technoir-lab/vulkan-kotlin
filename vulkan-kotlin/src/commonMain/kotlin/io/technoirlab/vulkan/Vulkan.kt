@@ -17,6 +17,7 @@ import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
 import io.technoirlab.volk.volkKotlinInitialize
 import kotlinx.cinterop.AutofreeScope
+import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -54,15 +55,26 @@ class Vulkan : AutoCloseable {
     /**
      * Create a new Vulkan instance.
      *
+     * If `VK_KHR_portability_enumeration` is included in [enabledExtensions],
+     * `VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR` is set.
+     *
+     * @param applicationInfo Application and engine metadata.
+     * @param enabledLayers Names of the instance layers to enable.
+     * @param enabledExtensions Names of the instance extensions to enable.
+     * @param extensions Optional `pNext` chain of extension structures to attach to `VkInstanceCreateInfo`, such as
+     * `VkLayerSettingsCreateInfoEXT` or `VkValidationFeaturesEXT`. The chained structures and any memory they
+     * reference must remain valid until this call returns.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateInstance.html">vkCreateInstance Manual Page</a>
      */
     fun createInstance(
         applicationInfo: ApplicationInfo,
         enabledLayers: List<String> = emptyList(),
         enabledExtensions: List<String> = emptyList(),
+        extensions: COpaquePointer? = null,
     ): Instance = memScoped {
         val instanceCreateInfo = alloc<VkInstanceCreateInfo> {
             sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO
+            pNext = extensions
             pApplicationInfo = applicationInfo.toVkApplicationInfo().ptr
             flags = if (VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME in enabledExtensions) {
                 VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
@@ -85,20 +97,23 @@ class Vulkan : AutoCloseable {
     }
 
     /**
-     * List global extension properties.
+     * List global extension properties, or the extensions provided by a layer.
      *
+     * @param layerName Name of the layer to retrieve extensions from, or `null` to retrieve the extensions provided
+     * by the Vulkan implementation and by implicitly enabled layers. A named layer must be available on the system.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEnumerateInstanceExtensionProperties.html">vkEnumerateInstanceExtensionProperties Manual Page</a>
      */
-    fun enumerateInstanceExtensionProperties(): List<ExtensionProperties> = memScoped {
+    fun enumerateInstanceExtensionProperties(layerName: String? = null): List<ExtensionProperties> = memScoped {
+        val layerNamePtr = layerName?.cstr?.ptr
         val countVar = alloc<UIntVar>()
-        vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, null)
+        vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, null)
             .checkResult("Failed to enumerate instance extensions")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
         val extensionProperties = allocArray<VkExtensionProperties>(count)
-        vkEnumerateInstanceExtensionProperties!!(null, countVar.ptr, extensionProperties)
+        vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, extensionProperties)
             .checkResult("Failed to enumerate instance extensions")
 
         return (0 until count).map {

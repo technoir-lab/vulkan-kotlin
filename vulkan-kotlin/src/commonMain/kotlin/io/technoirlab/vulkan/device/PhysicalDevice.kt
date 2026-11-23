@@ -6,6 +6,8 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_IMAGE_FORMAT_INFO_2
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_FEATURES
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VULKAN_1_1_PROPERTIES
@@ -29,7 +31,9 @@ import io.technoirlab.volk.VkPhysicalDevice
 import io.technoirlab.volk.VkPhysicalDeviceFeatures
 import io.technoirlab.volk.VkPhysicalDeviceFeatures2
 import io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2
+import io.technoirlab.volk.VkPhysicalDeviceMemoryBudgetPropertiesEXT
 import io.technoirlab.volk.VkPhysicalDeviceMemoryProperties
+import io.technoirlab.volk.VkPhysicalDeviceMemoryProperties2
 import io.technoirlab.volk.VkPhysicalDeviceProperties
 import io.technoirlab.volk.VkPhysicalDeviceProperties2
 import io.technoirlab.volk.VkPhysicalDeviceVulkan11Features
@@ -51,6 +55,7 @@ import io.technoirlab.volk.vkGetPhysicalDeviceFeatures2
 import io.technoirlab.volk.vkGetPhysicalDeviceFormatProperties2
 import io.technoirlab.volk.vkGetPhysicalDeviceImageFormatProperties2
 import io.technoirlab.volk.vkGetPhysicalDeviceMemoryProperties
+import io.technoirlab.volk.vkGetPhysicalDeviceMemoryProperties2
 import io.technoirlab.volk.vkGetPhysicalDeviceProperties
 import io.technoirlab.volk.vkGetPhysicalDeviceProperties2
 import io.technoirlab.volk.vkGetPhysicalDeviceQueueFamilyProperties
@@ -64,6 +69,7 @@ import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.image.ImageFormatProperties
 import io.technoirlab.vulkan.image.toImageFormatProperties
+import io.technoirlab.vulkan.memory.MemoryHeapBudget
 import io.technoirlab.vulkan.memory.MemoryProperties
 import io.technoirlab.vulkan.memory.toMemoryProperties
 import io.technoirlab.vulkan.presentation.Surface
@@ -252,6 +258,32 @@ class PhysicalDevice internal constructor(
         vkGetPhysicalDeviceImageFormatProperties2!!(handle, imageFormatInfo.ptr, properties.ptr)
             .checkResult("Failed to get image format properties")
         return properties.imageFormatProperties.toImageFormatProperties()
+    }
+
+    /**
+     * Retrieve the memory budget and usage for each memory heap on the physical device.
+     *
+     * The returned list is ordered by native memory heap index, matching [MemoryProperties.memoryHeaps].
+     * The physical device must support the `VK_EXT_memory_budget` device extension.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetPhysicalDeviceMemoryProperties2.html">vkGetPhysicalDeviceMemoryProperties2 Manual Page</a>
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPhysicalDeviceMemoryBudgetPropertiesEXT.html">VkPhysicalDeviceMemoryBudgetPropertiesEXT Manual Page</a>
+     */
+    fun getMemoryBudget(): List<MemoryHeapBudget> = memScoped {
+        val budgetProperties = alloc<VkPhysicalDeviceMemoryBudgetPropertiesEXT> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_BUDGET_PROPERTIES_EXT
+        }
+        val memoryProperties = alloc<VkPhysicalDeviceMemoryProperties2> {
+            sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2
+            pNext = budgetProperties.ptr
+        }
+        vkGetPhysicalDeviceMemoryProperties2!!(handle, memoryProperties.ptr)
+        return List(memoryProperties.memoryProperties.memoryHeapCount.toInt()) { index ->
+            MemoryHeapBudget(
+                budget = budgetProperties.heapBudget[index],
+                usage = budgetProperties.heapUsage[index],
+            )
+        }
     }
 
     /**

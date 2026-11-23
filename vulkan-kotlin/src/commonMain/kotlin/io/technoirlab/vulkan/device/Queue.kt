@@ -19,6 +19,7 @@ import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
+import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArrayOf
@@ -44,9 +45,20 @@ class Queue internal constructor(
     /**
      * Queue an image for presentation.
      *
+     * @param swapChain Swapchain containing the image to present.
+     * @param imageIndex Index of the swapchain image to present.
+     * @param waitSemaphores Semaphores to wait on before presenting the image.
+     * @param extensions Optional `pNext` chain of extension structures to attach to `VkPresentInfoKHR`, such as
+     * `VkSwapchainPresentFenceInfoKHR`. The chained structures and any memory they reference must remain valid
+     * until this call returns.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueuePresentKHR.html">vkQueuePresentKHR Manual Page</a>
      */
-    fun present(swapChain: Swapchain, imageIndex: UInt, waitSemaphores: List<Semaphore> = emptyList()): VkResult = memScoped {
+    fun present(
+        swapChain: Swapchain,
+        imageIndex: UInt,
+        waitSemaphores: List<Semaphore> = emptyList(),
+        extensions: COpaquePointer? = null,
+    ): VkResult = memScoped {
         val swapChainVar = alloc<VkSwapchainKHRVar> {
             value = swapChain.handle
         }
@@ -55,6 +67,7 @@ class Queue internal constructor(
         }
         val presentInfo = alloc<VkPresentInfoKHR> {
             sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR
+            pNext = extensions
             swapchainCount = 1u
             pSwapchains = swapChainVar.ptr
             pImageIndices = imageIndexVar.ptr
