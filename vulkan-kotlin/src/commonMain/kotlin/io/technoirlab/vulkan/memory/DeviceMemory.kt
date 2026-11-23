@@ -11,6 +11,7 @@ import io.technoirlab.volk.VkMappedMemoryRange
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.vkFlushMappedMemoryRanges
 import io.technoirlab.volk.vkFreeMemory
+import io.technoirlab.volk.vkGetDeviceMemoryCommitment
 import io.technoirlab.volk.vkGetDeviceMemoryOpaqueCaptureAddress
 import io.technoirlab.volk.vkInvalidateMappedMemoryRanges
 import io.technoirlab.volk.vkMapMemory
@@ -20,6 +21,7 @@ import io.technoirlab.vulkan.checkResult
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
+import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
 import kotlinx.cinterop.memScoped
@@ -81,6 +83,19 @@ class DeviceMemory internal constructor(
         }
         vkFlushMappedMemoryRanges!!(device, 1u, memoryRange.ptr)
             .checkResult("Failed to flush mapped memory")
+    }
+
+    /**
+     * Retrieve the current number of bytes committed to this lazily allocated memory object.
+     *
+     * This memory must have been allocated from a memory type with `VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT`.
+     *
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetDeviceMemoryCommitment.html">vkGetDeviceMemoryCommitment Manual Page</a>
+     */
+    fun getCommitment(): ULong = memScoped {
+        val committedBytes = alloc<ULongVar>()
+        vkGetDeviceMemoryCommitment!!(device, handle, committedBytes.ptr)
+        return committedBytes.value
     }
 
     /**

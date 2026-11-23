@@ -12,6 +12,7 @@ import io.technoirlab.volk.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
 import io.technoirlab.volk.VK_LAYER_SETTING_TYPE_BOOL32_EXT
+import io.technoirlab.volk.VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
 import io.technoirlab.volk.VK_SHARING_MODE_EXCLUSIVE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
@@ -227,6 +228,59 @@ class VulkanTest {
         }
     }
 
+    @Test
+    fun `device memory commitment query succeeds on lazily allocated memory`() {
+        createTestInstance().use { instance ->
+            val match = instance.enumeratePhysicalDevices()
+                .filter { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
+                .firstNotNullOfOrNull { physicalDevice ->
+                    val typeIndex = physicalDevice.getMemoryProperties().memoryTypes
+                        .indexOfFirst { (it.propertyFlags and VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) != 0u }
+                    if (typeIndex >= 0) physicalDevice to typeIndex.toUInt() else null
+                }
+                ?: return
+            val (physicalDevice, lazyTypeIndex) = match
+            createTestDevice(physicalDevice)?.use { device ->
+                device.allocateMemory {
+                    allocationSize = 4096uL
+                    memoryTypeIndex = lazyTypeIndex
+                }.use { memory ->
+                    assertTrue(memory.getCommitment() <= memory.size)
+                }
+            }
+        }
+    }
+
+    private fun createTestDevice(physicalDevice: PhysicalDevice): Device? {
+        val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
+        val enabledExtensions = buildList {
+            if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
+                add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)
+            }
+        }
+        val queueFamilyIndex = physicalDevice.getQueueFamilyProperties()
+            .indexOfFirst { it.queueCount > 0u }
+            .takeIf { it >= 0 }
+            ?.toUInt()
+            ?: return null
+        return memScoped {
+            val queuePriority = alloc<FloatVar> { value = 1.0f }
+            val queueCreateInfo = alloc<VkDeviceQueueCreateInfo> {
+                sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
+                this.queueFamilyIndex = queueFamilyIndex
+                queueCount = 1u
+                pQueuePriorities = queuePriority.ptr
+            }
+            physicalDevice.createDevice(
+                enabledExtensions = enabledExtensions,
+                createInfo = {
+                    queueCreateInfoCount = 1u
+                    pQueueCreateInfos = queueCreateInfo.ptr
+                },
+            )
+        }
+    }
+
     private fun createTestInstance(): Instance {
         val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
             it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
@@ -244,33 +298,7 @@ class VulkanTest {
             val physicalDevice = instance.enumeratePhysicalDevices()
                 .firstOrNull { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
                 ?: return
-            val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
-            val enabledExtensions = buildList {
-                if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
-                    add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)
-                }
-            }
-            val queueFamilyIndex = physicalDevice.getQueueFamilyProperties()
-                .indexOfFirst { it.queueCount > 0u }
-                .takeIf { it >= 0 }
-                ?.toUInt()
-                ?: return
-            val device = memScoped {
-                val queuePriority = alloc<FloatVar> { value = 1.0f }
-                val queueCreateInfo = alloc<VkDeviceQueueCreateInfo> {
-                    sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
-                    this.queueFamilyIndex = queueFamilyIndex
-                    queueCount = 1u
-                    pQueuePriorities = queuePriority.ptr
-                }
-                physicalDevice.createDevice(
-                    enabledExtensions = enabledExtensions,
-                    createInfo = {
-                        queueCreateInfoCount = 1u
-                        pQueueCreateInfos = queueCreateInfo.ptr
-                    },
-                )
-            }
+            val device = createTestDevice(physicalDevice) ?: return
             device.use { block(physicalDevice, it) }
         }
     }
