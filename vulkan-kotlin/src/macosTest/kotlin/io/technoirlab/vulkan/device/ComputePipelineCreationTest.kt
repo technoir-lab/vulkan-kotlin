@@ -1,10 +1,13 @@
 package io.technoirlab.vulkan.device
 
+import io.technoirlab.volk.VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT
 import io.technoirlab.volk.VK_SHADER_STAGE_COMPUTE_BIT
+import io.technoirlab.volk.VK_TRUE
+import io.technoirlab.volk.VkPipelineCreateFlags2
 import io.technoirlab.volk.VkPipelineShaderStageCreateInfo
 import io.technoirlab.vulkan.Vulkan
 import io.technoirlab.vulkan.pipeline.Pipeline
-import io.technoirlab.vulkan.pipeline.PipelineWithCreationFeedback
+import io.technoirlab.vulkan.pipeline.PipelineCreationResult
 import io.technoirlab.vulkan.withTestDevice
 import kotlinx.cinterop.MemScope
 import kotlinx.cinterop.cstr
@@ -12,6 +15,7 @@ import kotlinx.cinterop.memScoped
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 
 class ComputePipelineCreationTest {
     private val vulkan = Vulkan()
@@ -23,19 +27,36 @@ class ComputePipelineCreationTest {
 
     @Test
     fun `createComputePipeline creates a pipeline`() = withPipelineFixture { fixture ->
-        fixture.createPipeline().use { }
+        val pipeline = fixture.createPipeline()
+
+        assertNotNull(pipeline).close()
+    }
+
+    @Test
+    fun `createComputePipeline accepts failing on a required compile`() = withPipelineFixture { fixture ->
+        val pipeline = fixture.createPipeline(VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
+
+        pipeline?.close()
     }
 
     @Test
     fun `createComputePipelineWithFeedback reports feedback for the compute stage`() = withPipelineFixture { fixture ->
         val result = fixture.createPipelineWithFeedback()
-        result.pipeline.close()
 
+        assertNotNull(result.pipeline).close()
+        assertEquals(1, result.pipelineStageCreationFeedbacks.size)
+    }
+
+    @Test
+    fun `createComputePipelineWithFeedback reports feedback when failing on a required compile`() = withPipelineFixture { fixture ->
+        val result = fixture.createPipelineWithFeedback(VK_PIPELINE_CREATE_2_FAIL_ON_PIPELINE_COMPILE_REQUIRED_BIT)
+
+        result.pipeline?.close()
         assertEquals(1, result.pipelineStageCreationFeedbacks.size)
     }
 
     private fun withPipelineFixture(block: (ComputePipelineFixture) -> Unit) {
-        vulkan.withTestDevice { _, device ->
+        vulkan.withTestDevice(features13 = { pipelineCreationCacheControl = VK_TRUE }) { _, device ->
             memScoped {
                 ComputePipelineFixture(device, scope = this).use(block)
             }
@@ -62,9 +83,10 @@ private class ComputePipelineFixture(
         pName = entryPoint
     }
 
-    fun createPipeline(): Pipeline = device.createComputePipeline(layout, shaderStage)
+    fun createPipeline(flags: VkPipelineCreateFlags2 = 0uL): Pipeline? = device.createComputePipeline(layout, shaderStage, flags)
 
-    fun createPipelineWithFeedback(): PipelineWithCreationFeedback = device.createComputePipelineWithFeedback(layout, shaderStage)
+    fun createPipelineWithFeedback(flags: VkPipelineCreateFlags2 = 0uL): PipelineCreationResult =
+        device.createComputePipelineWithFeedback(layout, shaderStage, flags)
 
     override fun close() {
         computeShader.close()
