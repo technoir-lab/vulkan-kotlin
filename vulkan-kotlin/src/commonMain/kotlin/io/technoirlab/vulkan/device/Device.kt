@@ -32,6 +32,7 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CACHE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
+import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
@@ -96,6 +97,7 @@ import io.technoirlab.volk.VkPipelineCacheVar
 import io.technoirlab.volk.VkPipelineColorBlendStateCreateInfo
 import io.technoirlab.volk.VkPipelineCreateFlags2
 import io.technoirlab.volk.VkPipelineCreateFlags2CreateInfo
+import io.technoirlab.volk.VkPipelineCreationFeedbackCreateInfo
 import io.technoirlab.volk.VkPipelineDepthStencilStateCreateInfo
 import io.technoirlab.volk.VkPipelineDynamicStateCreateInfo
 import io.technoirlab.volk.VkPipelineInputAssemblyStateCreateInfo
@@ -169,12 +171,16 @@ import io.technoirlab.vulkan.image.ImageSubresourceLayout
 import io.technoirlab.vulkan.image.ImageView
 import io.technoirlab.vulkan.image.Sampler
 import io.technoirlab.vulkan.image.toImageSubresourceLayout
+import io.technoirlab.vulkan.internal.containsStructure
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCache
 import io.technoirlab.vulkan.pipeline.PipelineLayout
+import io.technoirlab.vulkan.pipeline.PipelineWithCreationFeedback
+import io.technoirlab.vulkan.pipeline.allocPipelineCreationFeedbackCreateInfo
+import io.technoirlab.vulkan.pipeline.toPipelineWithCreationFeedback
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.query.QueryPool
 import io.technoirlab.vulkan.shader.ShaderModule
@@ -297,6 +303,8 @@ class Device internal constructor(
      * Shader stage flags for varying subgroup sizes require `subgroupSizeControl`; requiring full subgroups
      * requires `computeFullSubgroups`. Explicit subgroup sizes also require `subgroupSizeControl`.
      *
+     * Use [createComputePipelineWithFeedback] to also receive the implementation's feedback about the creation.
+     *
      * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
      * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
@@ -308,32 +316,33 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): Pipeline = memScoped {
-        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
-            this.flags = flags
-        }
-        val computePipelineCreateInfo = alloc<VkComputePipelineCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
-            pNext = flagsCreateInfo.ptr
-            this.layout = layout?.handle
-            basePipelineHandle = basePipeline?.handle
-            basePipelineIndex = -1
-            stage.apply {
-                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
-                shaderStage()
-            }
-        }
-        val pipelineVar = alloc<VkPipelineVar>()
-        vkCreateComputePipelines!!(
-            handle,
-            cache?.handle,
-            1u,
-            computePipelineCreateInfo.ptr,
-            null,
-            pipelineVar.ptr,
-        ).checkResult("Failed to create compute pipeline")
-        return Pipeline(handle, pipelineVar.value!!)
+    ): Pipeline = createComputePipelineImpl(layout, shaderStage, flags, basePipeline, cache, creationFeedbackCreateInfo = null)
+
+    /**
+     * Create a new compute pipeline and report the implementation's feedback about its creation.
+     *
+     * Takes the same parameters as [createComputePipeline], with the same feature requirements and the same
+     * behavior on failure. It additionally chains [VkPipelineCreationFeedbackCreateInfo] to the pipeline creation
+     * parameters, and copies the feedback out of temporary native memory before returning.
+     *
+     * Feedback is advisory. An implementation may report none for the pipeline or for its stage, which is not
+     * a failure.
+     *
+     * @return The created pipeline, which the caller owns and must close, with the feedback about the pipeline
+     * and about its compute stage.
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateComputePipelines.html">vkCreateComputePipelines Manual Page</a>
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCreationFeedbackCreateInfo.html">VkPipelineCreationFeedbackCreateInfo Manual Page</a>
+     */
+    fun createComputePipelineWithFeedback(
+        layout: PipelineLayout?,
+        shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit = {},
+        flags: VkPipelineCreateFlags2 = 0uL,
+        basePipeline: Pipeline? = null,
+        cache: PipelineCache? = null,
+    ): PipelineWithCreationFeedback = memScoped {
+        val creationFeedbackCreateInfo = allocPipelineCreationFeedbackCreateInfo(stageCount = 1u)
+        val pipeline = createComputePipelineImpl(layout, shaderStage, flags, basePipeline, cache, creationFeedbackCreateInfo)
+        return creationFeedbackCreateInfo.toPipelineWithCreationFeedback(pipeline)
     }
 
     /**
@@ -465,6 +474,8 @@ class Device internal constructor(
      * operations require `logicOp`. Non-default line rasterization modes and line stippling require the matching
      * `rectangularLines`, `bresenhamLines`, `smoothLines`, and `stippled*Lines` features.
      *
+     * Use [createGraphicsPipelineWithFeedback] to also receive the implementation's feedback about the creation.
+     *
      * @param layout Pipeline layout. Must be `null` when [flags] includes `VK_PIPELINE_CREATE_2_DESCRIPTOR_HEAP_BIT_EXT`.
      * Descriptor heaps require the `VK_EXT_descriptor_heap` extension and its `descriptorHeap` feature to be enabled.
      * @param flags 64-bit pipeline creation flags, passed through [VkPipelineCreateFlags2CreateInfo].
@@ -488,88 +499,82 @@ class Device internal constructor(
         flags: VkPipelineCreateFlags2 = 0uL,
         basePipeline: Pipeline? = null,
         cache: PipelineCache? = null,
-    ): Pipeline = memScoped {
-        val shaderStageCreateInfo = if (stageCount > 0u) {
-            allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
-                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
-                stages(it.toUInt())
-            }
-        } else {
-            null
-        }
-        val vertexInputStateCreateInfo = alloc<VkPipelineVertexInputStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
-            vertexInputState()
-        }
-        val inputAssemblyStateCreateInfo = alloc<VkPipelineInputAssemblyStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
-            inputAssemblyState()
-        }
-        val tessellationStateCreateInfo = alloc<VkPipelineTessellationStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
-            tessellationState()
-        }
-        val viewportStateCreateInfo = alloc<VkPipelineViewportStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
-            viewportState()
-        }
-        val rasterizationStateCreateInfo = alloc<VkPipelineRasterizationStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
-            rasterizationState()
-        }
-        val multisampleStateCreateInfo = alloc<VkPipelineMultisampleStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
-            multisampleState()
-        }
-        val depthStencilStateCreateInfo = alloc<VkPipelineDepthStencilStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
-            depthStencilState()
-        }
-        val colorBlendStateCreateInfo = alloc<VkPipelineColorBlendStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
-            colorBlendState()
-        }
-        val dynamicStateCreateInfo = alloc<VkPipelineDynamicStateCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
-            dynamicState()
-        }
-        val renderingCreateInfo = alloc<VkPipelineRenderingCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO
-            renderingCreateInfo()
-        }
-        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
-            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
-            pNext = renderingCreateInfo.ptr
-            this.flags = flags
-        }
-        val graphicsPipelineCreateInfo = alloc<VkGraphicsPipelineCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
-            this.stageCount = stageCount
-            this.layout = layout?.handle
-            pStages = shaderStageCreateInfo
-            pVertexInputState = vertexInputStateCreateInfo.ptr
-            pInputAssemblyState = inputAssemblyStateCreateInfo.ptr
-            pTessellationState = tessellationStateCreateInfo.ptr
-            pViewportState = viewportStateCreateInfo.ptr
-            pRasterizationState = rasterizationStateCreateInfo.ptr
-            pMultisampleState = multisampleStateCreateInfo.ptr
-            pDepthStencilState = depthStencilStateCreateInfo.ptr
-            pColorBlendState = colorBlendStateCreateInfo.ptr
-            pDynamicState = dynamicStateCreateInfo.ptr
-            pNext = flagsCreateInfo.ptr
-            basePipelineHandle = basePipeline?.handle
-            basePipelineIndex = -1
-        }
-        val pipelineVar = alloc<VkPipelineVar>()
-        vkCreateGraphicsPipelines!!(
-            handle,
-            cache?.handle,
-            1u,
-            graphicsPipelineCreateInfo.ptr,
-            null,
-            pipelineVar.ptr,
-        ).checkResult("Failed to create graphics pipeline")
-        return Pipeline(handle, pipelineVar.value!!)
+    ): Pipeline = createGraphicsPipelineImpl(
+        layout,
+        stageCount,
+        stages,
+        vertexInputState,
+        inputAssemblyState,
+        tessellationState,
+        viewportState,
+        rasterizationState,
+        multisampleState,
+        depthStencilState,
+        colorBlendState,
+        dynamicState,
+        renderingCreateInfo,
+        flags,
+        basePipeline,
+        cache,
+        creationFeedbackCreateInfo = null,
+    )
+
+    /**
+     * Create a new graphics pipeline and report the implementation's feedback about its creation.
+     *
+     * Takes the same parameters as [createGraphicsPipeline], with the same feature requirements and the same
+     * behavior on failure. It additionally chains [VkPipelineCreationFeedbackCreateInfo] to the pipeline creation
+     * parameters, and copies the feedback out of temporary native memory before returning.
+     *
+     * Feedback is advisory. An implementation may report none for the pipeline or for any of its stages, which
+     * is not a failure.
+     *
+     * @param renderingCreateInfo Configures dynamic rendering. Structures chained through it are preserved, but
+     * it must not chain [VkPipelineCreationFeedbackCreateInfo].
+     * @return The created pipeline, which the caller owns and must close, with the feedback about the pipeline
+     * and about each of its [stageCount] stages in the order [stages] configures them.
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateGraphicsPipelines.html">vkCreateGraphicsPipelines Manual Page</a>
+     * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCreationFeedbackCreateInfo.html">VkPipelineCreationFeedbackCreateInfo Manual Page</a>
+     */
+    fun createGraphicsPipelineWithFeedback(
+        layout: PipelineLayout?,
+        stageCount: UInt,
+        stages: VkPipelineShaderStageCreateInfo.(UInt) -> Unit = {},
+        vertexInputState: VkPipelineVertexInputStateCreateInfo.() -> Unit = {},
+        inputAssemblyState: VkPipelineInputAssemblyStateCreateInfo.() -> Unit = {},
+        tessellationState: VkPipelineTessellationStateCreateInfo.() -> Unit = {},
+        viewportState: VkPipelineViewportStateCreateInfo.() -> Unit = {},
+        rasterizationState: VkPipelineRasterizationStateCreateInfo.() -> Unit = {},
+        multisampleState: VkPipelineMultisampleStateCreateInfo.() -> Unit = {},
+        depthStencilState: VkPipelineDepthStencilStateCreateInfo.() -> Unit = {},
+        colorBlendState: VkPipelineColorBlendStateCreateInfo.() -> Unit = {},
+        dynamicState: VkPipelineDynamicStateCreateInfo.() -> Unit = {},
+        renderingCreateInfo: VkPipelineRenderingCreateInfo.() -> Unit = {},
+        flags: VkPipelineCreateFlags2 = 0uL,
+        basePipeline: Pipeline? = null,
+        cache: PipelineCache? = null,
+    ): PipelineWithCreationFeedback = memScoped {
+        val creationFeedbackCreateInfo = allocPipelineCreationFeedbackCreateInfo(stageCount)
+        val pipeline = createGraphicsPipelineImpl(
+            layout,
+            stageCount,
+            stages,
+            vertexInputState,
+            inputAssemblyState,
+            tessellationState,
+            viewportState,
+            rasterizationState,
+            multisampleState,
+            depthStencilState,
+            colorBlendState,
+            dynamicState,
+            renderingCreateInfo,
+            flags,
+            basePipeline,
+            cache,
+            creationFeedbackCreateInfo,
+        )
+        return creationFeedbackCreateInfo.toPipelineWithCreationFeedback(pipeline)
     }
 
     /**
@@ -953,5 +958,156 @@ class Device internal constructor(
      */
     override fun close() {
         vkDestroyDevice!!(handle, null)
+    }
+
+    /**
+     * Creates a compute pipeline, chaining [creationFeedbackCreateInfo] to its creation parameters when supplied.
+     */
+    private fun createComputePipelineImpl(
+        layout: PipelineLayout?,
+        shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit,
+        flags: VkPipelineCreateFlags2,
+        basePipeline: Pipeline?,
+        cache: PipelineCache?,
+        creationFeedbackCreateInfo: VkPipelineCreationFeedbackCreateInfo?,
+    ): Pipeline = memScoped {
+        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
+            this.flags = flags
+        }
+        creationFeedbackCreateInfo?.pNext = flagsCreateInfo.ptr
+        val computePipelineCreateInfo = alloc<VkComputePipelineCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO
+            pNext = creationFeedbackCreateInfo?.ptr ?: flagsCreateInfo.ptr
+            this.layout = layout?.handle
+            basePipelineHandle = basePipeline?.handle
+            basePipelineIndex = -1
+            stage.apply {
+                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+                shaderStage()
+            }
+        }
+        val pipelineVar = alloc<VkPipelineVar>()
+        vkCreateComputePipelines!!(
+            handle,
+            cache?.handle,
+            1u,
+            computePipelineCreateInfo.ptr,
+            null,
+            pipelineVar.ptr,
+        ).checkResult("Failed to create compute pipeline")
+        return Pipeline(handle, pipelineVar.value!!)
+    }
+
+    /**
+     * Creates a graphics pipeline, chaining [creationFeedbackCreateInfo] to its creation parameters when supplied.
+     */
+    private fun createGraphicsPipelineImpl(
+        layout: PipelineLayout?,
+        stageCount: UInt,
+        stages: VkPipelineShaderStageCreateInfo.(UInt) -> Unit,
+        vertexInputState: VkPipelineVertexInputStateCreateInfo.() -> Unit,
+        inputAssemblyState: VkPipelineInputAssemblyStateCreateInfo.() -> Unit,
+        tessellationState: VkPipelineTessellationStateCreateInfo.() -> Unit,
+        viewportState: VkPipelineViewportStateCreateInfo.() -> Unit,
+        rasterizationState: VkPipelineRasterizationStateCreateInfo.() -> Unit,
+        multisampleState: VkPipelineMultisampleStateCreateInfo.() -> Unit,
+        depthStencilState: VkPipelineDepthStencilStateCreateInfo.() -> Unit,
+        colorBlendState: VkPipelineColorBlendStateCreateInfo.() -> Unit,
+        dynamicState: VkPipelineDynamicStateCreateInfo.() -> Unit,
+        renderingCreateInfo: VkPipelineRenderingCreateInfo.() -> Unit,
+        flags: VkPipelineCreateFlags2,
+        basePipeline: Pipeline?,
+        cache: PipelineCache?,
+        creationFeedbackCreateInfo: VkPipelineCreationFeedbackCreateInfo?,
+    ): Pipeline = memScoped {
+        val shaderStageCreateInfo = if (stageCount > 0u) {
+            allocArray<VkPipelineShaderStageCreateInfo>(stageCount.toLong()) {
+                sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO
+                stages(it.toUInt())
+            }
+        } else {
+            null
+        }
+        val vertexInputStateCreateInfo = alloc<VkPipelineVertexInputStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO
+            vertexInputState()
+        }
+        val inputAssemblyStateCreateInfo = alloc<VkPipelineInputAssemblyStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO
+            inputAssemblyState()
+        }
+        val tessellationStateCreateInfo = alloc<VkPipelineTessellationStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_TESSELLATION_STATE_CREATE_INFO
+            tessellationState()
+        }
+        val viewportStateCreateInfo = alloc<VkPipelineViewportStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO
+            viewportState()
+        }
+        val rasterizationStateCreateInfo = alloc<VkPipelineRasterizationStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO
+            rasterizationState()
+        }
+        val multisampleStateCreateInfo = alloc<VkPipelineMultisampleStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO
+            multisampleState()
+        }
+        val depthStencilStateCreateInfo = alloc<VkPipelineDepthStencilStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO
+            depthStencilState()
+        }
+        val colorBlendStateCreateInfo = alloc<VkPipelineColorBlendStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO
+            colorBlendState()
+        }
+        val dynamicStateCreateInfo = alloc<VkPipelineDynamicStateCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO
+            dynamicState()
+        }
+        val renderingCreateInfo = alloc<VkPipelineRenderingCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_RENDERING_CREATE_INFO
+            renderingCreateInfo()
+        }
+        val flagsCreateInfo = alloc<VkPipelineCreateFlags2CreateInfo> {
+            sType = VK_STRUCTURE_TYPE_PIPELINE_CREATE_FLAGS_2_CREATE_INFO
+            pNext = renderingCreateInfo.ptr
+            this.flags = flags
+        }
+        if (creationFeedbackCreateInfo != null) {
+            assert(!renderingCreateInfo.pNext.containsStructure(VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO)) {
+                "renderingCreateInfo must not chain VkPipelineCreationFeedbackCreateInfo when creation feedback is requested"
+            }
+            // Prepending keeps the structures the caller chained through renderingCreateInfo reachable.
+            creationFeedbackCreateInfo.pNext = flagsCreateInfo.ptr
+        }
+        val graphicsPipelineCreateInfo = alloc<VkGraphicsPipelineCreateInfo> {
+            sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO
+            this.stageCount = stageCount
+            this.layout = layout?.handle
+            pStages = shaderStageCreateInfo
+            pVertexInputState = vertexInputStateCreateInfo.ptr
+            pInputAssemblyState = inputAssemblyStateCreateInfo.ptr
+            pTessellationState = tessellationStateCreateInfo.ptr
+            pViewportState = viewportStateCreateInfo.ptr
+            pRasterizationState = rasterizationStateCreateInfo.ptr
+            pMultisampleState = multisampleStateCreateInfo.ptr
+            pDepthStencilState = depthStencilStateCreateInfo.ptr
+            pColorBlendState = colorBlendStateCreateInfo.ptr
+            pDynamicState = dynamicStateCreateInfo.ptr
+            pNext = creationFeedbackCreateInfo?.ptr ?: flagsCreateInfo.ptr
+            basePipelineHandle = basePipeline?.handle
+            basePipelineIndex = -1
+        }
+        val pipelineVar = alloc<VkPipelineVar>()
+        vkCreateGraphicsPipelines!!(
+            handle,
+            cache?.handle,
+            1u,
+            graphicsPipelineCreateInfo.ptr,
+            null,
+            pipelineVar.ptr,
+        ).checkResult("Failed to create graphics pipeline")
+        return Pipeline(handle, pipelineVar.value!!)
     }
 }

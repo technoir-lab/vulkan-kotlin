@@ -10,21 +10,15 @@ import io.technoirlab.volk.VK_IMAGE_TILING_OPTIMAL
 import io.technoirlab.volk.VK_IMAGE_TYPE_2D
 import io.technoirlab.volk.VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-import io.technoirlab.volk.VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
 import io.technoirlab.volk.VK_LAYER_SETTING_TYPE_BOOL32_EXT
 import io.technoirlab.volk.VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT
 import io.technoirlab.volk.VK_SAMPLE_COUNT_1_BIT
 import io.technoirlab.volk.VK_SHARING_MODE_EXCLUSIVE
-import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_LAYER_SETTINGS_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_TRUE
 import io.technoirlab.volk.VkBool32Var
-import io.technoirlab.volk.VkDeviceQueueCreateInfo
 import io.technoirlab.volk.VkLayerSettingEXT
 import io.technoirlab.volk.VkLayerSettingsCreateInfoEXT
-import io.technoirlab.vulkan.device.Device
-import io.technoirlab.vulkan.device.PhysicalDevice
-import kotlinx.cinterop.FloatVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
@@ -46,7 +40,7 @@ class VulkanTest {
 
     @Test
     fun `create instance`() {
-        createTestInstance().use { }
+        vulkan.createTestInstance().use { }
     }
 
     @Test
@@ -126,7 +120,7 @@ class VulkanTest {
 
     @Test
     fun `buffer and image memory requirements include dedicated allocation flags`() {
-        withTestDevice { _, device ->
+        vulkan.withTestDevice { _, device ->
             val buffer = device.createBuffer {
                 size = 256uL
                 usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
@@ -166,7 +160,7 @@ class VulkanTest {
 
     @Test
     fun `memory budget query returns one entry per memory heap`() {
-        createTestInstance().use { instance ->
+        vulkan.createTestInstance().use { instance ->
             val physicalDevice = instance.enumeratePhysicalDevices()
                 .firstOrNull { device ->
                     memScoped { device.getProperties().apiVersion >= VK_API_VERSION_1_4 } &&
@@ -183,7 +177,7 @@ class VulkanTest {
 
     @Test
     fun `object-less buffer and image memory requirements match created objects`() {
-        withTestDevice { _, device ->
+        vulkan.withTestDevice { _, device ->
             val queriedBufferRequirements = device.getDeviceBufferMemoryRequirements {
                 size = 256uL
                 usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
@@ -230,7 +224,7 @@ class VulkanTest {
 
     @Test
     fun `device memory commitment query succeeds on lazily allocated memory`() {
-        createTestInstance().use { instance ->
+        vulkan.createTestInstance().use { instance ->
             val match = instance.enumeratePhysicalDevices()
                 .filter { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
                 .firstNotNullOfOrNull { physicalDevice ->
@@ -248,58 +242,6 @@ class VulkanTest {
                     assertTrue(memory.getCommitment() <= memory.size)
                 }
             }
-        }
-    }
-
-    private fun createTestDevice(physicalDevice: PhysicalDevice): Device? {
-        val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
-        val enabledExtensions = buildList {
-            if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
-                add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)
-            }
-        }
-        val queueFamilyIndex = physicalDevice.getQueueFamilyProperties()
-            .indexOfFirst { it.queueCount > 0u }
-            .takeIf { it >= 0 }
-            ?.toUInt()
-            ?: return null
-        return memScoped {
-            val queuePriority = alloc<FloatVar> { value = 1.0f }
-            val queueCreateInfo = alloc<VkDeviceQueueCreateInfo> {
-                sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
-                this.queueFamilyIndex = queueFamilyIndex
-                queueCount = 1u
-                pQueuePriorities = queuePriority.ptr
-            }
-            physicalDevice.createDevice(
-                enabledExtensions = enabledExtensions,
-                createInfo = {
-                    queueCreateInfoCount = 1u
-                    pQueueCreateInfos = queueCreateInfo.ptr
-                },
-            )
-        }
-    }
-
-    private fun createTestInstance(): Instance {
-        val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
-            it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
-        }
-        val extensions = if (hasPortabilityExtension) {
-            listOf(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
-        } else {
-            emptyList()
-        }
-        return vulkan.createInstance(ApplicationInfo(), enabledExtensions = extensions)
-    }
-
-    private fun withTestDevice(block: (PhysicalDevice, Device) -> Unit) {
-        createTestInstance().use { instance ->
-            val physicalDevice = instance.enumeratePhysicalDevices()
-                .firstOrNull { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
-                ?: return
-            val device = createTestDevice(physicalDevice) ?: return
-            device.use { block(physicalDevice, it) }
         }
     }
 }
