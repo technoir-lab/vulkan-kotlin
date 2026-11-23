@@ -180,6 +180,53 @@ class VulkanTest {
         }
     }
 
+    @Test
+    fun `object-less buffer and image memory requirements match created objects`() {
+        withTestDevice { _, device ->
+            val queriedBufferRequirements = device.getDeviceBufferMemoryRequirements {
+                size = 256uL
+                usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+                sharingMode = VK_SHARING_MODE_EXCLUSIVE
+            }
+            val bufferRequirements = device.createBuffer {
+                size = 256uL
+                usage = VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+                sharingMode = VK_SHARING_MODE_EXCLUSIVE
+            }.use { it.getMemoryRequirements() }
+            assertEquals(bufferRequirements, queriedBufferRequirements)
+
+            val queriedImageRequirements = device.getDeviceImageMemoryRequirements {
+                imageType = VK_IMAGE_TYPE_2D
+                format = VK_FORMAT_R8G8B8A8_UNORM
+                extent.width = 64u
+                extent.height = 64u
+                extent.depth = 1u
+                mipLevels = 1u
+                arrayLayers = 1u
+                samples = VK_SAMPLE_COUNT_1_BIT
+                tiling = VK_IMAGE_TILING_OPTIMAL
+                usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+                sharingMode = VK_SHARING_MODE_EXCLUSIVE
+                initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+            }
+            val imageRequirements = device.createImage {
+                imageType = VK_IMAGE_TYPE_2D
+                format = VK_FORMAT_R8G8B8A8_UNORM
+                extent.width = 64u
+                extent.height = 64u
+                extent.depth = 1u
+                mipLevels = 1u
+                arrayLayers = 1u
+                samples = VK_SAMPLE_COUNT_1_BIT
+                tiling = VK_IMAGE_TILING_OPTIMAL
+                usage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT
+                sharingMode = VK_SHARING_MODE_EXCLUSIVE
+                initialLayout = VK_IMAGE_LAYOUT_UNDEFINED
+            }.use { it.getMemoryRequirements() }
+            assertEquals(imageRequirements, queriedImageRequirements)
+        }
+    }
+
     private fun createTestInstance(): Instance {
         val hasPortabilityExtension = vulkan.enumerateInstanceExtensionProperties().any {
             it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
