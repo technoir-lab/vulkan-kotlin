@@ -425,6 +425,7 @@ final class io.technoirlab.vulkan.device/PhysicalDevice : io.technoirlab.vulkan/
     final fun enumerateDeviceExtensionProperties(): kotlin.collections/List<io.technoirlab.vulkan/ExtensionProperties> // io.technoirlab.vulkan.device/PhysicalDevice.enumerateDeviceExtensionProperties|enumerateDeviceExtensionProperties(){}[0]
     final fun getFormatProperties(kotlin/UInt): io.technoirlab.vulkan/FormatProperties // io.technoirlab.vulkan.device/PhysicalDevice.getFormatProperties|getFormatProperties(kotlin.UInt){}[0]
     final fun getImageFormatProperties(kotlin/Function1<io.technoirlab.volk/VkPhysicalDeviceImageFormatInfo2, kotlin/Unit>): io.technoirlab.vulkan.image/ImageFormatProperties // io.technoirlab.vulkan.device/PhysicalDevice.getImageFormatProperties|getImageFormatProperties(kotlin.Function1<io.technoirlab.volk.VkPhysicalDeviceImageFormatInfo2,kotlin.Unit>){}[0]
+    final fun getMemoryBudget(): kotlin.collections/List<io.technoirlab.vulkan.memory/MemoryHeapBudget> // io.technoirlab.vulkan.device/PhysicalDevice.getMemoryBudget|getMemoryBudget(){}[0]
     final fun getMemoryProperties(): io.technoirlab.vulkan.memory/MemoryProperties // io.technoirlab.vulkan.device/PhysicalDevice.getMemoryProperties|getMemoryProperties(){}[0]
     final fun getQueueFamilyProperties(): kotlin.collections/List<io.technoirlab.vulkan.device/QueueFamilyProperties> // io.technoirlab.vulkan.device/PhysicalDevice.getQueueFamilyProperties|getQueueFamilyProperties(){}[0]
     final fun getSurfaceCapabilities(io.technoirlab.vulkan.presentation/Surface): io.technoirlab.vulkan.presentation/SurfaceCapabilities // io.technoirlab.vulkan.device/PhysicalDevice.getSurfaceCapabilities|getSurfaceCapabilities(io.technoirlab.vulkan.presentation.Surface){}[0]
@@ -817,6 +818,19 @@ final class io.technoirlab.vulkan.memory/MemoryHeap { // io.technoirlab.vulkan.m
     final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryHeap.equals|equals(kotlin.Any?){}[0]
     final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryHeap.hashCode|hashCode(){}[0]
     final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryHeap.toString|toString(){}[0]
+}
+
+final class io.technoirlab.vulkan.memory/MemoryHeapBudget { // io.technoirlab.vulkan.memory/MemoryHeapBudget|null[0]
+    final val budget // io.technoirlab.vulkan.memory/MemoryHeapBudget.budget|{}budget[0]
+        final fun <get-budget>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeapBudget.budget.<get-budget>|<get-budget>(){}[0]
+    final val usage // io.technoirlab.vulkan.memory/MemoryHeapBudget.usage|{}usage[0]
+        final fun <get-usage>(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeapBudget.usage.<get-usage>|<get-usage>(){}[0]
+
+    final fun component1(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeapBudget.component1|component1(){}[0]
+    final fun component2(): kotlin/ULong // io.technoirlab.vulkan.memory/MemoryHeapBudget.component2|component2(){}[0]
+    final fun equals(kotlin/Any?): kotlin/Boolean // io.technoirlab.vulkan.memory/MemoryHeapBudget.equals|equals(kotlin.Any?){}[0]
+    final fun hashCode(): kotlin/Int // io.technoirlab.vulkan.memory/MemoryHeapBudget.hashCode|hashCode(){}[0]
+    final fun toString(): kotlin/String // io.technoirlab.vulkan.memory/MemoryHeapBudget.toString|toString(){}[0]
 }
 
 final class io.technoirlab.vulkan.memory/MemoryProperties { // io.technoirlab.vulkan.memory/MemoryProperties|null[0]

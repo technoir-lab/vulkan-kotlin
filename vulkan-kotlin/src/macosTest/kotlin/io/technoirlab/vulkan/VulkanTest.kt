@@ -2,6 +2,7 @@ package io.technoirlab.vulkan
 
 import io.technoirlab.volk.VK_API_VERSION_1_4
 import io.technoirlab.volk.VK_BUFFER_USAGE_VERTEX_BUFFER_BIT
+import io.technoirlab.volk.VK_EXT_MEMORY_BUDGET_EXTENSION_NAME
 import io.technoirlab.volk.VK_FORMAT_R8G8B8A8_UNORM
 import io.technoirlab.volk.VK_IMAGE_LAYOUT_UNDEFINED
 import io.technoirlab.volk.VK_IMAGE_TILING_OPTIMAL
@@ -22,6 +23,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -98,6 +100,23 @@ class VulkanTest {
                 assertTrue(requirements.memoryTypeBits != 0u)
                 assertTrue(!requirements.requiresDedicatedAllocation || requirements.prefersDedicatedAllocation)
             }
+        }
+    }
+
+    @Test
+    fun `memory budget query returns one entry per memory heap`() {
+        createTestInstance().use { instance ->
+            val physicalDevice = instance.enumeratePhysicalDevices()
+                .firstOrNull { device ->
+                    memScoped { device.getProperties().apiVersion >= VK_API_VERSION_1_4 } &&
+                        device.enumerateDeviceExtensionProperties().any { it.name == VK_EXT_MEMORY_BUDGET_EXTENSION_NAME }
+                }
+                ?: return
+            val memoryProperties = physicalDevice.getMemoryProperties()
+            val memoryBudgets = physicalDevice.getMemoryBudget()
+
+            assertEquals(memoryProperties.memoryHeaps.size, memoryBudgets.size)
+            assertTrue(memoryBudgets.any { it.budget > 0uL })
         }
     }
 

@@ -1,5 +1,6 @@
 package sample
 
+import io.technoirlab.volk.VK_EXT_MEMORY_BUDGET_EXTENSION_NAME
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO
@@ -54,6 +55,14 @@ class Sample : AutoCloseable {
 
         val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
         println("Supported device extensions: ${deviceExtensions.joinToString(", ") { it.name }}")
+
+        if (deviceExtensions.any { it.name == VK_EXT_MEMORY_BUDGET_EXTENSION_NAME }) {
+            val memoryBudgets = physicalDevice.getMemoryBudget()
+            println("Memory heap budgets:")
+            memoryBudgets.forEachIndexed { index, heap ->
+                println("  Heap $index: usage=${heap.usage} bytes, budget=${heap.budget} bytes")
+            }
+        }
 
         val enabledDeviceExtensions = buildList {
             if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
