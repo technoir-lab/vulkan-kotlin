@@ -1,13 +1,16 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_INSTANCE
 import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDeviceVar
+import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.vkDestroyInstance
 import io.technoirlab.volk.vkEnumeratePhysicalDevices
 import io.technoirlab.volk.volkLoadInstanceOnly
 import io.technoirlab.vulkan.device.PhysicalDevice
+import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -43,17 +46,21 @@ class Instance internal constructor(
      */
     fun enumeratePhysicalDevices(): List<PhysicalDevice> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
-            .checkResult("Failed to enumerate physical devices")
+        var physicalDevices: CArrayPointer<VkPhysicalDeviceVar>
+        var result: VkResult
+        do {
+            vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
+                .checkResult("Failed to enumerate physical devices")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val physicalDevices = allocArray<VkPhysicalDeviceVar>(count)
-        vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
-            .checkResult("Failed to enumerate physical devices")
+            physicalDevices = allocArray<VkPhysicalDeviceVar>(count)
+            result = vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to enumerate physical devices")
 
-        return (0 until count).map { PhysicalDevice(physicalDevices[it]!!) }
+        List(countVar.value.toInt()) { index -> PhysicalDevice(physicalDevices[index]!!) }
     }
 
     /**

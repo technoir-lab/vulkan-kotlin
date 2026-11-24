@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan.device
 
+import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_PHYSICAL_DEVICE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
@@ -47,6 +48,7 @@ import io.technoirlab.volk.VkPhysicalDeviceVulkan14Properties
 import io.technoirlab.volk.VkPresentModeKHR
 import io.technoirlab.volk.VkPresentModeKHRVar
 import io.technoirlab.volk.VkQueueFamilyProperties
+import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkSurfaceCapabilitiesKHR
 import io.technoirlab.volk.VkSurfaceFormatKHR
 import io.technoirlab.volk.vkCreateDevice
@@ -77,6 +79,7 @@ import io.technoirlab.vulkan.presentation.SurfaceCapabilities
 import io.technoirlab.vulkan.presentation.SurfaceFormat
 import io.technoirlab.vulkan.presentation.toSurfaceCapabilities
 import io.technoirlab.vulkan.presentation.toSurfaceFormat
+import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
@@ -180,18 +183,22 @@ class PhysicalDevice internal constructor(
      */
     fun enumerateDeviceExtensionProperties(): List<ExtensionProperties> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
-            .checkResult("Failed to enumerate device extensions")
+        var extensionProperties: CArrayPointer<VkExtensionProperties>
+        var result: VkResult
+        do {
+            vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
+                .checkResult("Failed to enumerate device extensions")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val extensionProperties = allocArray<VkExtensionProperties>(count)
-        vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
-            .checkResult("Failed to enumerate device extensions")
+            extensionProperties = allocArray<VkExtensionProperties>(count)
+            result = vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to enumerate device extensions")
 
-        return (0 until count).map {
-            val properties = extensionProperties[it]
+        List(countVar.value.toInt()) { index ->
+            val properties = extensionProperties[index]
             ExtensionProperties(properties.extensionName.toKString(), properties.specVersion)
         }
     }
@@ -358,13 +365,13 @@ class PhysicalDevice internal constructor(
         val countVar = alloc<UIntVar>()
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+        val count = countVar.value.toInt()
+        if (count == 0) return emptyList()
 
         val queueFamilyProperties = allocArray<VkQueueFamilyProperties>(count)
         vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
 
-        return List(countVar.value.toInt()) { index ->
+        List(countVar.value.toInt()) { index ->
             queueFamilyProperties[index].toQueueFamilyProperties()
         }
     }
@@ -388,17 +395,21 @@ class PhysicalDevice internal constructor(
      */
     fun getSurfaceFormats(surface: Surface): List<SurfaceFormat> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
-            .checkResult("Failed to get surface formats")
+        var surfaceFormats: CArrayPointer<VkSurfaceFormatKHR>
+        var result: VkResult
+        do {
+            vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
+                .checkResult("Failed to get surface formats")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val surfaceFormats = allocArray<VkSurfaceFormatKHR>(count)
-        vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
-            .checkResult("Failed to get surface formats")
+            surfaceFormats = allocArray<VkSurfaceFormatKHR>(count)
+            result = vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to get surface formats")
 
-        return List(countVar.value.toInt()) { index ->
+        List(countVar.value.toInt()) { index ->
             surfaceFormats[index].toSurfaceFormat()
         }
     }
@@ -410,17 +421,21 @@ class PhysicalDevice internal constructor(
      */
     fun getSurfacePresentModes(surface: Surface): Set<VkPresentModeKHR> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
-            .checkResult("Failed to get surface present modes")
+        var presentModes: CArrayPointer<VkPresentModeKHRVar>
+        var result: VkResult
+        do {
+            vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
+                .checkResult("Failed to get surface present modes")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptySet()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptySet()
 
-        val presentModes = allocArray<VkPresentModeKHRVar>(count)
-        vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)
-            .checkResult("Failed to get surface present modes")
+            presentModes = allocArray<VkPresentModeKHRVar>(count)
+            result = vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to get surface present modes")
 
-        return (0 until count).mapTo(mutableSetOf()) { presentModes[it] }
+        (0 until countVar.value.toInt()).mapTo(mutableSetOf()) { presentModes[it] }
     }
 
     /**
