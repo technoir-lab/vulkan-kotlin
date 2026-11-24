@@ -181,12 +181,14 @@ class PhysicalDevice internal constructor(
     fun enumerateDeviceExtensionProperties(): List<ExtensionProperties> = memScoped {
         val countVar = alloc<UIntVar>()
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
+            .checkResult("Failed to enumerate device extensions")
 
         val count = countVar.value.toLong()
         if (count == 0L) return emptyList()
 
         val extensionProperties = allocArray<VkExtensionProperties>(count)
         vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
+            .checkResult("Failed to enumerate device extensions")
 
         return (0 until count).map {
             val properties = extensionProperties[it]
