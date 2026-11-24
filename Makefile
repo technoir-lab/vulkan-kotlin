@@ -1,7 +1,7 @@
 SHELL := sh
 GRADLE := sh ./gradlew
 
-.PHONY: clean check format abi test docs publish-local help
+.PHONY: clean check format abi test docs publish-local build run-sample-macos run-sample-ios help
 .DEFAULT_GOAL := help
 
 clean: ## Remove build outputs
@@ -24,6 +24,19 @@ docs: ## Generate API documentation
 
 publish-local: ## Publish artifacts to Maven Local
 	@$(GRADLE) publishToMavenLocal $(GRADLE_ARGS)
+
+build: ## Build sample app
+	@scripts/build-sample.sh macos
+	@scripts/build-sample.sh ios_simulator
+	@scripts/build-sample.sh ios_device
+
+run-sample-macos: ## Build and run the macOS sample app
+	@scripts/build-sample.sh macos
+	@scripts/run-sample.sh macos
+
+run-sample-ios: ## Build and run the iOS sample app on simulator
+	@scripts/build-sample.sh ios_simulator
+	@scripts/run-sample.sh ios
 
 help: ## Show this help
 	@printf 'Available targets:\n'

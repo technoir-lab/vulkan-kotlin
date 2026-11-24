@@ -1,0 +1,15 @@
+{
+  "originHash" : "34c71c9b1aa58b51e1d41db44ad65be1ad436a97818c75061149c99bc1ab0ab0",
+  "pins" : [
+    {
+      "identity" : "vulkan-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/technoir-lab/vulkan-swift",
+      "state" : {
+        "revision" : "66c9922c14c669965defd466e5d42a2e6fed08cc",
+        "version" : "1.1.0"
+      }
+    }
+  ],
+  "version" : 3
+}
