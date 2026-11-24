@@ -8,10 +8,13 @@ import io.technoirlab.volk.VkPipelineShaderStageCreateInfo
 import io.technoirlab.vulkan.Vulkan
 import io.technoirlab.vulkan.pipeline.Pipeline
 import io.technoirlab.vulkan.pipeline.PipelineCreationResult
+import io.technoirlab.vulkan.shader.allocSpirvCode
+import io.technoirlab.vulkan.shader.shaderModuleCreateInfo
 import io.technoirlab.vulkan.withTestDevice
 import kotlinx.cinterop.MemScope
 import kotlinx.cinterop.cstr
 import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -55,6 +58,28 @@ class ComputePipelineCreationTest {
         assertEquals(1, result.pipelineStageCreationFeedbacks.size)
     }
 
+    @Test
+    fun `createComputePipeline creates a pipeline from shader code chained into the stage`() {
+        vulkan.withTestDevice(features14 = { maintenance5 = VK_TRUE }) { _, device ->
+            memScoped {
+                val entryPoint = "main".cstr.ptr
+                val code = shaderModuleCreateInfo(allocSpirvCode(NOOP_COMPUTE_SHADER, misalignment = 1))
+                device.createPipelineLayout().use { layout ->
+                    val pipeline = device.createComputePipeline(
+                        layout,
+                        shaderStage = {
+                            stage = VK_SHADER_STAGE_COMPUTE_BIT
+                            pNext = code.ptr
+                            pName = entryPoint
+                        },
+                    )
+
+                    assertNotNull(pipeline).close()
+                }
+            }
+        }
+    }
+
     private fun withPipelineFixture(block: (ComputePipelineFixture) -> Unit) {
         vulkan.withTestDevice(features13 = { pipelineCreationCacheControl = VK_TRUE }) { _, device ->
             memScoped {
@@ -75,7 +100,7 @@ private class ComputePipelineFixture(
 ) : AutoCloseable {
     private val entryPoint = "main".cstr.getPointer(scope)
     private val layout = device.createPipelineLayout()
-    private val computeShader = device.createShaderModule(COMPUTE_SHADER)
+    private val computeShader = device.createShaderModule(NOOP_COMPUTE_SHADER)
 
     private val shaderStage: VkPipelineShaderStageCreateInfo.() -> Unit = {
         stage = VK_SHADER_STAGE_COMPUTE_BIT
@@ -91,26 +116,5 @@ private class ComputePipelineFixture(
     override fun close() {
         computeShader.close()
         layout.close()
-    }
-
-    private companion object {
-        // Assembled with `spirv-as --target-env vulkan1.0` from:
-        //                OpCapability Shader
-        //                OpMemoryModel Logical GLSL450
-        //                OpEntryPoint GLCompute %main "main"
-        //                OpExecutionMode %main LocalSize 1 1 1
-        //        %void = OpTypeVoid
-        //    %function = OpTypeFunction %void
-        //        %main = OpFunction %void None %function
-        //       %entry = OpLabel
-        //                OpReturn
-        //                OpFunctionEnd
-        private val COMPUTE_SHADER = listOf(
-            0x07230203u, 0x00010000u, 0x00070000u, 0x00000005u, 0x00000000u, 0x00020011u, 0x00000001u, 0x0003000eu,
-            0x00000000u, 0x00000001u, 0x0005000fu, 0x00000005u, 0x00000001u, 0x6e69616du, 0x00000000u, 0x00060010u,
-            0x00000001u, 0x00000011u, 0x00000001u, 0x00000001u, 0x00000001u, 0x00020013u, 0x00000002u, 0x00030021u,
-            0x00000003u, 0x00000002u, 0x00050036u, 0x00000002u, 0x00000001u, 0x00000000u, 0x00000003u, 0x000200f8u,
-            0x00000004u, 0x000100fdu, 0x00010038u,
-        )
     }
 }
