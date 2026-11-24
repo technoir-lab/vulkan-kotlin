@@ -49,7 +49,6 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_RENDERING_AREA_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO
-import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SUBRESOURCE_HOST_MEMCPY_SIZE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR
@@ -121,7 +120,7 @@ import io.technoirlab.volk.VkSemaphoreCreateInfo
 import io.technoirlab.volk.VkSemaphoreType
 import io.technoirlab.volk.VkSemaphoreTypeCreateInfo
 import io.technoirlab.volk.VkSemaphoreVar
-import io.technoirlab.volk.VkShaderModuleCreateInfo
+import io.technoirlab.volk.VkShaderModuleCreateFlags
 import io.technoirlab.volk.VkShaderModuleVar
 import io.technoirlab.volk.VkSubresourceHostMemcpySize
 import io.technoirlab.volk.VkSubresourceLayout2
@@ -173,6 +172,7 @@ import io.technoirlab.vulkan.image.Sampler
 import io.technoirlab.vulkan.image.toImageSubresourceLayout
 import io.technoirlab.vulkan.internal.containsStructure
 import io.technoirlab.vulkan.memory.DeviceMemory
+import io.technoirlab.vulkan.memory.MemoryRegion
 import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
 import io.technoirlab.vulkan.pipeline.Pipeline
@@ -185,10 +185,12 @@ import io.technoirlab.vulkan.pipeline.toPipelineOrNull
 import io.technoirlab.vulkan.presentation.Swapchain
 import io.technoirlab.vulkan.query.QueryPool
 import io.technoirlab.vulkan.shader.ShaderModule
+import io.technoirlab.vulkan.shader.shaderModuleCreateInfo
 import io.technoirlab.vulkan.sync.Event
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
 import io.technoirlab.vulkan.toExtent2D
+import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -700,20 +702,30 @@ class Device internal constructor(
     }
 
     /**
-     * Create a new shader module.
+     * Create a new shader module from SPIR-V code.
      *
+     * [code] must meet the requirements of [shaderModuleCreateInfo] and may start at any address. It is read only
+     * during this call and is not retained.
+     *
+     * A pipeline can also take SPIR-V code without a shader module object: see [shaderModuleCreateInfo].
+     *
+     * @param code The memory region holding the SPIR-V code.
+     * @param flags Shader module creation flags. Vulkan defines none yet, so the default is the only valid value.
+     * @param extensions Optional `pNext` chain of extension structures to attach to `VkShaderModuleCreateInfo`,
+     * such as `VkShaderModuleValidationCacheCreateInfoEXT`. The chained structures and any memory they reference
+     * must remain valid until this call returns.
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateShaderModule.html">vkCreateShaderModule Manual Page</a>
      */
-    fun createShaderModule(createInfo: VkShaderModuleCreateInfo.() -> Unit): ShaderModule = memScoped {
-        val shaderModuleCreateInfo = alloc<VkShaderModuleCreateInfo> {
-            sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
-            createInfo()
+    fun createShaderModule(code: MemoryRegion, flags: VkShaderModuleCreateFlags = 0u, extensions: COpaquePointer? = null): ShaderModule =
+        memScoped {
+            val createInfo = shaderModuleCreateInfo(code)
+            createInfo.pNext = extensions
+            createInfo.flags = flags
+            val shaderModule = alloc<VkShaderModuleVar>()
+            vkCreateShaderModule!!(handle, createInfo.ptr, null, shaderModule.ptr)
+                .checkResult("Failed to create shader module")
+            return ShaderModule(handle, shaderModule.value!!)
         }
-        val shaderModule = alloc<VkShaderModuleVar>()
-        vkCreateShaderModule!!(handle, shaderModuleCreateInfo.ptr, null, shaderModule.ptr)
-            .checkResult("Failed to create shader module")
-        return ShaderModule(handle, shaderModule.value!!)
-    }
 
     /**
      * Create a swapchain.

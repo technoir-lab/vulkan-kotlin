@@ -3,6 +3,7 @@ package io.technoirlab.vulkan.shader
 import io.technoirlab.volk.VK_INCOMPATIBLE_SHADER_BINARY_EXT
 import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_EXT
+import io.technoirlab.volk.VK_SHADER_CODE_TYPE_SPIRV_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VkDevice
@@ -22,6 +23,9 @@ import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.command.CommandBuffer
 import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.memory.MemoryRegion
+import kotlinx.cinterop.CArrayPointer
+import kotlinx.cinterop.CPointer
+import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
@@ -100,19 +104,42 @@ fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List
  */
 fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -> Unit): List<Shader>? = memScoped {
     assert(count > 0u) { "count must be greater than 0" }
-    val createInfos = allocArray<VkShaderCreateInfoEXT>(count.toLong()) { index ->
-        sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
-        createInfo(index.toUInt())
-    }
     val shaderHandles = allocArray<VkShaderEXTVar>(count.toLong())
-    val result = vkCreateShadersEXT!!(handle, count, createInfos, null, shaderHandles)
-    if (result != VK_SUCCESS) {
-        // Whatever the result, every element is either null or a valid handle that nothing else will release.
-        repeat(count.toInt()) { index ->
-            shaderHandles[index]?.let { vkDestroyShaderEXT!!(handle, it, null) }
-        }
-    }
+    val result = createShaderHandles(handle, count.toInt(), shaderHandles) { index -> createInfo(index.toUInt()) }
     return result.toShadersOrNull(handle, List(count.toInt()) { shaderHandles[it] }, "Failed to create shaders")
+}
+
+/**
+ * Create one or more shader objects from SPIR-V code.
+ *
+ * [createInfo] must leave `pCode` and `codeSize` unset. They are set from [code], together with `codeType`, after
+ * [createInfo] has configured everything else, such as the stage and the entry point.
+ *
+ * Each region in [code] must meet the requirements of [shaderModuleCreateInfo] and may start at any address. The
+ * regions are read only during this call and are not retained.
+ *
+ * Unlike [createShaders], this function never returns `null`. `VK_INCOMPATIBLE_SHADER_BINARY_EXT` reports
+ * incompatible binary shader code, which SPIR-V is not, so it fails like any result other than `VK_SUCCESS`.
+ * Use [createShaders] for binary shader code.
+ *
+ * Any shaders created before a batch creation failure are destroyed before the failure is reported.
+ * Requires the `VK_EXT_shader_object` extension and its `shaderObject` feature.
+ *
+ * @param code The memory regions holding the SPIR-V code, one for each shader object to create. A region used for
+ * several shader objects is copied at most once.
+ * @param createInfo Configures each shader object using its index in [code].
+ * @return The created shader objects in [code] order.
+ * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCreateShadersEXT.html">vkCreateShadersEXT Manual Page</a>
+ */
+fun Device.createShadersFromSpirv(code: List<MemoryRegion>, createInfo: VkShaderCreateInfoEXT.(Int) -> Unit): List<Shader> = memScoped {
+    assert(code.isNotEmpty()) { "code must not be empty" }
+    val words = alignedSpirvWords(code)
+    val shaderHandles = allocArray<VkShaderEXTVar>(code.size)
+    val result = createShaderHandles(handle, code.size, shaderHandles) { index ->
+        createInfo(index)
+        setSpirvCode(words[index], code[index].size, index)
+    }
+    return result.toShaders(handle, List(code.size) { shaderHandles[it] }, "Failed to create shaders")
 }
 
 /**
@@ -157,6 +184,40 @@ fun Shader.getBinaryDataSize(): ULong = memScoped {
 }
 
 /**
+ * Makes this create info describe SPIR-V code of [size] bytes starting at [words].
+ *
+ * The code fields are written by the wrapper alone, so whatever configured this create info before must have left
+ * `pCode` and `codeSize` unset.
+ *
+ * @param words The SPIR-V code, aligned to 4 bytes.
+ * @param size The size of the code in bytes.
+ * @param index The position of the shader in its batch, which the assertion message names.
+ */
+internal fun VkShaderCreateInfoEXT.setSpirvCode(words: CPointer<UIntVar>, size: ULong, index: Int) {
+    assert(pCode == null && codeSize == 0uL) { "createInfo must leave pCode and codeSize of the shader at index $index unset" }
+
+    codeType = VK_SHADER_CODE_TYPE_SPIRV_EXT
+    codeSize = size
+    pCode = words
+}
+
+/**
+ * Interprets the result of a command that creates a batch of shader objects from code that cannot be incompatible
+ * with the device.
+ *
+ * The caller releases the handles of a batch that is not returned.
+ *
+ * @param device The device the shader objects were created on.
+ * @param shaders The handles the command wrote, all of which are non-null when the command returned `VK_SUCCESS`.
+ * @param message Describes the failure when this result is not `VK_SUCCESS`.
+ * @return The created shader objects in [shaders] order.
+ */
+internal fun VkResult.toShaders(device: VkDevice, shaders: List<VkShaderEXT?>, message: String): List<Shader> {
+    checkResult(message)
+    return shaders.map { Shader(device, it!!) }
+}
+
+/**
  * Interprets the result of a command that creates a batch of shader objects.
  *
  * `VK_INCOMPATIBLE_SHADER_BINARY_EXT` is a success code reporting that supplied binary shader code is not compatible
@@ -170,6 +231,36 @@ fun Shader.getBinaryDataSize(): ULong = memScoped {
  */
 internal fun VkResult.toShadersOrNull(device: VkDevice, shaders: List<VkShaderEXT?>, message: String): List<Shader>? {
     if (this == VK_INCOMPATIBLE_SHADER_BINARY_EXT) return null
-    checkResult(message)
-    return shaders.map { Shader(device, it!!) }
+    return toShaders(device, shaders, message)
+}
+
+/**
+ * Creates a batch of shader objects, writing their handles to [shaders].
+ *
+ * If the batch does not succeed, the shader objects it did create are destroyed before the result is returned.
+ *
+ * @param device The device to create the shader objects on.
+ * @param count Number of shader objects to create.
+ * @param shaders Receives one handle for each shader object.
+ * @param createInfo Configures each shader object using its zero-based index.
+ * @return The result of the command.
+ */
+private fun NativePlacement.createShaderHandles(
+    device: VkDevice,
+    count: Int,
+    shaders: CArrayPointer<VkShaderEXTVar>,
+    createInfo: VkShaderCreateInfoEXT.(Int) -> Unit,
+): VkResult {
+    val createInfos = allocArray<VkShaderCreateInfoEXT>(count) { index ->
+        sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
+        createInfo(index)
+    }
+    val result = vkCreateShadersEXT!!(device, count.toUInt(), createInfos, null, shaders)
+    if (result != VK_SUCCESS) {
+        // Whatever the result, every element is either null or a valid handle that nothing else will release.
+        repeat(count) { index ->
+            shaders[index]?.let { vkDestroyShaderEXT!!(device, it, null) }
+        }
+    }
+    return result
 }
