@@ -13,7 +13,7 @@ data class VulkanResult<T> internal constructor(
 /**
  * Returns `true` for [VK_SUCCESS], otherwise throws [VulkanException] with [message] and the result name.
  */
-inline fun VkResult.checkResult(message: String): Boolean {
+internal inline fun VkResult.checkResult(message: String): Boolean {
     if (this != VK_SUCCESS) {
         throw VulkanException("$message: ${string_VkResult(this)?.toKString()}")
     }
