@@ -1,5 +1,6 @@
 package io.technoirlab.vulkan
 
+import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR
 import io.technoirlab.volk.VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_APPLICATION_INFO
@@ -9,6 +10,7 @@ import io.technoirlab.volk.VkExtensionProperties
 import io.technoirlab.volk.VkInstanceCreateInfo
 import io.technoirlab.volk.VkInstanceVar
 import io.technoirlab.volk.VkLayerProperties
+import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.vkCreateInstance
 import io.technoirlab.volk.vkEnumerateInstanceExtensionProperties
 import io.technoirlab.volk.vkEnumerateInstanceLayerProperties
@@ -17,6 +19,7 @@ import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
 import io.technoirlab.volk.volkKotlinInitialize
 import kotlinx.cinterop.AutofreeScope
+import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
@@ -106,18 +109,22 @@ class Vulkan : AutoCloseable {
     fun enumerateInstanceExtensionProperties(layerName: String? = null): List<ExtensionProperties> = memScoped {
         val layerNamePtr = layerName?.cstr?.ptr
         val countVar = alloc<UIntVar>()
-        vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, null)
-            .checkResult("Failed to enumerate instance extensions")
+        var extensionProperties: CArrayPointer<VkExtensionProperties>
+        var result: VkResult
+        do {
+            vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, null)
+                .checkResult("Failed to enumerate instance extensions")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val extensionProperties = allocArray<VkExtensionProperties>(count)
-        vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, extensionProperties)
-            .checkResult("Failed to enumerate instance extensions")
+            extensionProperties = allocArray<VkExtensionProperties>(count)
+            result = vkEnumerateInstanceExtensionProperties!!(layerNamePtr, countVar.ptr, extensionProperties)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to enumerate instance extensions")
 
-        return (0 until count).map {
-            val properties = extensionProperties[it]
+        List(countVar.value.toInt()) { index ->
+            val properties = extensionProperties[index]
             ExtensionProperties(properties.extensionName.toKString(), properties.specVersion)
         }
     }
@@ -129,18 +136,22 @@ class Vulkan : AutoCloseable {
      */
     fun enumerateInstanceLayerProperties(): List<LayerProperties> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
-            .checkResult("Failed to enumerate instance layers")
+        var layerProperties: CArrayPointer<VkLayerProperties>
+        var result: VkResult
+        do {
+            vkEnumerateInstanceLayerProperties!!(countVar.ptr, null)
+                .checkResult("Failed to enumerate instance layers")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val layerProperties = allocArray<VkLayerProperties>(count)
-        vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
-            .checkResult("Failed to enumerate instance layers")
+            layerProperties = allocArray<VkLayerProperties>(count)
+            result = vkEnumerateInstanceLayerProperties!!(countVar.ptr, layerProperties)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to enumerate instance layers")
 
-        return (0 until count).map {
-            val properties = layerProperties[it]
+        List(countVar.value.toInt()) { index ->
+            val properties = layerProperties[index]
             LayerProperties(
                 properties.layerName.toKString(),
                 properties.specVersion,

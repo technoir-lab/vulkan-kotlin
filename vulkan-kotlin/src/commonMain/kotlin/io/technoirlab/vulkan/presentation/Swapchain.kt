@@ -1,6 +1,7 @@
 package io.technoirlab.vulkan.presentation
 
 import io.technoirlab.volk.VK_ERROR_OUT_OF_DATE_KHR
+import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_NOT_READY
 import io.technoirlab.volk.VK_OBJECT_TYPE_SWAPCHAIN_KHR
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
@@ -10,6 +11,7 @@ import io.technoirlab.volk.VkAcquireNextImageInfoKHR
 import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImageVar
 import io.technoirlab.volk.VkObjectType
+import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkSwapchainKHR
 import io.technoirlab.volk.vkAcquireNextImage2KHR
 import io.technoirlab.volk.vkDestroySwapchainKHR
@@ -21,6 +23,7 @@ import io.technoirlab.vulkan.image.Image
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import io.technoirlab.vulkan.sync.Fence
 import io.technoirlab.vulkan.sync.Semaphore
+import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
@@ -89,17 +92,21 @@ class Swapchain internal constructor(
      */
     fun getImages(): List<Image> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, null)
-            .checkResult("Failed to get swap chain image count")
+        var images: CArrayPointer<VkImageVar>
+        var result: VkResult
+        do {
+            vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, null)
+                .checkResult("Failed to get swap chain image count")
 
-        val count = countVar.value.toLong()
-        if (count == 0L) return emptyList()
+            val count = countVar.value.toInt()
+            if (count == 0) return emptyList()
 
-        val images = allocArray<VkImageVar>(count)
-        vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, images)
-            .checkResult("Failed to get swap chain images")
+            images = allocArray<VkImageVar>(count)
+            result = vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, images)
+        } while (result == VK_INCOMPLETE)
+        result.checkResult("Failed to get swap chain images")
 
-        return (0 until count).map { Image(device, images[it]!!, destroyable = false) }
+        List(countVar.value.toInt()) { index -> Image(device, images[index]!!, destroyable = false) }
     }
 
     /**
