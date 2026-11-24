@@ -1409,9 +1409,7 @@ final class io.technoirlab.vulkan/Vulkan : kotlin/AutoCloseable { // io.technoir
     final fun enumerateInstanceLayerProperties(): kotlin.collections/List<io.technoirlab.vulkan/LayerProperties> // io.technoirlab.vulkan/Vulkan.enumerateInstanceLayerProperties|enumerateInstanceLayerProperties(){}[0]
 }
 
-final class io.technoirlab.vulkan/VulkanException : kotlin/Exception { // io.technoirlab.vulkan/VulkanException|null[0]
-    constructor <init>(kotlin/String) // io.technoirlab.vulkan/VulkanException.<init>|<init>(kotlin.String){}[0]
-}
+final class io.technoirlab.vulkan/VulkanException : kotlin/Exception // io.technoirlab.vulkan/VulkanException|null[0]
 
 final fun (io.technoirlab.vulkan.command/CommandBuffer).io.technoirlab.vulkan.command/drawMeshTasks(kotlin/UInt, kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/drawMeshTasks|drawMeshTasks@io.technoirlab.vulkan.command.CommandBuffer(kotlin.UInt;kotlin.UInt;kotlin.UInt){}[0]
 final fun (io.technoirlab.vulkan.command/CommandBuffer).io.technoirlab.vulkan.command/drawMeshTasksIndirect(io.technoirlab.vulkan.buffer/Buffer, kotlin/ULong = ..., kotlin/UInt = ..., kotlin/UInt = ...) // io.technoirlab.vulkan.command/drawMeshTasksIndirect|drawMeshTasksIndirect@io.technoirlab.vulkan.command.CommandBuffer(io.technoirlab.vulkan.buffer.Buffer;kotlin.ULong;kotlin.UInt;kotlin.UInt){}[0]
@@ -1466,7 +1464,6 @@ final fun (io.technoirlab.vulkan.shader/Shader).io.technoirlab.vulkan.shader/get
 final fun (io.technoirlab.vulkan.shader/Shader).io.technoirlab.vulkan.shader/getBinaryDataSize(): kotlin/ULong // io.technoirlab.vulkan.shader/getBinaryDataSize|getBinaryDataSize@io.technoirlab.vulkan.shader.Shader(){}[0]
 final fun (io.technoirlab.vulkan/Instance).io.technoirlab.vulkan.debug/createDebugMessenger(kotlin/UInt, kotlin/UInt, io.technoirlab.vulkan.debug/DebugMessenger.Callback): io.technoirlab.vulkan.debug/DebugMessenger // io.technoirlab.vulkan.debug/createDebugMessenger|createDebugMessenger@io.technoirlab.vulkan.Instance(kotlin.UInt;kotlin.UInt;io.technoirlab.vulkan.debug.DebugMessenger.Callback){}[0]
 final fun (io.technoirlab.vulkan/Instance).io.technoirlab.vulkan.presentation/createHeadlessSurface(): io.technoirlab.vulkan.presentation/Surface // io.technoirlab.vulkan.presentation/createHeadlessSurface|createHeadlessSurface@io.technoirlab.vulkan.Instance(){}[0]
-final inline fun (kotlin/Int).io.technoirlab.vulkan/checkResult(kotlin/String): kotlin/Boolean // io.technoirlab.vulkan/checkResult|checkResult@kotlin.Int(kotlin.String){}[0]
 
 // Targets: [apple]
 final fun (io.technoirlab.vulkan/Instance).io.technoirlab.vulkan.presentation/createMetalSurface(platform.QuartzCore/CAMetalLayer): io.technoirlab.vulkan.presentation/Surface // io.technoirlab.vulkan.presentation/createMetalSurface|createMetalSurface@io.technoirlab.vulkan.Instance(platform.QuartzCore.CAMetalLayer){}[0]
