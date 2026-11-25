@@ -43,6 +43,9 @@ val vulkan = Vulkan()
 val instance = vulkan.createInstance()
 ```
 
+The Vulkan loader is loaded once per process, so only one `Vulkan` object may be live at a time.
+It can serve any number of instances and devices.
+
 On Apple platforms, `Vulkan()` appends bundled SwiftPM driver manifests to `VK_ADD_DRIVER_FILES`
 and validation layer directories to `VK_ADD_LAYER_PATH` before initializing the loader.
 Existing entries are preserved, and bundled and system-installed ICDs are discovered together.
@@ -63,6 +66,18 @@ On Android, add the following as a direct child of the `<manifest>` element in `
     android:version="0x00404000"
     android:required="true" />
 ```
+
+### Calling Vulkan directly
+
+Every `Instance` and `Device` resolves its own commands, so the library does not load the global function pointers of volk.
+To call a command that the library does not wrap, use the `dispatch` table of the object that owns it:
+
+```kotlin
+device.dispatch.vkDestroyAccelerationStructureKHR!!(device.handle, accelerationStructure, null)
+```
+
+Commands of instance extensions, such as `VK_EXT_debug_utils`, are in `Instance.dispatch` even when they take a device,
+queue or command buffer.
 
 ### Debug assertions
 

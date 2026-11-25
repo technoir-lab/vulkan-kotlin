@@ -30,6 +30,14 @@ ktlint_standard_no-blank-line-in-list = enabled
 ktlint_standard_no-empty-first-line-in-class-body = enabled
 ktlint_standard_no-single-line-block-comment = enabled
 ktlint_standard_string-template-indent = enabled
+ktlint_technoirlab_forbidden-import_imports = io.technoirlab.volk.vk*
+
+# Only loader-level commands and the dispatch table loader may use the global function pointers of volk.
+[vulkan-kotlin/src/commonMain/kotlin/io/technoirlab/vulkan/Vulkan.kt]
+ktlint_technoirlab_forbidden-import = disabled
+
+[vulkan-kotlin/src/commonMain/kotlin/io/technoirlab/vulkan/internal/DispatchLoader.kt]
+ktlint_technoirlab_forbidden-import = disabled
 
 [*.md]
 trim_trailing_whitespace = false
