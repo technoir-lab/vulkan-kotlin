@@ -42,8 +42,8 @@ class ShaderModule internal constructor(
  * Describe SPIR-V shader code for a pipeline shader stage or a shader module.
  *
  * Chain the returned structure into the `pNext` of a `VkPipelineShaderStageCreateInfo` whose `module` is left
- * null to create a pipeline without a shader module object. This requires the `maintenance5` feature, which every
- * Vulkan 1.4 device supports, to be enabled on the device.
+ * null to create a pipeline without a shader module object. This requires the `maintenance5` feature, which device
+ * creation enables by default.
  *
  * [code] must be a complete SPIR-V module stored as 32-bit words in host byte order, which on every supported
  * target is the layout of a `.spv` file. Assertions check that its size is greater than zero and a multiple of 4,
