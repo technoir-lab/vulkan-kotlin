@@ -49,6 +49,7 @@ Required core features (enabled by default when creating a device):
 * `dynamicRendering`
 * `synchronization2`
 * `dynamicRenderingLocalRead`
+* `maintenance5`
 
 The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension or feature enablement is needed for
 `vkCmdSetDepthBiasEnable`, `vkCmdSetPrimitiveRestartEnable`, or `vkCmdSetRasterizerDiscardEnable`.

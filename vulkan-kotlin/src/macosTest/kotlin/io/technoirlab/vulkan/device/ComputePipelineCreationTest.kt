@@ -60,7 +60,7 @@ class ComputePipelineCreationTest {
 
     @Test
     fun `createComputePipeline creates a pipeline from shader code chained into the stage`() {
-        vulkan.withTestDevice(features14 = { maintenance5 = VK_TRUE }) { _, device ->
+        vulkan.withTestDevice { _, device ->
             memScoped {
                 val entryPoint = "main".cstr.ptr
                 val code = shaderModuleCreateInfo(allocSpirvCode(NOOP_COMPUTE_SHADER, misalignment = 1))
