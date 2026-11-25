@@ -75,71 +75,6 @@ import io.technoirlab.volk.VkShaderStageFlags
 import io.technoirlab.volk.VkStencilFaceFlags
 import io.technoirlab.volk.VkStencilOp
 import io.technoirlab.volk.VkViewport
-import io.technoirlab.volk.vkBeginCommandBuffer
-import io.technoirlab.volk.vkCmdBeginQuery
-import io.technoirlab.volk.vkCmdBeginRendering
-import io.technoirlab.volk.vkCmdBindDescriptorSets
-import io.technoirlab.volk.vkCmdBindIndexBuffer
-import io.technoirlab.volk.vkCmdBindIndexBuffer2
-import io.technoirlab.volk.vkCmdBindPipeline
-import io.technoirlab.volk.vkCmdBindVertexBuffers2
-import io.technoirlab.volk.vkCmdBlitImage2
-import io.technoirlab.volk.vkCmdClearAttachments
-import io.technoirlab.volk.vkCmdClearColorImage
-import io.technoirlab.volk.vkCmdClearDepthStencilImage
-import io.technoirlab.volk.vkCmdCopyBuffer2
-import io.technoirlab.volk.vkCmdCopyBufferToImage2
-import io.technoirlab.volk.vkCmdCopyImage2
-import io.technoirlab.volk.vkCmdCopyImageToBuffer2
-import io.technoirlab.volk.vkCmdCopyQueryPoolResults
-import io.technoirlab.volk.vkCmdDispatch
-import io.technoirlab.volk.vkCmdDispatchBase
-import io.technoirlab.volk.vkCmdDispatchIndirect
-import io.technoirlab.volk.vkCmdDraw
-import io.technoirlab.volk.vkCmdDrawIndexed
-import io.technoirlab.volk.vkCmdDrawIndexedIndirect
-import io.technoirlab.volk.vkCmdDrawIndexedIndirectCount
-import io.technoirlab.volk.vkCmdDrawIndirect
-import io.technoirlab.volk.vkCmdDrawIndirectCount
-import io.technoirlab.volk.vkCmdEndQuery
-import io.technoirlab.volk.vkCmdEndRendering
-import io.technoirlab.volk.vkCmdExecuteCommands
-import io.technoirlab.volk.vkCmdFillBuffer
-import io.technoirlab.volk.vkCmdPipelineBarrier2
-import io.technoirlab.volk.vkCmdPushConstants
-import io.technoirlab.volk.vkCmdPushDescriptorSet2
-import io.technoirlab.volk.vkCmdResetEvent2
-import io.technoirlab.volk.vkCmdResetQueryPool
-import io.technoirlab.volk.vkCmdResolveImage2
-import io.technoirlab.volk.vkCmdSetBlendConstants
-import io.technoirlab.volk.vkCmdSetCullMode
-import io.technoirlab.volk.vkCmdSetDepthBias
-import io.technoirlab.volk.vkCmdSetDepthBiasEnable
-import io.technoirlab.volk.vkCmdSetDepthCompareOp
-import io.technoirlab.volk.vkCmdSetDepthTestEnable
-import io.technoirlab.volk.vkCmdSetDepthWriteEnable
-import io.technoirlab.volk.vkCmdSetEvent2
-import io.technoirlab.volk.vkCmdSetFrontFace
-import io.technoirlab.volk.vkCmdSetLineWidth
-import io.technoirlab.volk.vkCmdSetPrimitiveRestartEnable
-import io.technoirlab.volk.vkCmdSetPrimitiveTopology
-import io.technoirlab.volk.vkCmdSetRasterizerDiscardEnable
-import io.technoirlab.volk.vkCmdSetRenderingAttachmentLocations
-import io.technoirlab.volk.vkCmdSetRenderingInputAttachmentIndices
-import io.technoirlab.volk.vkCmdSetScissor
-import io.technoirlab.volk.vkCmdSetScissorWithCount
-import io.technoirlab.volk.vkCmdSetStencilCompareMask
-import io.technoirlab.volk.vkCmdSetStencilOp
-import io.technoirlab.volk.vkCmdSetStencilReference
-import io.technoirlab.volk.vkCmdSetStencilTestEnable
-import io.technoirlab.volk.vkCmdSetStencilWriteMask
-import io.technoirlab.volk.vkCmdSetViewport
-import io.technoirlab.volk.vkCmdSetViewportWithCount
-import io.technoirlab.volk.vkCmdUpdateBuffer
-import io.technoirlab.volk.vkCmdWaitEvents2
-import io.technoirlab.volk.vkCmdWriteTimestamp2
-import io.technoirlab.volk.vkEndCommandBuffer
-import io.technoirlab.volk.vkResetCommandBuffer
 import io.technoirlab.vulkan.Rect2D
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.buffer.Buffer
@@ -147,6 +82,7 @@ import io.technoirlab.vulkan.buffer.BufferCopyRegion
 import io.technoirlab.vulkan.buffer.from
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.descriptor.DescriptorSet
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.from
 import io.technoirlab.vulkan.image.BufferImageCopyRegion
 import io.technoirlab.vulkan.image.Image
@@ -183,6 +119,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandBuffer.html">VkCommandBuffer Manual Page</a>
  */
 class CommandBuffer internal constructor(
+    internal val device: Device,
     override val handle: VkCommandBuffer,
 ) : VulkanObject {
     /**
@@ -285,7 +222,7 @@ class CommandBuffer internal constructor(
             flags = usageFlags
             pInheritanceInfo = inheritanceInfo.ptr
         }
-        vkBeginCommandBuffer!!(handle, beginInfo.ptr)
+        device.dispatch.vkBeginCommandBuffer!!(handle, beginInfo.ptr)
             .checkResult("Failed to begin command buffer")
     }
 
@@ -298,7 +235,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBeginQuery.html">vkCmdBeginQuery Manual Page</a>
      */
     fun beginQuery(queryPool: QueryPool, query: UInt, flags: VkQueryControlFlags = 0u) {
-        vkCmdBeginQuery!!(handle, queryPool.handle, query, flags)
+        device.dispatch.vkCmdBeginQuery!!(handle, queryPool.handle, query, flags)
     }
 
     /**
@@ -311,7 +248,7 @@ class CommandBuffer internal constructor(
             sType = VK_STRUCTURE_TYPE_RENDERING_INFO
             renderingInfo()
         }
-        vkCmdBeginRendering!!(handle, renderingInfo.ptr)
+        device.dispatch.vkCmdBeginRendering!!(handle, renderingInfo.ptr)
     }
 
     /**
@@ -336,7 +273,7 @@ class CommandBuffer internal constructor(
             null
         }
 
-        vkCmdBindDescriptorSets!!(
+        device.dispatch.vkCmdBindDescriptorSets!!(
             handle,
             pipelineBindPoint,
             layout.handle,
@@ -372,8 +309,8 @@ class CommandBuffer internal constructor(
         assert(size == VK_WHOLE_SIZE || size <= indexBuffer.size - offset) {
             "offset + size must be less than or equal to ${indexBuffer.size}"
         }
-        vkCmdBindIndexBuffer2?.invoke(handle, indexBuffer.handle, offset, size, indexType)
-            ?: vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
+        device.dispatch.vkCmdBindIndexBuffer2?.invoke(handle, indexBuffer.handle, offset, size, indexType)
+            ?: device.dispatch.vkCmdBindIndexBuffer!!(handle, indexBuffer.handle, offset, indexType)
     }
 
     /**
@@ -382,7 +319,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdBindPipeline.html">vkCmdBindPipeline Manual Page</a>
      */
     fun bindPipeline(pipelineBindPoint: VkPipelineBindPoint, pipeline: Pipeline) {
-        vkCmdBindPipeline!!(handle, pipelineBindPoint, pipeline.handle)
+        device.dispatch.vkCmdBindPipeline!!(handle, pipelineBindPoint, pipeline.handle)
     }
 
     /**
@@ -407,7 +344,7 @@ class CommandBuffer internal constructor(
         val offsetVar = alloc<ULongVar> { value = offset }
         val sizeVar = size?.let { alloc<ULongVar> { value = it } }
         val strideVar = stride?.let { alloc<ULongVar> { value = it } }
-        vkCmdBindVertexBuffers2!!(
+        device.dispatch.vkCmdBindVertexBuffers2!!(
             handle,
             bindingIndex,
             1u,
@@ -439,7 +376,7 @@ class CommandBuffer internal constructor(
         val offsetsArray = allocArray<ULongVar>(offsets.size) { value = offsets[it] }
         val sizesArray = sizes?.let { allocArray<ULongVar>(sizes.size) { value = sizes[it] } }
         val stridesArray = strides?.let { allocArray<ULongVar>(strides.size) { value = strides[it] } }
-        vkCmdBindVertexBuffers2!!(
+        device.dispatch.vkCmdBindVertexBuffers2!!(
             handle,
             firstBinding,
             vertexBuffers.size.toUInt(),
@@ -477,7 +414,7 @@ class CommandBuffer internal constructor(
             pRegions = imageBlits
             this.filter = filter
         }
-        vkCmdBlitImage2!!(handle, blitImageInfo.ptr)
+        device.dispatch.vkCmdBlitImage2!!(handle, blitImageInfo.ptr)
     }
 
     /**
@@ -515,7 +452,7 @@ class CommandBuffer internal constructor(
         val clearRects = allocArray<VkClearRect>(rects.size) {
             from(rects[it])
         }
-        vkCmdClearAttachments!!(handle, attachments.size.toUInt(), clearAttachments, rects.size.toUInt(), clearRects)
+        device.dispatch.vkCmdClearAttachments!!(handle, attachments.size.toUInt(), clearAttachments, rects.size.toUInt(), clearRects)
     }
 
     /**
@@ -530,7 +467,14 @@ class CommandBuffer internal constructor(
             val subresourceRanges = allocArray<VkImageSubresourceRange>(ranges.size) {
                 from(ranges[it])
             }
-            vkCmdClearColorImage!!(handle, image.handle, imageLayout, clearColor.ptr, ranges.size.toUInt(), subresourceRanges)
+            device.dispatch.vkCmdClearColorImage!!(
+                handle,
+                image.handle,
+                imageLayout,
+                clearColor.ptr,
+                ranges.size.toUInt(),
+                subresourceRanges,
+            )
         }
 
     /**
@@ -553,7 +497,7 @@ class CommandBuffer internal constructor(
         val subresourceRanges = allocArray<VkImageSubresourceRange>(ranges.size) {
             from(ranges[it])
         }
-        vkCmdClearDepthStencilImage!!(
+        device.dispatch.vkCmdClearDepthStencilImage!!(
             handle,
             image.handle,
             imageLayout,
@@ -580,7 +524,7 @@ class CommandBuffer internal constructor(
             regionCount = regions.size.toUInt()
             pRegions = bufferCopies
         }
-        vkCmdCopyBuffer2!!(handle, copyBufferInfo.ptr)
+        device.dispatch.vkCmdCopyBuffer2!!(handle, copyBufferInfo.ptr)
     }
 
     /**
@@ -602,7 +546,7 @@ class CommandBuffer internal constructor(
                 regionCount = regions.size.toUInt()
                 pRegions = bufferImageCopies
             }
-            vkCmdCopyBufferToImage2!!(handle, copyBufferToImageInfo.ptr)
+            device.dispatch.vkCmdCopyBufferToImage2!!(handle, copyBufferToImageInfo.ptr)
         }
 
     /**
@@ -630,7 +574,7 @@ class CommandBuffer internal constructor(
             regionCount = regions.size.toUInt()
             pRegions = imageCopies
         }
-        vkCmdCopyImage2!!(handle, copyImageInfo.ptr)
+        device.dispatch.vkCmdCopyImage2!!(handle, copyImageInfo.ptr)
     }
 
     /**
@@ -652,7 +596,7 @@ class CommandBuffer internal constructor(
                 regionCount = regions.size.toUInt()
                 pRegions = bufferImageCopies
             }
-            vkCmdCopyImageToBuffer2!!(handle, copyImageToBufferInfo.ptr)
+            device.dispatch.vkCmdCopyImageToBuffer2!!(handle, copyImageToBufferInfo.ptr)
         }
 
     /**
@@ -683,7 +627,7 @@ class CommandBuffer internal constructor(
         assert((flags and VK_QUERY_RESULT_64_BIT) == 0u || queryCount <= 1u || stride % 8uL == 0uL) {
             "stride must be a multiple of 8"
         }
-        vkCmdCopyQueryPoolResults!!(
+        device.dispatch.vkCmdCopyQueryPoolResults!!(
             handle,
             queryPool.handle,
             firstQuery,
@@ -701,7 +645,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkEndCommandBuffer.html">vkEndCommandBuffer Manual Page</a>
      */
     fun end() {
-        vkEndCommandBuffer!!(handle)
+        device.dispatch.vkEndCommandBuffer!!(handle)
             .checkResult("Failed to end command buffer")
     }
 
@@ -711,7 +655,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdEndQuery.html">vkCmdEndQuery Manual Page</a>
      */
     fun endQuery(queryPool: QueryPool, query: UInt) {
-        vkCmdEndQuery!!(handle, queryPool.handle, query)
+        device.dispatch.vkCmdEndQuery!!(handle, queryPool.handle, query)
     }
 
     /**
@@ -720,7 +664,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdEndRendering.html">vkCmdEndRendering Manual Page</a>
      */
     fun endRendering() {
-        vkCmdEndRendering!!(handle)
+        device.dispatch.vkCmdEndRendering!!(handle)
     }
 
     /**
@@ -733,7 +677,7 @@ class CommandBuffer internal constructor(
     fun executeCommands(commandBuffers: List<CommandBuffer>): Unit = memScoped {
         assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
         val commandBufferHandles = allocArrayOf(commandBuffers.map { it.handle })
-        vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
+        device.dispatch.vkCmdExecuteCommands!!(handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
 
     /**
@@ -749,7 +693,7 @@ class CommandBuffer internal constructor(
             assert(size <= buffer.size - offset) { "Fill range exceeds the buffer size" }
             assert(size % 4uL == 0uL) { "Fill size must be a multiple of 4" }
         }
-        vkCmdFillBuffer!!(handle, buffer.handle, offset, size, data)
+        device.dispatch.vkCmdFillBuffer!!(handle, buffer.handle, offset, size, data)
     }
 
     /**
@@ -758,7 +702,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDispatch.html">vkCmdDispatch Manual Page</a>
      */
     fun dispatch(groupCountX: UInt, groupCountY: UInt = 1u, groupCountZ: UInt = 1u) {
-        vkCmdDispatch!!(handle, groupCountX, groupCountY, groupCountZ)
+        device.dispatch.vkCmdDispatch!!(handle, groupCountX, groupCountY, groupCountZ)
     }
 
     /**
@@ -774,7 +718,7 @@ class CommandBuffer internal constructor(
         groupCountY: UInt = 1u,
         groupCountZ: UInt = 1u,
     ) {
-        vkCmdDispatchBase!!(
+        device.dispatch.vkCmdDispatchBase!!(
             handle,
             baseGroupX,
             baseGroupY,
@@ -795,7 +739,7 @@ class CommandBuffer internal constructor(
         assert(buffer.size >= DISPATCH_INDIRECT_COMMAND_SIZE && offset <= buffer.size - DISPATCH_INDIRECT_COMMAND_SIZE) {
             "offset + sizeof(VkDispatchIndirectCommand) must be less than or equal to ${buffer.size}"
         }
-        vkCmdDispatchIndirect!!(handle, buffer.handle, offset)
+        device.dispatch.vkCmdDispatchIndirect!!(handle, buffer.handle, offset)
     }
 
     /**
@@ -804,7 +748,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDraw.html">vkCmdDraw Manual Page</a>
      */
     fun draw(vertexCount: UInt, instanceCount: UInt = 1u, firstVertex: UInt = 0u, firstInstance: UInt = 0u) {
-        vkCmdDraw!!(handle, vertexCount, instanceCount, firstVertex, firstInstance)
+        device.dispatch.vkCmdDraw!!(handle, vertexCount, instanceCount, firstVertex, firstInstance)
     }
 
     /**
@@ -813,7 +757,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawIndexed.html">vkCmdDrawIndexed Manual Page</a>
      */
     fun drawIndexed(indexCount: UInt, instanceCount: UInt = 1u, firstIndex: UInt = 0u, vertexOffset: Int = 0, firstInstance: UInt = 0u) {
-        vkCmdDrawIndexed!!(handle, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance)
+        device.dispatch.vkCmdDrawIndexed!!(handle, indexCount, instanceCount, firstIndex, vertexOffset, firstInstance)
     }
 
     /**
@@ -829,7 +773,7 @@ class CommandBuffer internal constructor(
         assert(drawCount <= 1u || stride % 4u == 0u && stride >= 20u) {
             "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndexedIndirectCommand)"
         }
-        vkCmdDrawIndexedIndirect!!(handle, buffer.handle, offset, drawCount, stride)
+        device.dispatch.vkCmdDrawIndexedIndirect!!(handle, buffer.handle, offset, drawCount, stride)
     }
 
     /**
@@ -858,7 +802,7 @@ class CommandBuffer internal constructor(
         assert(countBuffer.size >= DRAW_COUNT_SIZE && countBufferOffset <= countBuffer.size - DRAW_COUNT_SIZE) {
             "countBufferOffset + sizeof(uint32_t) must be less than or equal to ${countBuffer.size}"
         }
-        vkCmdDrawIndexedIndirectCount!!(
+        device.dispatch.vkCmdDrawIndexedIndirectCount!!(
             handle,
             buffer.handle,
             offset,
@@ -882,7 +826,7 @@ class CommandBuffer internal constructor(
         assert(drawCount <= 1u || stride % 4u == 0u && stride >= 16u) {
             "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawIndirectCommand)"
         }
-        vkCmdDrawIndirect!!(handle, buffer.handle, offset, drawCount, stride)
+        device.dispatch.vkCmdDrawIndirect!!(handle, buffer.handle, offset, drawCount, stride)
     }
 
     /**
@@ -904,7 +848,7 @@ class CommandBuffer internal constructor(
         assert(countBuffer.size >= DRAW_COUNT_SIZE && countBufferOffset <= countBuffer.size - DRAW_COUNT_SIZE) {
             "countBufferOffset + sizeof(uint32_t) must be less than or equal to ${countBuffer.size}"
         }
-        vkCmdDrawIndirectCount!!(
+        device.dispatch.vkCmdDrawIndirectCount!!(
             handle,
             buffer.handle,
             offset,
@@ -955,7 +899,7 @@ class CommandBuffer internal constructor(
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfo()
         }
-        vkCmdPipelineBarrier2!!(handle, dependencyInfo.ptr)
+        device.dispatch.vkCmdPipelineBarrier2!!(handle, dependencyInfo.ptr)
     }
 
     /**
@@ -969,7 +913,7 @@ class CommandBuffer internal constructor(
         assert(values.size % 4 == 0) { "values.size must be a multiple of 4" }
         assert(stageFlags != 0u) { "stageFlags must not be 0" }
         values.usePinned {
-            vkCmdPushConstants!!(
+            device.dispatch.vkCmdPushConstants!!(
                 handle,
                 layout.handle,
                 stageFlags,
@@ -992,7 +936,7 @@ class CommandBuffer internal constructor(
             sType = VK_STRUCTURE_TYPE_PUSH_DESCRIPTOR_SET_INFO
             pushInfo()
         }
-        vkCmdPushDescriptorSet2!!(handle, pushDescriptorSetInfo.ptr)
+        device.dispatch.vkCmdPushDescriptorSet2!!(handle, pushDescriptorSetInfo.ptr)
     }
 
     /**
@@ -1001,7 +945,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetCommandBuffer.html">vkResetCommandBuffer Manual Page</a>
      */
     fun reset(flags: VkCommandBufferResetFlags = 0u) {
-        vkResetCommandBuffer!!(handle, flags)
+        device.dispatch.vkResetCommandBuffer!!(handle, flags)
             .checkResult("Failed to reset command buffer")
     }
 
@@ -1017,7 +961,7 @@ class CommandBuffer internal constructor(
         assert((stageMask and VK_PIPELINE_STAGE_2_HOST_BIT) == 0uL) {
             "stageMask must not include VK_PIPELINE_STAGE_2_HOST_BIT"
         }
-        vkCmdResetEvent2!!(handle, event.handle, stageMask)
+        device.dispatch.vkCmdResetEvent2!!(handle, event.handle, stageMask)
     }
 
     /**
@@ -1026,7 +970,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdResetQueryPool.html">vkCmdResetQueryPool Manual Page</a>
      */
     fun resetQueryPool(queryPool: QueryPool, firstQuery: UInt, queryCount: UInt) {
-        vkCmdResetQueryPool!!(handle, queryPool.handle, firstQuery, queryCount)
+        device.dispatch.vkCmdResetQueryPool!!(handle, queryPool.handle, firstQuery, queryCount)
     }
 
     /**
@@ -1062,7 +1006,7 @@ class CommandBuffer internal constructor(
             regionCount = regions.size.toUInt()
             pRegions = imageResolves
         }
-        vkCmdResolveImage2!!(handle, resolveImageInfo.ptr)
+        device.dispatch.vkCmdResolveImage2!!(handle, resolveImageInfo.ptr)
     }
 
     /**
@@ -1073,7 +1017,7 @@ class CommandBuffer internal constructor(
     fun setBlendConstants(r: Float, g: Float, b: Float, a: Float) {
         val blendConstants = floatArrayOf(r, g, b, a)
         blendConstants.usePinned {
-            vkCmdSetBlendConstants!!(handle, it.addressOf(0))
+            device.dispatch.vkCmdSetBlendConstants!!(handle, it.addressOf(0))
         }
     }
 
@@ -1083,7 +1027,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetCullMode.html">vkCmdSetCullMode Manual Page</a>
      */
     fun setCullMode(cullMode: VkCullModeFlags) {
-        vkCmdSetCullMode!!(handle, cullMode)
+        device.dispatch.vkCmdSetCullMode!!(handle, cullMode)
     }
 
     /**
@@ -1100,7 +1044,7 @@ class CommandBuffer internal constructor(
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfo()
         }
-        vkCmdSetEvent2!!(handle, event.handle, dep.ptr)
+        device.dispatch.vkCmdSetEvent2!!(handle, event.handle, dep.ptr)
     }
 
     /**
@@ -1111,7 +1055,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBias.html">vkCmdSetDepthBias Manual Page</a>
      */
     fun setDepthBias(constantFactor: Float, clamp: Float, slopeFactor: Float) {
-        vkCmdSetDepthBias!!(handle, constantFactor, clamp, slopeFactor)
+        device.dispatch.vkCmdSetDepthBias!!(handle, constantFactor, clamp, slopeFactor)
     }
 
     /**
@@ -1120,7 +1064,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBiasEnable.html">vkCmdSetDepthBiasEnable Manual Page</a>
      */
     fun setDepthBiasEnable(enable: Boolean) {
-        vkCmdSetDepthBiasEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetDepthBiasEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1129,7 +1073,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthTestEnable.html">vkCmdSetDepthTestEnable Manual Page</a>
      */
     fun setDepthTestEnable(enable: Boolean) {
-        vkCmdSetDepthTestEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetDepthTestEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1138,7 +1082,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthWriteEnable.html">vkCmdSetDepthWriteEnable Manual Page</a>
      */
     fun setDepthWriteEnable(enable: Boolean) {
-        vkCmdSetDepthWriteEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetDepthWriteEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1147,7 +1091,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthCompareOp.html">vkCmdSetDepthCompareOp Manual Page</a>
      */
     fun setDepthCompareOp(compareOp: VkCompareOp) {
-        vkCmdSetDepthCompareOp!!(handle, compareOp)
+        device.dispatch.vkCmdSetDepthCompareOp!!(handle, compareOp)
     }
 
     /**
@@ -1156,7 +1100,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetFrontFace.html">vkCmdSetFrontFace Manual Page</a>
      */
     fun setFrontFace(frontFace: VkFrontFace) {
-        vkCmdSetFrontFace!!(handle, frontFace)
+        device.dispatch.vkCmdSetFrontFace!!(handle, frontFace)
     }
 
     /**
@@ -1167,7 +1111,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineWidth.html">vkCmdSetLineWidth Manual Page</a>
      */
     fun setLineWidth(lineWidth: Float) {
-        vkCmdSetLineWidth!!(handle, lineWidth)
+        device.dispatch.vkCmdSetLineWidth!!(handle, lineWidth)
     }
 
     /**
@@ -1176,7 +1120,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPrimitiveRestartEnable.html">vkCmdSetPrimitiveRestartEnable Manual Page</a>
      */
     fun setPrimitiveRestartEnable(enable: Boolean) {
-        vkCmdSetPrimitiveRestartEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetPrimitiveRestartEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1185,7 +1129,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPrimitiveTopology.html">vkCmdSetPrimitiveTopology Manual Page</a>
      */
     fun setPrimitiveTopology(topology: VkPrimitiveTopology) {
-        vkCmdSetPrimitiveTopology!!(handle, topology)
+        device.dispatch.vkCmdSetPrimitiveTopology!!(handle, topology)
     }
 
     /**
@@ -1194,7 +1138,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetRasterizerDiscardEnable.html">vkCmdSetRasterizerDiscardEnable Manual Page</a>
      */
     fun setRasterizerDiscardEnable(enable: Boolean) {
-        vkCmdSetRasterizerDiscardEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetRasterizerDiscardEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1219,7 +1163,7 @@ class CommandBuffer internal constructor(
             colorAttachmentCount = colorAttachmentLocations.size.toUInt()
             pColorAttachmentLocations = locations
         }
-        vkCmdSetRenderingAttachmentLocations!!(handle, locationInfo.ptr)
+        device.dispatch.vkCmdSetRenderingAttachmentLocations!!(handle, locationInfo.ptr)
     }
 
     /**
@@ -1252,7 +1196,7 @@ class CommandBuffer internal constructor(
             pDepthInputAttachmentIndex = depthIndex?.ptr
             pStencilInputAttachmentIndex = stencilIndex?.ptr
         }
-        vkCmdSetRenderingInputAttachmentIndices!!(handle, inputAttachmentIndexInfo.ptr)
+        device.dispatch.vkCmdSetRenderingInputAttachmentIndices!!(handle, inputAttachmentIndexInfo.ptr)
     }
 
     /**
@@ -1262,7 +1206,7 @@ class CommandBuffer internal constructor(
      */
     fun setScissor(scissor: Rect2D): Unit = memScoped {
         val scissor = alloc<VkRect2D> { from(scissor) }
-        vkCmdSetScissor!!(handle, 0u, 1u, scissor.ptr)
+        device.dispatch.vkCmdSetScissor!!(handle, 0u, 1u, scissor.ptr)
     }
 
     /**
@@ -1276,7 +1220,7 @@ class CommandBuffer internal constructor(
         assert(scissors.isNotEmpty()) { "scissors must not be empty" }
         val count = scissors.size.toUInt()
         val scissors = allocArray<VkRect2D>(scissors.size) { from(scissors[it]) }
-        vkCmdSetScissorWithCount!!(handle, count, scissors)
+        device.dispatch.vkCmdSetScissorWithCount!!(handle, count, scissors)
     }
 
     /**
@@ -1286,7 +1230,7 @@ class CommandBuffer internal constructor(
      */
     fun setStencilCompareMask(faceMask: VkStencilFaceFlags, compareMask: UInt) {
         assert(faceMask != 0u) { "faceMask must not be 0" }
-        vkCmdSetStencilCompareMask!!(handle, faceMask, compareMask)
+        device.dispatch.vkCmdSetStencilCompareMask!!(handle, faceMask, compareMask)
     }
 
     /**
@@ -1302,7 +1246,7 @@ class CommandBuffer internal constructor(
         compareOp: VkCompareOp,
     ) {
         assert(faceMask != 0u) { "faceMask must not be 0" }
-        vkCmdSetStencilOp!!(handle, faceMask, failOp, passOp, depthFailOp, compareOp)
+        device.dispatch.vkCmdSetStencilOp!!(handle, faceMask, failOp, passOp, depthFailOp, compareOp)
     }
 
     /**
@@ -1312,7 +1256,7 @@ class CommandBuffer internal constructor(
      */
     fun setStencilReference(faceMask: VkStencilFaceFlags, reference: UInt) {
         assert(faceMask != 0u) { "faceMask must not be 0" }
-        vkCmdSetStencilReference!!(handle, faceMask, reference)
+        device.dispatch.vkCmdSetStencilReference!!(handle, faceMask, reference)
     }
 
     /**
@@ -1321,7 +1265,7 @@ class CommandBuffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetStencilTestEnable.html">vkCmdSetStencilTestEnable Manual Page</a>
      */
     fun setStencilTestEnable(enable: Boolean) {
-        vkCmdSetStencilTestEnable!!(handle, enable.toVkBool32())
+        device.dispatch.vkCmdSetStencilTestEnable!!(handle, enable.toVkBool32())
     }
 
     /**
@@ -1331,7 +1275,7 @@ class CommandBuffer internal constructor(
      */
     fun setStencilWriteMask(faceMask: VkStencilFaceFlags, writeMask: UInt) {
         assert(faceMask != 0u) { "faceMask must not be 0" }
-        vkCmdSetStencilWriteMask!!(handle, faceMask, writeMask)
+        device.dispatch.vkCmdSetStencilWriteMask!!(handle, faceMask, writeMask)
     }
 
     /**
@@ -1341,7 +1285,7 @@ class CommandBuffer internal constructor(
      */
     fun setViewport(viewport: Viewport): Unit = memScoped {
         val vp = alloc<VkViewport> { from(viewport) }
-        vkCmdSetViewport!!(handle, 0u, 1u, vp.ptr)
+        device.dispatch.vkCmdSetViewport!!(handle, 0u, 1u, vp.ptr)
     }
 
     /**
@@ -1355,7 +1299,7 @@ class CommandBuffer internal constructor(
         assert(viewports.isNotEmpty()) { "viewports must not be empty" }
         val count = viewports.size.toUInt()
         val viewports = allocArray<VkViewport>(viewports.size) { from(viewports[it]) }
-        vkCmdSetViewportWithCount!!(handle, count, viewports)
+        device.dispatch.vkCmdSetViewportWithCount!!(handle, count, viewports)
     }
 
     /**
@@ -1370,7 +1314,7 @@ class CommandBuffer internal constructor(
         assert(offset % 4uL == 0uL) { "Offset must be a multiple of 4" }
         assert(offset <= buffer.size && data.size.toULong() <= buffer.size - offset) { "Update range exceeds the buffer size" }
         data.usePinned {
-            vkCmdUpdateBuffer!!(handle, buffer.handle, offset, data.size.toULong(), it.addressOf(0))
+            device.dispatch.vkCmdUpdateBuffer!!(handle, buffer.handle, offset, data.size.toULong(), it.addressOf(0))
         }
     }
 
@@ -1390,7 +1334,7 @@ class CommandBuffer internal constructor(
             sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO
             dependencyInfos(index.toUInt())
         }
-        vkCmdWaitEvents2!!(handle, events.size.toUInt(), eventsArray, deps)
+        device.dispatch.vkCmdWaitEvents2!!(handle, events.size.toUInt(), eventsArray, deps)
     }
 
     /**
@@ -1403,7 +1347,7 @@ class CommandBuffer internal constructor(
      */
     fun writeTimestamp(stage: VkPipelineStageFlags2, queryPool: QueryPool, query: UInt) {
         assert(stage.countOneBits() <= 1) { "stage must only include a single pipeline stage" }
-        vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
+        device.dispatch.vkCmdWriteTimestamp2!!(handle, stage, queryPool.handle, query)
     }
 
     private companion object {

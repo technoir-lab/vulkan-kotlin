@@ -5,12 +5,9 @@ import io.technoirlab.volk.VK_KHR_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_OBJECT_TYPE_SURFACE_KHR
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
 import io.technoirlab.volk.VkHeadlessSurfaceCreateInfoEXT
-import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSurfaceKHR
 import io.technoirlab.volk.VkSurfaceKHRVar
-import io.technoirlab.volk.vkCreateHeadlessSurfaceEXT
-import io.technoirlab.volk.vkDestroySurfaceKHR
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
@@ -26,7 +23,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSurfaceKHR.html">VkSurfaceKHR Manual Page</a>
  */
 class Surface internal constructor(
-    private val instance: VkInstance,
+    private val instance: Instance,
     override val handle: VkSurfaceKHR,
 ) : VulkanObject,
     AutoCloseable {
@@ -41,7 +38,7 @@ class Surface internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroySurfaceKHR.html">vkDestroySurfaceKHR Manual Page</a>
      */
     override fun close() {
-        vkDestroySurfaceKHR!!(instance, handle, null)
+        instance.dispatch.vkDestroySurfaceKHR!!(instance.handle, handle, null)
     }
 }
 
@@ -59,7 +56,7 @@ fun Instance.createHeadlessSurface(): Surface = memScoped {
         sType = VK_STRUCTURE_TYPE_HEADLESS_SURFACE_CREATE_INFO_EXT
     }
     val surfaceVar = alloc<VkSurfaceKHRVar>()
-    vkCreateHeadlessSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
+    dispatch.vkCreateHeadlessSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create a headless surface")
-    return Surface(handle, surfaceVar.value!!)
+    return Surface(this@createHeadlessSurface, surfaceVar.value!!)
 }

@@ -5,18 +5,14 @@ import io.technoirlab.volk.VK_SEMAPHORE_TYPE_TIMELINE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_SIGNAL_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO
 import io.technoirlab.volk.VK_TIMEOUT
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSemaphore
 import io.technoirlab.volk.VkSemaphoreSignalInfo
 import io.technoirlab.volk.VkSemaphoreType
 import io.technoirlab.volk.VkSemaphoreWaitInfo
-import io.technoirlab.volk.vkDestroySemaphore
-import io.technoirlab.volk.vkGetSemaphoreCounterValue
-import io.technoirlab.volk.vkSignalSemaphore
-import io.technoirlab.volk.vkWaitSemaphores
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
@@ -34,7 +30,7 @@ import kotlin.time.Duration
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSemaphore.html">VkSemaphore Manual Page</a>
  */
 class Semaphore internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkSemaphore,
     val semaphoreType: VkSemaphoreType,
 ) : VulkanObject,
@@ -57,7 +53,7 @@ class Semaphore internal constructor(
         }
 
         val valueVar = alloc<ULongVar>()
-        vkGetSemaphoreCounterValue!!(device, handle, valueVar.ptr)
+        device.dispatch.vkGetSemaphoreCounterValue!!(device.handle, handle, valueVar.ptr)
             .checkResult("Failed to get timeline semaphore counter value")
         return valueVar.value
     }
@@ -79,7 +75,7 @@ class Semaphore internal constructor(
             semaphore = handle
             this.value = value
         }
-        vkSignalSemaphore!!(device, signalInfo.ptr)
+        device.dispatch.vkSignalSemaphore!!(device.handle, signalInfo.ptr)
             .checkResult("Failed to signal timeline semaphore")
     }
 
@@ -104,7 +100,7 @@ class Semaphore internal constructor(
             pValues = valueVar.ptr
             flags = 0u
         }
-        when (val result = vkWaitSemaphores!!(device, waitInfo.ptr, timeout.inWholeNanosecondsULong)) {
+        when (val result = device.dispatch.vkWaitSemaphores!!(device.handle, waitInfo.ptr, timeout.inWholeNanosecondsULong)) {
             VK_TIMEOUT -> false
             else -> result.checkResult("Failed to wait for timeline semaphore")
         }
@@ -116,6 +112,6 @@ class Semaphore internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroySemaphore.html">vkDestroySemaphore Manual Page</a>
      */
     override fun close() {
-        vkDestroySemaphore!!(device, handle, null)
+        device.dispatch.vkDestroySemaphore!!(device.handle, handle, null)
     }
 }

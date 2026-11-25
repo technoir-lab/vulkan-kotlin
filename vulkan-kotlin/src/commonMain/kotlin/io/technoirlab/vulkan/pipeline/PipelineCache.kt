@@ -2,15 +2,12 @@ package io.technoirlab.vulkan.pipeline
 
 import io.technoirlab.volk.VK_INCOMPLETE
 import io.technoirlab.volk.VK_OBJECT_TYPE_PIPELINE_CACHE
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipelineCache
-import io.technoirlab.volk.vkDestroyPipelineCache
-import io.technoirlab.volk.vkGetPipelineCacheData
-import io.technoirlab.volk.vkMergePipelineCaches
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.VulkanResult
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.memory.MemoryRegion
 import kotlinx.cinterop.ULongVar
 import kotlinx.cinterop.alloc
@@ -27,7 +24,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipelineCache.html">VkPipelineCache Manual Page</a>
  */
 class PipelineCache internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkPipelineCache,
 ) : VulkanObject,
     AutoCloseable {
@@ -42,7 +39,7 @@ class PipelineCache internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyPipelineCache.html">vkDestroyPipelineCache Manual Page</a>
      */
     override fun close() {
-        vkDestroyPipelineCache!!(device, handle, null)
+        device.dispatch.vkDestroyPipelineCache!!(device.handle, handle, null)
     }
 
     /**
@@ -59,7 +56,7 @@ class PipelineCache internal constructor(
      */
     fun getData(destination: MemoryRegion): VulkanResult<ULong> = memScoped {
         val dataSize = alloc<ULongVar> { value = destination.size }
-        val result = vkGetPipelineCacheData!!(device, handle, dataSize.ptr, destination.address)
+        val result = device.dispatch.vkGetPipelineCacheData!!(device.handle, handle, dataSize.ptr, destination.address)
         if (result != VK_INCOMPLETE) {
             result.checkResult("Failed to get pipeline cache data")
         }
@@ -75,7 +72,7 @@ class PipelineCache internal constructor(
      */
     fun getDataSize(): ULong = memScoped {
         val dataSize = alloc<ULongVar>()
-        vkGetPipelineCacheData!!(device, handle, dataSize.ptr, null)
+        device.dispatch.vkGetPipelineCacheData!!(device.handle, handle, dataSize.ptr, null)
             .checkResult("Failed to get pipeline cache data size")
         return dataSize.value
     }
@@ -89,7 +86,7 @@ class PipelineCache internal constructor(
         assert(srcCaches.isNotEmpty()) { "srcCaches must not be empty" }
 
         val srcCacheHandles = allocArrayOf(srcCaches.map { it.handle })
-        vkMergePipelineCaches!!(device, handle, srcCaches.size.toUInt(), srcCacheHandles)
+        device.dispatch.vkMergePipelineCaches!!(device.handle, handle, srcCaches.size.toUInt(), srcCacheHandles)
             .checkResult("Failed to merge pipeline caches")
     }
 }

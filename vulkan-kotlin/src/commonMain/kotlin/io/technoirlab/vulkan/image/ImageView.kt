@@ -1,11 +1,10 @@
 package io.technoirlab.vulkan.image
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_IMAGE_VIEW
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImageView
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkDestroyImageView
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.invoke
 
 /**
@@ -14,7 +13,7 @@ import kotlinx.cinterop.invoke
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkImageView.html">VkImageView Manual Page</a>
  */
 class ImageView internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkImageView,
 ) : VulkanObject,
     AutoCloseable {
@@ -29,6 +28,6 @@ class ImageView internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyImageView.html">vkDestroyImageView Manual Page</a>
      */
     override fun close() {
-        vkDestroyImageView!!(device, handle, null)
+        device.dispatch.vkDestroyImageView!!(device.handle, handle, null)
     }
 }

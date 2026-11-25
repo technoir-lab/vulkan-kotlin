@@ -61,6 +61,8 @@ The Vulkan 1.3 core subset of extended dynamic state 2 is required. No extension
 * Allocate temporary native memory inside `memScoped` when returned values do not depend on the allocation scope.
   Keep allocation context parameters for native views whose memory lifetime must be controlled by the caller.
 * When the same functionality is available both in core and as an extension, the core functionality must be used.
+* Call instance-level and device-level commands through the `dispatch` table of the owning `Instance` or `Device`, never
+  through the global function pointers of volk. KtLint rejects their imports; only `Vulkan.kt` and `DispatchLoader.kt` are exempt.
 * Use only `kotlin.assert` for input and constraint validation; never use `require`, `requireNotNull`, `check`, or `checkNotNull`.
 * Every `public` class, function, and property must have a KDoc.
 

@@ -5,7 +5,6 @@ import io.technoirlab.volk.VK_KHR_WIN32_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR
 import io.technoirlab.volk.VkSurfaceKHRVar
 import io.technoirlab.volk.VkWin32SurfaceCreateInfoKHR
-import io.technoirlab.volk.vkCreateWin32SurfaceKHR
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.checkResult
 import kotlinx.cinterop.alloc
@@ -32,7 +31,7 @@ fun Instance.createWin32Surface(hinstance: HINSTANCE, hwnd: HWND): Surface = mem
         this.hwnd = hwnd
     }
     val surfaceVar = alloc<VkSurfaceKHRVar>()
-    vkCreateWin32SurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
+    dispatch.vkCreateWin32SurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create a Win32 surface")
-    return Surface(handle, surfaceVar.value!!)
+    return Surface(this@createWin32Surface, surfaceVar.value!!)
 }

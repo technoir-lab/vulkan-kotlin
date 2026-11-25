@@ -6,17 +6,12 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_EXT
 import io.technoirlab.volk.VK_SHADER_CODE_TYPE_SPIRV_EXT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
 import io.technoirlab.volk.VK_SUCCESS
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkShaderCreateInfoEXT
 import io.technoirlab.volk.VkShaderEXT
 import io.technoirlab.volk.VkShaderEXTVar
 import io.technoirlab.volk.VkShaderStageFlagBits
-import io.technoirlab.volk.vkCmdBindShadersEXT
-import io.technoirlab.volk.vkCreateShadersEXT
-import io.technoirlab.volk.vkDestroyShaderEXT
-import io.technoirlab.volk.vkGetShaderBinaryDataEXT
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.VulkanResult
 import io.technoirlab.vulkan.checkResult
@@ -45,7 +40,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkShaderEXT.html">VkShaderEXT Manual Page</a>
  */
 class Shader internal constructor(
-    internal val device: VkDevice,
+    internal val device: Device,
     override val handle: VkShaderEXT,
 ) : VulkanObject,
     AutoCloseable {
@@ -60,7 +55,7 @@ class Shader internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyShaderEXT.html">vkDestroyShaderEXT Manual Page</a>
      */
     override fun close() {
-        vkDestroyShaderEXT!!(device, handle, null)
+        device.dispatch.vkDestroyShaderEXT!!(device.handle, handle, null)
     }
 }
 
@@ -82,7 +77,7 @@ fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List
     val shaderValues = shaders?.let { shaderList ->
         allocArray<VkShaderEXTVar>(shaderList.size) { index -> value = shaderList[index]?.handle }
     }
-    vkCmdBindShadersEXT!!(handle, stages.size.toUInt(), stageValues, shaderValues)
+    device.dispatch.vkCmdBindShadersEXT!!(handle, stages.size.toUInt(), stageValues, shaderValues)
 }
 
 /**
@@ -105,8 +100,8 @@ fun CommandBuffer.bindShaders(stages: List<VkShaderStageFlagBits>, shaders: List
 fun Device.createShaders(count: UInt, createInfo: VkShaderCreateInfoEXT.(UInt) -> Unit): List<Shader>? = memScoped {
     assert(count > 0u) { "count must be greater than 0" }
     val shaderHandles = allocArray<VkShaderEXTVar>(count.toLong())
-    val result = createShaderHandles(handle, count.toInt(), shaderHandles) { index -> createInfo(index.toUInt()) }
-    return result.toShadersOrNull(handle, List(count.toInt()) { shaderHandles[it] }, "Failed to create shaders")
+    val result = createShaderHandles(this@createShaders, count.toInt(), shaderHandles) { index -> createInfo(index.toUInt()) }
+    return result.toShadersOrNull(this@createShaders, List(count.toInt()) { shaderHandles[it] }, "Failed to create shaders")
 }
 
 /**
@@ -135,11 +130,11 @@ fun Device.createShadersFromSpirv(code: List<MemoryRegion>, createInfo: VkShader
     assert(code.isNotEmpty()) { "code must not be empty" }
     val words = alignedSpirvWords(code)
     val shaderHandles = allocArray<VkShaderEXTVar>(code.size)
-    val result = createShaderHandles(handle, code.size, shaderHandles) { index ->
+    val result = createShaderHandles(this@createShadersFromSpirv, code.size, shaderHandles) { index ->
         createInfo(index)
         setSpirvCode(words[index], code[index].size, index)
     }
-    return result.toShaders(handle, List(code.size) { shaderHandles[it] }, "Failed to create shaders")
+    return result.toShaders(this@createShadersFromSpirv, List(code.size) { shaderHandles[it] }, "Failed to create shaders")
 }
 
 /**
@@ -159,7 +154,7 @@ fun Shader.getBinaryData(destination: MemoryRegion): VulkanResult<ULong> = memSc
     assert(destination.address.rawValue.toLong() % 16L == 0L) { "destination address must be aligned to 16 bytes" }
 
     val dataSize = alloc<ULongVar> { value = destination.size }
-    val result = vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, destination.address)
+    val result = device.dispatch.vkGetShaderBinaryDataEXT!!(device.handle, handle, dataSize.ptr, destination.address)
     if (result == VK_INCOMPLETE) {
         return VulkanResult(0uL, result)
     }
@@ -177,7 +172,7 @@ fun Shader.getBinaryData(destination: MemoryRegion): VulkanResult<ULong> = memSc
  */
 fun Shader.getBinaryDataSize(): ULong = memScoped {
     val dataSize = alloc<ULongVar>()
-    vkGetShaderBinaryDataEXT!!(device, handle, dataSize.ptr, null)
+    device.dispatch.vkGetShaderBinaryDataEXT!!(device.handle, handle, dataSize.ptr, null)
         .checkResult("Failed to get shader binary data size")
 
     return dataSize.value
@@ -212,7 +207,7 @@ internal fun VkShaderCreateInfoEXT.setSpirvCode(words: CPointer<UIntVar>, size: 
  * @param message Describes the failure when this result is not `VK_SUCCESS`.
  * @return The created shader objects in [shaders] order.
  */
-internal fun VkResult.toShaders(device: VkDevice, shaders: List<VkShaderEXT?>, message: String): List<Shader> {
+internal fun VkResult.toShaders(device: Device, shaders: List<VkShaderEXT?>, message: String): List<Shader> {
     checkResult(message)
     return shaders.map { Shader(device, it!!) }
 }
@@ -229,7 +224,7 @@ internal fun VkResult.toShaders(device: VkDevice, shaders: List<VkShaderEXT?>, m
  * `VK_INCOMPATIBLE_SHADER_BINARY_EXT`.
  * @return The created shader objects in [shaders] order, or `null` for `VK_INCOMPATIBLE_SHADER_BINARY_EXT`.
  */
-internal fun VkResult.toShadersOrNull(device: VkDevice, shaders: List<VkShaderEXT?>, message: String): List<Shader>? {
+internal fun VkResult.toShadersOrNull(device: Device, shaders: List<VkShaderEXT?>, message: String): List<Shader>? {
     if (this == VK_INCOMPATIBLE_SHADER_BINARY_EXT) return null
     return toShaders(device, shaders, message)
 }
@@ -246,7 +241,7 @@ internal fun VkResult.toShadersOrNull(device: VkDevice, shaders: List<VkShaderEX
  * @return The result of the command.
  */
 private fun NativePlacement.createShaderHandles(
-    device: VkDevice,
+    device: Device,
     count: Int,
     shaders: CArrayPointer<VkShaderEXTVar>,
     createInfo: VkShaderCreateInfoEXT.(Int) -> Unit,
@@ -255,11 +250,11 @@ private fun NativePlacement.createShaderHandles(
         sType = VK_STRUCTURE_TYPE_SHADER_CREATE_INFO_EXT
         createInfo(index)
     }
-    val result = vkCreateShadersEXT!!(device, count.toUInt(), createInfos, null, shaders)
+    val result = device.dispatch.vkCreateShadersEXT!!(device.handle, count.toUInt(), createInfos, null, shaders)
     if (result != VK_SUCCESS) {
         // Whatever the result, every element is either null or a valid handle that nothing else will release.
         repeat(count) { index ->
-            shaders[index]?.let { vkDestroyShaderEXT!!(device, it, null) }
+            shaders[index]?.let { device.dispatch.vkDestroyShaderEXT!!(device.handle, it, null) }
         }
     }
     return result

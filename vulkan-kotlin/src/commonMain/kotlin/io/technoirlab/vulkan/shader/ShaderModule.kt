@@ -2,12 +2,11 @@ package io.technoirlab.vulkan.shader
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_SHADER_MODULE
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkShaderModule
 import io.technoirlab.volk.VkShaderModuleCreateInfo
-import io.technoirlab.volk.vkDestroyShaderModule
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.memory.MemoryRegion
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
@@ -19,7 +18,7 @@ import kotlinx.cinterop.invoke
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkShaderModule.html">VkShaderModule Manual Page</a>
  */
 class ShaderModule internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkShaderModule,
 ) : VulkanObject,
     AutoCloseable {
@@ -34,7 +33,7 @@ class ShaderModule internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyShaderModule.html">vkDestroyShaderModule Manual Page</a>
      */
     override fun close() {
-        vkDestroyShaderModule!!(device, handle, null)
+        device.dispatch.vkDestroyShaderModule!!(device.handle, handle, null)
     }
 }
 

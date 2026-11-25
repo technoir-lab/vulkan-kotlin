@@ -8,14 +8,10 @@ import io.technoirlab.volk.VkDescriptorPoolCreateFlags
 import io.technoirlab.volk.VkDescriptorPoolResetFlags
 import io.technoirlab.volk.VkDescriptorSetAllocateInfo
 import io.technoirlab.volk.VkDescriptorSetVar
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkAllocateDescriptorSets
-import io.technoirlab.volk.vkDestroyDescriptorPool
-import io.technoirlab.volk.vkFreeDescriptorSets
-import io.technoirlab.volk.vkResetDescriptorPool
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
@@ -31,7 +27,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDescriptorPool.html">VkDescriptorPool Manual Page</a>
  */
 class DescriptorPool internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkDescriptorPool,
     private val flags: VkDescriptorPoolCreateFlags,
 ) : VulkanObject,
@@ -57,7 +53,7 @@ class DescriptorPool internal constructor(
             pSetLayouts = layoutsNative
         }
         val sets = allocArray<VkDescriptorSetVar>(setLayouts.size)
-        vkAllocateDescriptorSets!!(device, allocInfo.ptr, sets)
+        device.dispatch.vkAllocateDescriptorSets!!(device.handle, allocInfo.ptr, sets)
             .checkResult("Failed to allocate descriptor sets")
 
         return (0 until setLayouts.size).map { DescriptorSet(sets[it]!!) }
@@ -75,7 +71,7 @@ class DescriptorPool internal constructor(
         }
 
         val descriptorSetHandles = allocArrayOf(descriptorSets.map { it.handle })
-        vkFreeDescriptorSets!!(device, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
+        device.dispatch.vkFreeDescriptorSets!!(device.handle, handle, descriptorSets.size.toUInt(), descriptorSetHandles)
             .checkResult("Failed to free descriptor sets")
     }
 
@@ -85,7 +81,7 @@ class DescriptorPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetDescriptorPool.html">vkResetDescriptorPool Manual Page</a>
      */
     fun reset(flags: VkDescriptorPoolResetFlags = 0u) {
-        vkResetDescriptorPool!!(device, handle, flags).checkResult("Failed to reset descriptor pool")
+        device.dispatch.vkResetDescriptorPool!!(device.handle, handle, flags).checkResult("Failed to reset descriptor pool")
     }
 
     /**
@@ -94,6 +90,6 @@ class DescriptorPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyDescriptorPool.html">vkDestroyDescriptorPool Manual Page</a>
      */
     override fun close() {
-        vkDestroyDescriptorPool!!(device, handle, null)
+        device.dispatch.vkDestroyDescriptorPool!!(device.handle, handle, null)
     }
 }

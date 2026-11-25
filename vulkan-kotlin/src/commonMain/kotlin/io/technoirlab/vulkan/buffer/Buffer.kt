@@ -10,17 +10,12 @@ import io.technoirlab.volk.VkBindBufferMemoryInfo
 import io.technoirlab.volk.VkBuffer
 import io.technoirlab.volk.VkBufferDeviceAddressInfo
 import io.technoirlab.volk.VkBufferMemoryRequirementsInfo2
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkMemoryDedicatedRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkBindBufferMemory2
-import io.technoirlab.volk.vkDestroyBuffer
-import io.technoirlab.volk.vkGetBufferDeviceAddress
-import io.technoirlab.volk.vkGetBufferMemoryRequirements2
-import io.technoirlab.volk.vkGetBufferOpaqueCaptureAddress
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
@@ -36,7 +31,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkBuffer.html">VkBuffer Manual Page</a>
  */
 class Buffer internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkBuffer,
     val size: ULong,
 ) : VulkanObject,
@@ -60,7 +55,7 @@ class Buffer internal constructor(
             memoryOffset = offset
             this.memory = memory.handle
         }
-        vkBindBufferMemory2!!(device, 1u, bindImageMemoryInfo.ptr)
+        device.dispatch.vkBindBufferMemory2!!(device.handle, 1u, bindImageMemoryInfo.ptr)
             .checkResult("Failed to bind buffer memory")
     }
 
@@ -79,7 +74,7 @@ class Buffer internal constructor(
             sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO
             buffer = handle
         }
-        return vkGetBufferDeviceAddress!!(device, addressInfo.ptr)
+        return device.dispatch.vkGetBufferDeviceAddress!!(device.handle, addressInfo.ptr)
     }
 
     /**
@@ -99,7 +94,7 @@ class Buffer internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
             pNext = dedicatedRequirements.ptr
         }
-        vkGetBufferMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
+        device.dispatch.vkGetBufferMemoryRequirements2!!(device.handle, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
         return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 
@@ -119,7 +114,7 @@ class Buffer internal constructor(
             sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO
             buffer = handle
         }
-        return vkGetBufferOpaqueCaptureAddress!!(device, addressInfo.ptr)
+        return device.dispatch.vkGetBufferOpaqueCaptureAddress!!(device.handle, addressInfo.ptr)
     }
 
     /**
@@ -128,6 +123,6 @@ class Buffer internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyBuffer.html">vkDestroyBuffer Manual Page</a>
      */
     override fun close() {
-        vkDestroyBuffer!!(device, handle, null)
+        device.dispatch.vkDestroyBuffer!!(device.handle, handle, null)
     }
 }

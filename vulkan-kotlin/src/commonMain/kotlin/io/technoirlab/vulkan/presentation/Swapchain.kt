@@ -8,17 +8,14 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_ACQUIRE_NEXT_IMAGE_INFO_KHR
 import io.technoirlab.volk.VK_SUBOPTIMAL_KHR
 import io.technoirlab.volk.VK_TIMEOUT
 import io.technoirlab.volk.VkAcquireNextImageInfoKHR
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImageVar
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkSwapchainKHR
-import io.technoirlab.volk.vkAcquireNextImage2KHR
-import io.technoirlab.volk.vkDestroySwapchainKHR
-import io.technoirlab.volk.vkGetSwapchainImagesKHR
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.VulkanResult
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.image.Image
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import io.technoirlab.vulkan.sync.Fence
@@ -41,7 +38,7 @@ import kotlin.time.Duration
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSwapchainKHR.html">VkSwapchainKHR Manual Page</a>
  */
 class Swapchain internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkSwapchainKHR,
 ) : VulkanObject,
     AutoCloseable {
@@ -74,7 +71,7 @@ class Swapchain internal constructor(
                 this.timeout = timeout.inWholeNanosecondsULong
             }
             val imageIndexVar = alloc<UIntVar>()
-            val result = vkAcquireNextImage2KHR!!(device, acquireInfo.ptr, imageIndexVar.ptr)
+            val result = device.dispatch.vkAcquireNextImage2KHR!!(device.handle, acquireInfo.ptr, imageIndexVar.ptr)
             if (result != VK_ERROR_OUT_OF_DATE_KHR &&
                 result != VK_NOT_READY &&
                 result != VK_SUBOPTIMAL_KHR &&
@@ -95,14 +92,14 @@ class Swapchain internal constructor(
         var images: CArrayPointer<VkImageVar>
         var result: VkResult
         do {
-            vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, null)
+            device.dispatch.vkGetSwapchainImagesKHR!!(device.handle, handle, countVar.ptr, null)
                 .checkResult("Failed to get swap chain image count")
 
             val count = countVar.value.toInt()
             if (count == 0) return emptyList()
 
             images = allocArray<VkImageVar>(count)
-            result = vkGetSwapchainImagesKHR!!(device, handle, countVar.ptr, images)
+            result = device.dispatch.vkGetSwapchainImagesKHR!!(device.handle, handle, countVar.ptr, images)
         } while (result == VK_INCOMPLETE)
         result.checkResult("Failed to get swap chain images")
 
@@ -115,6 +112,6 @@ class Swapchain internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroySwapchainKHR.html">vkDestroySwapchainKHR Manual Page</a>
      */
     override fun close() {
-        vkDestroySwapchainKHR!!(device, handle, null)
+        device.dispatch.vkDestroySwapchainKHR!!(device.handle, handle, null)
     }
 }

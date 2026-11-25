@@ -24,37 +24,6 @@ import io.technoirlab.volk.VkSampleLocationsInfoEXT
 import io.technoirlab.volk.VkTessellationDomainOrigin
 import io.technoirlab.volk.VkVertexInputAttributeDescription2EXT
 import io.technoirlab.volk.VkVertexInputBindingDescription2EXT
-import io.technoirlab.volk.vkCmdSetAlphaToCoverageEnableEXT
-import io.technoirlab.volk.vkCmdSetAlphaToOneEnableEXT
-import io.technoirlab.volk.vkCmdSetColorBlendAdvancedEXT
-import io.technoirlab.volk.vkCmdSetColorBlendEnableEXT
-import io.technoirlab.volk.vkCmdSetColorBlendEquationEXT
-import io.technoirlab.volk.vkCmdSetColorWriteEnableEXT
-import io.technoirlab.volk.vkCmdSetColorWriteMaskEXT
-import io.technoirlab.volk.vkCmdSetConservativeRasterizationModeEXT
-import io.technoirlab.volk.vkCmdSetDepthBounds
-import io.technoirlab.volk.vkCmdSetDepthBoundsTestEnable
-import io.technoirlab.volk.vkCmdSetDepthClampEnableEXT
-import io.technoirlab.volk.vkCmdSetDepthClampRangeEXT
-import io.technoirlab.volk.vkCmdSetDepthClipEnableEXT
-import io.technoirlab.volk.vkCmdSetDepthClipNegativeOneToOneEXT
-import io.technoirlab.volk.vkCmdSetExtraPrimitiveOverestimationSizeEXT
-import io.technoirlab.volk.vkCmdSetFragmentShadingRateKHR
-import io.technoirlab.volk.vkCmdSetLineRasterizationModeEXT
-import io.technoirlab.volk.vkCmdSetLineStipple
-import io.technoirlab.volk.vkCmdSetLineStippleEnableEXT
-import io.technoirlab.volk.vkCmdSetLogicOpEXT
-import io.technoirlab.volk.vkCmdSetLogicOpEnableEXT
-import io.technoirlab.volk.vkCmdSetPatchControlPointsEXT
-import io.technoirlab.volk.vkCmdSetPolygonModeEXT
-import io.technoirlab.volk.vkCmdSetProvokingVertexModeEXT
-import io.technoirlab.volk.vkCmdSetRasterizationSamplesEXT
-import io.technoirlab.volk.vkCmdSetRasterizationStreamEXT
-import io.technoirlab.volk.vkCmdSetSampleLocationsEXT
-import io.technoirlab.volk.vkCmdSetSampleLocationsEnableEXT
-import io.technoirlab.volk.vkCmdSetSampleMaskEXT
-import io.technoirlab.volk.vkCmdSetTessellationDomainOriginEXT
-import io.technoirlab.volk.vkCmdSetVertexInputEXT
 import io.technoirlab.vulkan.Extent2D
 import io.technoirlab.vulkan.internal.toVkBool32
 import io.technoirlab.vulkan.pipeline.ColorBlendAdvanced
@@ -80,7 +49,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetAlphaToCoverageEnableEXT.html">vkCmdSetAlphaToCoverageEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setAlphaToCoverageEnable(enable: Boolean) {
-    vkCmdSetAlphaToCoverageEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetAlphaToCoverageEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -93,7 +62,7 @@ fun CommandBuffer.setAlphaToCoverageEnable(enable: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetAlphaToOneEnableEXT.html">vkCmdSetAlphaToOneEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setAlphaToOneEnable(enable: Boolean) {
-    vkCmdSetAlphaToOneEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetAlphaToOneEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -111,7 +80,7 @@ fun CommandBuffer.setColorBlendAdvanced(firstAttachment: UInt, settings: List<Co
     val values = allocArray<VkColorBlendAdvancedEXT>(settings.size) { index ->
         from(settings[index])
     }
-    vkCmdSetColorBlendAdvancedEXT!!(handle, firstAttachment, settings.size.toUInt(), values)
+    device.dispatch.vkCmdSetColorBlendAdvancedEXT!!(handle, firstAttachment, settings.size.toUInt(), values)
 }
 
 /**
@@ -126,7 +95,7 @@ fun CommandBuffer.setColorBlendAdvanced(firstAttachment: UInt, settings: List<Co
 fun CommandBuffer.setColorBlendEnable(firstAttachment: UInt, enables: List<Boolean>): Unit = memScoped {
     assert(enables.isNotEmpty()) { "enables must not be empty" }
     val values = allocArray<UIntVar>(enables.size) { value = enables[it].toVkBool32() }
-    vkCmdSetColorBlendEnableEXT!!(handle, firstAttachment, enables.size.toUInt(), values)
+    device.dispatch.vkCmdSetColorBlendEnableEXT!!(handle, firstAttachment, enables.size.toUInt(), values)
 }
 
 /**
@@ -145,7 +114,7 @@ fun CommandBuffer.setColorBlendEquation(firstAttachment: UInt, equations: List<C
     val values = allocArray<VkColorBlendEquationEXT>(equations.size) { index ->
         from(equations[index])
     }
-    vkCmdSetColorBlendEquationEXT!!(handle, firstAttachment, equations.size.toUInt(), values)
+    device.dispatch.vkCmdSetColorBlendEquationEXT!!(handle, firstAttachment, equations.size.toUInt(), values)
 }
 
 /**
@@ -160,7 +129,7 @@ fun CommandBuffer.setColorBlendEquation(firstAttachment: UInt, equations: List<C
 fun CommandBuffer.setColorWriteEnable(enables: List<Boolean>): Unit = memScoped {
     assert(enables.isNotEmpty()) { "enables must not be empty" }
     val values = allocArray<UIntVar>(enables.size) { value = enables[it].toVkBool32() }
-    vkCmdSetColorWriteEnableEXT!!(handle, enables.size.toUInt(), values)
+    device.dispatch.vkCmdSetColorWriteEnableEXT!!(handle, enables.size.toUInt(), values)
 }
 
 /**
@@ -175,7 +144,7 @@ fun CommandBuffer.setColorWriteEnable(enables: List<Boolean>): Unit = memScoped 
 fun CommandBuffer.setColorWriteMask(firstAttachment: UInt, masks: List<VkColorComponentFlags>): Unit = memScoped {
     assert(masks.isNotEmpty()) { "masks must not be empty" }
     val values = allocArray<UIntVar>(masks.size) { value = masks[it] }
-    vkCmdSetColorWriteMaskEXT!!(handle, firstAttachment, masks.size.toUInt(), values)
+    device.dispatch.vkCmdSetColorWriteMaskEXT!!(handle, firstAttachment, masks.size.toUInt(), values)
 }
 
 /**
@@ -187,7 +156,7 @@ fun CommandBuffer.setColorWriteMask(firstAttachment: UInt, masks: List<VkColorCo
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetConservativeRasterizationModeEXT.html">vkCmdSetConservativeRasterizationModeEXT Manual Page</a>
  */
 fun CommandBuffer.setConservativeRasterizationMode(mode: VkConservativeRasterizationModeEXT) {
-    vkCmdSetConservativeRasterizationModeEXT!!(handle, mode)
+    device.dispatch.vkCmdSetConservativeRasterizationModeEXT!!(handle, mode)
 }
 
 /**
@@ -196,7 +165,7 @@ fun CommandBuffer.setConservativeRasterizationMode(mode: VkConservativeRasteriza
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBounds.html">vkCmdSetDepthBounds Manual Page</a>
  */
 fun CommandBuffer.setDepthBounds(minDepthBounds: Float, maxDepthBounds: Float) {
-    vkCmdSetDepthBounds!!(handle, minDepthBounds, maxDepthBounds)
+    device.dispatch.vkCmdSetDepthBounds!!(handle, minDepthBounds, maxDepthBounds)
 }
 
 /**
@@ -207,7 +176,7 @@ fun CommandBuffer.setDepthBounds(minDepthBounds: Float, maxDepthBounds: Float) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthBoundsTestEnable.html">vkCmdSetDepthBoundsTestEnable Manual Page</a>
  */
 fun CommandBuffer.setDepthBoundsTestEnable(enable: Boolean) {
-    vkCmdSetDepthBoundsTestEnable!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetDepthBoundsTestEnable!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -220,7 +189,7 @@ fun CommandBuffer.setDepthBoundsTestEnable(enable: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthClampEnableEXT.html">vkCmdSetDepthClampEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setDepthClampEnable(enable: Boolean) {
-    vkCmdSetDepthClampEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetDepthClampEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -235,7 +204,7 @@ fun CommandBuffer.setDepthClampRange(mode: VkDepthClampModeEXT) {
     assert(mode != VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT) {
         "use the overload with minimum and maximum bounds for VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT"
     }
-    vkCmdSetDepthClampRangeEXT!!(handle, mode, null)
+    device.dispatch.vkCmdSetDepthClampRangeEXT!!(handle, mode, null)
 }
 
 /**
@@ -253,7 +222,7 @@ fun CommandBuffer.setDepthClampRange(minDepthClamp: Float, maxDepthClamp: Float)
         this.minDepthClamp = minDepthClamp
         this.maxDepthClamp = maxDepthClamp
     }
-    vkCmdSetDepthClampRangeEXT!!(handle, VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT, range.ptr)
+    device.dispatch.vkCmdSetDepthClampRangeEXT!!(handle, VK_DEPTH_CLAMP_MODE_USER_DEFINED_RANGE_EXT, range.ptr)
 }
 
 /**
@@ -265,7 +234,7 @@ fun CommandBuffer.setDepthClampRange(minDepthClamp: Float, maxDepthClamp: Float)
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthClipEnableEXT.html">vkCmdSetDepthClipEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setDepthClipEnable(enable: Boolean) {
-    vkCmdSetDepthClipEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetDepthClipEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -277,7 +246,7 @@ fun CommandBuffer.setDepthClipEnable(enable: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetDepthClipNegativeOneToOneEXT.html">vkCmdSetDepthClipNegativeOneToOneEXT Manual Page</a>
  */
 fun CommandBuffer.setDepthClipNegativeOneToOne(negativeOneToOne: Boolean) {
-    vkCmdSetDepthClipNegativeOneToOneEXT!!(handle, negativeOneToOne.toVkBool32())
+    device.dispatch.vkCmdSetDepthClipNegativeOneToOneEXT!!(handle, negativeOneToOne.toVkBool32())
 }
 
 /**
@@ -289,7 +258,7 @@ fun CommandBuffer.setDepthClipNegativeOneToOne(negativeOneToOne: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetExtraPrimitiveOverestimationSizeEXT.html">vkCmdSetExtraPrimitiveOverestimationSizeEXT Manual Page</a>
  */
 fun CommandBuffer.setExtraPrimitiveOverestimationSize(size: Float) {
-    vkCmdSetExtraPrimitiveOverestimationSizeEXT!!(handle, size)
+    device.dispatch.vkCmdSetExtraPrimitiveOverestimationSizeEXT!!(handle, size)
 }
 
 /**
@@ -324,7 +293,7 @@ fun CommandBuffer.setFragmentShadingRate(
     val combinerOps = allocArray<VkFragmentShadingRateCombinerOpKHRVar>(2) { index: Int ->
         value = if (index == 0) primitiveCombinerOp else attachmentCombinerOp
     }
-    vkCmdSetFragmentShadingRateKHR!!(handle, size.ptr, combinerOps)
+    device.dispatch.vkCmdSetFragmentShadingRateKHR!!(handle, size.ptr, combinerOps)
 }
 
 /**
@@ -341,7 +310,7 @@ fun CommandBuffer.setFragmentShadingRate(
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineRasterizationModeEXT.html">vkCmdSetLineRasterizationModeEXT Manual Page</a>
  */
 fun CommandBuffer.setLineRasterizationMode(mode: VkLineRasterizationModeEXT) {
-    vkCmdSetLineRasterizationModeEXT!!(handle, mode)
+    device.dispatch.vkCmdSetLineRasterizationModeEXT!!(handle, mode)
 }
 
 /**
@@ -357,7 +326,7 @@ fun CommandBuffer.setLineRasterizationMode(mode: VkLineRasterizationModeEXT) {
  */
 fun CommandBuffer.setLineStipple(factor: UInt, pattern: UShort) {
     assert(factor in 1u..256u) { "factor must be between 1 and 256" }
-    vkCmdSetLineStipple!!(handle, factor, pattern)
+    device.dispatch.vkCmdSetLineStipple!!(handle, factor, pattern)
 }
 
 /**
@@ -375,7 +344,7 @@ fun CommandBuffer.setLineStipple(factor: UInt, pattern: UShort) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLineStippleEnableEXT.html">vkCmdSetLineStippleEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setLineStippleEnable(enable: Boolean) {
-    vkCmdSetLineStippleEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetLineStippleEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -387,7 +356,7 @@ fun CommandBuffer.setLineStippleEnable(enable: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLogicOpEXT.html">vkCmdSetLogicOpEXT Manual Page</a>
  */
 fun CommandBuffer.setLogicOp(logicOp: VkLogicOp) {
-    vkCmdSetLogicOpEXT!!(handle, logicOp)
+    device.dispatch.vkCmdSetLogicOpEXT!!(handle, logicOp)
 }
 
 /**
@@ -400,7 +369,7 @@ fun CommandBuffer.setLogicOp(logicOp: VkLogicOp) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetLogicOpEnableEXT.html">vkCmdSetLogicOpEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setLogicOpEnable(enable: Boolean) {
-    vkCmdSetLogicOpEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetLogicOpEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -412,7 +381,7 @@ fun CommandBuffer.setLogicOpEnable(enable: Boolean) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPatchControlPointsEXT.html">vkCmdSetPatchControlPointsEXT Manual Page</a>
  */
 fun CommandBuffer.setPatchControlPoints(patchControlPoints: UInt) {
-    vkCmdSetPatchControlPointsEXT!!(handle, patchControlPoints)
+    device.dispatch.vkCmdSetPatchControlPointsEXT!!(handle, patchControlPoints)
 }
 
 /**
@@ -425,7 +394,7 @@ fun CommandBuffer.setPatchControlPoints(patchControlPoints: UInt) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetPolygonModeEXT.html">vkCmdSetPolygonModeEXT Manual Page</a>
  */
 fun CommandBuffer.setPolygonMode(polygonMode: VkPolygonMode) {
-    vkCmdSetPolygonModeEXT!!(handle, polygonMode)
+    device.dispatch.vkCmdSetPolygonModeEXT!!(handle, polygonMode)
 }
 
 /**
@@ -437,7 +406,7 @@ fun CommandBuffer.setPolygonMode(polygonMode: VkPolygonMode) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetProvokingVertexModeEXT.html">vkCmdSetProvokingVertexModeEXT Manual Page</a>
  */
 fun CommandBuffer.setProvokingVertexMode(mode: VkProvokingVertexModeEXT) {
-    vkCmdSetProvokingVertexModeEXT!!(handle, mode)
+    device.dispatch.vkCmdSetProvokingVertexModeEXT!!(handle, mode)
 }
 
 /**
@@ -448,7 +417,7 @@ fun CommandBuffer.setProvokingVertexMode(mode: VkProvokingVertexModeEXT) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetRasterizationSamplesEXT.html">vkCmdSetRasterizationSamplesEXT Manual Page</a>
  */
 fun CommandBuffer.setRasterizationSamples(samples: VkSampleCountFlagBits) {
-    vkCmdSetRasterizationSamplesEXT!!(handle, samples)
+    device.dispatch.vkCmdSetRasterizationSamplesEXT!!(handle, samples)
 }
 
 /**
@@ -460,7 +429,7 @@ fun CommandBuffer.setRasterizationSamples(samples: VkSampleCountFlagBits) {
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetRasterizationStreamEXT.html">vkCmdSetRasterizationStreamEXT Manual Page</a>
  */
 fun CommandBuffer.setRasterizationStream(stream: UInt) {
-    vkCmdSetRasterizationStreamEXT!!(handle, stream)
+    device.dispatch.vkCmdSetRasterizationStreamEXT!!(handle, stream)
 }
 
 /**
@@ -498,7 +467,7 @@ fun CommandBuffer.setSampleLocations(samples: VkSampleCountFlagBits, gridSize: E
             sampleLocationsCount = sampleLocations.size.toUInt()
             pSampleLocations = locations
         }
-        vkCmdSetSampleLocationsEXT!!(handle, sampleLocationsInfo.ptr)
+        device.dispatch.vkCmdSetSampleLocationsEXT!!(handle, sampleLocationsInfo.ptr)
     }
 
 /**
@@ -511,7 +480,7 @@ fun CommandBuffer.setSampleLocations(samples: VkSampleCountFlagBits, gridSize: E
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetSampleLocationsEnableEXT.html">vkCmdSetSampleLocationsEnableEXT Manual Page</a>
  */
 fun CommandBuffer.setSampleLocationsEnable(enable: Boolean) {
-    vkCmdSetSampleLocationsEnableEXT!!(handle, enable.toVkBool32())
+    device.dispatch.vkCmdSetSampleLocationsEnableEXT!!(handle, enable.toVkBool32())
 }
 
 /**
@@ -529,7 +498,7 @@ fun CommandBuffer.setSampleMask(samples: VkSampleCountFlagBits, sampleMasks: Lis
         "sampleMasks must contain one mask per group of 32 samples"
     }
     val masks = allocArray<UIntVar>(sampleMasks.size) { value = sampleMasks[it] }
-    vkCmdSetSampleMaskEXT!!(handle, samples, masks)
+    device.dispatch.vkCmdSetSampleMaskEXT!!(handle, samples, masks)
 }
 
 /**
@@ -540,7 +509,7 @@ fun CommandBuffer.setSampleMask(samples: VkSampleCountFlagBits, sampleMasks: Lis
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdSetTessellationDomainOriginEXT.html">vkCmdSetTessellationDomainOriginEXT Manual Page</a>
  */
 fun CommandBuffer.setTessellationDomainOrigin(origin: VkTessellationDomainOrigin) {
-    vkCmdSetTessellationDomainOriginEXT!!(handle, origin)
+    device.dispatch.vkCmdSetTessellationDomainOriginEXT!!(handle, origin)
 }
 
 /**
@@ -572,7 +541,7 @@ fun CommandBuffer.setVertexInput(bindings: List<VertexInputBinding>, attributes:
     } else {
         null
     }
-    vkCmdSetVertexInputEXT!!(
+    device.dispatch.vkCmdSetVertexInputEXT!!(
         handle,
         bindings.size.toUInt(),
         bindingDescriptions,

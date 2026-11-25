@@ -4,20 +4,13 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_DEVICE_MEMORY
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MAPPED_MEMORY_RANGE
 import io.technoirlab.volk.VK_WHOLE_SIZE
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkDeviceMemory
 import io.technoirlab.volk.VkDeviceMemoryOpaqueCaptureAddressInfo
 import io.technoirlab.volk.VkMappedMemoryRange
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkFlushMappedMemoryRanges
-import io.technoirlab.volk.vkFreeMemory
-import io.technoirlab.volk.vkGetDeviceMemoryCommitment
-import io.technoirlab.volk.vkGetDeviceMemoryOpaqueCaptureAddress
-import io.technoirlab.volk.vkInvalidateMappedMemoryRanges
-import io.technoirlab.volk.vkMapMemory
-import io.technoirlab.volk.vkUnmapMemory
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.CPointed
 import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.CPointerVar
@@ -35,7 +28,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDeviceMemory.html">VkDeviceMemory Manual Page</a>
  */
 class DeviceMemory internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkDeviceMemory,
     /**
      * Size of the allocation in bytes.
@@ -56,7 +49,7 @@ class DeviceMemory internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkFreeMemory.html">vkFreeMemory Manual Page</a>
      */
     override fun close() {
-        vkFreeMemory!!(device, handle, null)
+        device.dispatch.vkFreeMemory!!(device.handle, handle, null)
     }
 
     /**
@@ -81,7 +74,7 @@ class DeviceMemory internal constructor(
             this.offset = range.offset
             this.size = range.size
         }
-        vkFlushMappedMemoryRanges!!(device, 1u, memoryRange.ptr)
+        device.dispatch.vkFlushMappedMemoryRanges!!(device.handle, 1u, memoryRange.ptr)
             .checkResult("Failed to flush mapped memory")
     }
 
@@ -94,7 +87,7 @@ class DeviceMemory internal constructor(
      */
     fun getCommitment(): ULong = memScoped {
         val committedBytes = alloc<ULongVar>()
-        vkGetDeviceMemoryCommitment!!(device, handle, committedBytes.ptr)
+        device.dispatch.vkGetDeviceMemoryCommitment!!(device.handle, handle, committedBytes.ptr)
         return committedBytes.value
     }
 
@@ -113,7 +106,7 @@ class DeviceMemory internal constructor(
             sType = VK_STRUCTURE_TYPE_DEVICE_MEMORY_OPAQUE_CAPTURE_ADDRESS_INFO
             memory = handle
         }
-        return vkGetDeviceMemoryOpaqueCaptureAddress!!(device, addressInfo.ptr)
+        return device.dispatch.vkGetDeviceMemoryOpaqueCaptureAddress!!(device.handle, addressInfo.ptr)
     }
 
     /**
@@ -139,7 +132,7 @@ class DeviceMemory internal constructor(
             this.offset = range.offset
             this.size = range.size
         }
-        vkInvalidateMappedMemoryRanges!!(device, 1u, memoryRange.ptr)
+        device.dispatch.vkInvalidateMappedMemoryRanges!!(device.handle, 1u, memoryRange.ptr)
             .checkResult("Failed to invalidate mapped memory")
     }
 
@@ -158,7 +151,7 @@ class DeviceMemory internal constructor(
         validateRange(offset, mappedSize)
 
         val mappedPtr = alloc<CPointerVar<out CPointed>>()
-        vkMapMemory!!(device, handle, offset, size, 0u, mappedPtr.ptr)
+        device.dispatch.vkMapMemory!!(device.handle, handle, offset, size, 0u, mappedPtr.ptr)
             .checkResult("Failed to map memory")
         mappedRange = MappedRange(offset, mappedSize)
         return mappedPtr.value!!
@@ -174,7 +167,7 @@ class DeviceMemory internal constructor(
     fun unmap() {
         assert(mappedRange != null) { "Memory is not mapped" }
         try {
-            vkUnmapMemory!!(device, handle)
+            device.dispatch.vkUnmapMemory!!(device.handle, handle)
         } finally {
             mappedRange = null
         }

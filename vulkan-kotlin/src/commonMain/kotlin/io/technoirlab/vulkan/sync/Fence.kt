@@ -5,16 +5,12 @@ import io.technoirlab.volk.VK_OBJECT_TYPE_FENCE
 import io.technoirlab.volk.VK_SUCCESS
 import io.technoirlab.volk.VK_TIMEOUT
 import io.technoirlab.volk.VK_TRUE
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkFence
 import io.technoirlab.volk.VkFenceVar
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkDestroyFence
-import io.technoirlab.volk.vkGetFenceStatus
-import io.technoirlab.volk.vkResetFences
-import io.technoirlab.volk.vkWaitForFences
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.internal.inWholeNanosecondsULong
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.invoke
@@ -29,7 +25,7 @@ import kotlin.time.Duration
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkFence.html">VkFence Manual Page</a>
  */
 class Fence internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkFence,
 ) : VulkanObject,
     AutoCloseable {
@@ -44,7 +40,7 @@ class Fence internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkGetFenceStatus.html">vkGetFenceStatus Manual Page</a>
      */
     val isSignaled: Boolean
-        get() = when (val result = vkGetFenceStatus!!(device, handle)) {
+        get() = when (val result = device.dispatch.vkGetFenceStatus!!(device.handle, handle)) {
             VK_SUCCESS -> true
             VK_NOT_READY -> false
             else -> result.checkResult("Failed to get fence status")
@@ -59,7 +55,7 @@ class Fence internal constructor(
         val fenceVar = alloc<VkFenceVar> {
             value = handle
         }
-        vkResetFences!!(device, 1u, fenceVar.ptr)
+        device.dispatch.vkResetFences!!(device.handle, 1u, fenceVar.ptr)
             .checkResult("Failed to reset fence")
     }
 
@@ -73,7 +69,7 @@ class Fence internal constructor(
         val fenceVar = alloc<VkFenceVar> {
             value = handle
         }
-        when (val result = vkWaitForFences!!(device, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanosecondsULong)) {
+        when (val result = device.dispatch.vkWaitForFences!!(device.handle, 1u, fenceVar.ptr, VK_TRUE, timeout.inWholeNanosecondsULong)) {
             VK_TIMEOUT -> false
             else -> result.checkResult("Failed to wait for fence")
         }
@@ -85,6 +81,6 @@ class Fence internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyFence.html">vkDestroyFence Manual Page</a>
      */
     override fun close() {
-        vkDestroyFence!!(device, handle, null)
+        device.dispatch.vkDestroyFence!!(device.handle, handle, null)
     }
 }

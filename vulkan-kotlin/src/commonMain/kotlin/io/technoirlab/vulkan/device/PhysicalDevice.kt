@@ -51,22 +51,9 @@ import io.technoirlab.volk.VkQueueFamilyProperties
 import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkSurfaceCapabilitiesKHR
 import io.technoirlab.volk.VkSurfaceFormatKHR
-import io.technoirlab.volk.vkCreateDevice
-import io.technoirlab.volk.vkEnumerateDeviceExtensionProperties
-import io.technoirlab.volk.vkGetPhysicalDeviceFeatures2
-import io.technoirlab.volk.vkGetPhysicalDeviceFormatProperties2
-import io.technoirlab.volk.vkGetPhysicalDeviceImageFormatProperties2
-import io.technoirlab.volk.vkGetPhysicalDeviceMemoryProperties
-import io.technoirlab.volk.vkGetPhysicalDeviceMemoryProperties2
-import io.technoirlab.volk.vkGetPhysicalDeviceProperties
-import io.technoirlab.volk.vkGetPhysicalDeviceProperties2
-import io.technoirlab.volk.vkGetPhysicalDeviceQueueFamilyProperties
-import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceCapabilitiesKHR
-import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceFormatsKHR
-import io.technoirlab.volk.vkGetPhysicalDeviceSurfacePresentModesKHR
-import io.technoirlab.volk.vkGetPhysicalDeviceSurfaceSupportKHR
 import io.technoirlab.vulkan.ExtensionProperties
 import io.technoirlab.vulkan.FormatProperties
+import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.image.ImageFormatProperties
@@ -99,6 +86,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPhysicalDevice.html">VkPhysicalDevice Manual Page</a>
  */
 class PhysicalDevice internal constructor(
+    internal val instance: Instance,
     override val handle: VkPhysicalDevice,
 ) : VulkanObject {
     /**
@@ -173,9 +161,11 @@ class PhysicalDevice internal constructor(
             }
         }
         val deviceVar = alloc<VkDeviceVar>()
-        vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
+        instance.dispatch.vkCreateDevice!!(handle, deviceCreateInfo.ptr, null, deviceVar.ptr)
             .checkResult("Failed to create a device")
-        return Device(deviceVar.value!!, enabledExtensions.toSet())
+        val device = deviceVar.value!!
+        val dispatchTable = instance.dispatchLoader.loadDeviceTable(device, instance.dispatch)
+        return Device(instance, device, enabledExtensions.toSet(), dispatchTable)
     }
 
     /**
@@ -188,14 +178,14 @@ class PhysicalDevice internal constructor(
         var extensionProperties: CArrayPointer<VkExtensionProperties>
         var result: VkResult
         do {
-            vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
+            instance.dispatch.vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, null)
                 .checkResult("Failed to enumerate device extensions")
 
             val count = countVar.value.toInt()
             if (count == 0) return emptyList()
 
             extensionProperties = allocArray<VkExtensionProperties>(count)
-            result = vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
+            result = instance.dispatch.vkEnumerateDeviceExtensionProperties!!(handle, null, countVar.ptr, extensionProperties)
         } while (result == VK_INCOMPLETE)
         result.checkResult("Failed to enumerate device extensions")
 
@@ -232,7 +222,7 @@ class PhysicalDevice internal constructor(
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2
             pNext = features11.ptr
         }
-        vkGetPhysicalDeviceFeatures2!!(handle, features.ptr)
+        instance.dispatch.vkGetPhysicalDeviceFeatures2!!(handle, features.ptr)
         return Features(features, features11, features12, features13, features14)
     }
 
@@ -245,7 +235,7 @@ class PhysicalDevice internal constructor(
         val properties = alloc<VkFormatProperties2> {
             sType = VK_STRUCTURE_TYPE_FORMAT_PROPERTIES_2
         }
-        vkGetPhysicalDeviceFormatProperties2!!(handle, format, properties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceFormatProperties2!!(handle, format, properties.ptr)
         return FormatProperties(
             linearTilingFeatures = properties.formatProperties.linearTilingFeatures,
             optimalTilingFeatures = properties.formatProperties.optimalTilingFeatures,
@@ -266,7 +256,7 @@ class PhysicalDevice internal constructor(
         val properties = alloc<VkImageFormatProperties2> {
             sType = VK_STRUCTURE_TYPE_IMAGE_FORMAT_PROPERTIES_2
         }
-        vkGetPhysicalDeviceImageFormatProperties2!!(handle, imageFormatInfo.ptr, properties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceImageFormatProperties2!!(handle, imageFormatInfo.ptr, properties.ptr)
             .checkResult("Failed to get image format properties")
         return properties.imageFormatProperties.toImageFormatProperties()
     }
@@ -288,7 +278,7 @@ class PhysicalDevice internal constructor(
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MEMORY_PROPERTIES_2
             pNext = budgetProperties.ptr
         }
-        vkGetPhysicalDeviceMemoryProperties2!!(handle, memoryProperties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceMemoryProperties2!!(handle, memoryProperties.ptr)
         return List(memoryProperties.memoryProperties.memoryHeapCount.toInt()) { index ->
             MemoryHeapBudget(
                 budget = budgetProperties.heapBudget[index],
@@ -304,7 +294,7 @@ class PhysicalDevice internal constructor(
      */
     fun getMemoryProperties(): MemoryProperties = memScoped {
         val memoryProperties = alloc<VkPhysicalDeviceMemoryProperties>()
-        vkGetPhysicalDeviceMemoryProperties!!(handle, memoryProperties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceMemoryProperties!!(handle, memoryProperties.ptr)
         return memoryProperties.toMemoryProperties()
     }
 
@@ -316,7 +306,7 @@ class PhysicalDevice internal constructor(
     context(allocator: NativePlacement)
     fun getProperties(): VkPhysicalDeviceProperties {
         val properties = allocator.alloc<VkPhysicalDeviceProperties>()
-        vkGetPhysicalDeviceProperties!!(handle, properties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceProperties!!(handle, properties.ptr)
         return properties
     }
 
@@ -347,14 +337,14 @@ class PhysicalDevice internal constructor(
             sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROPERTIES_2
             pNext = properties11.ptr
         }
-        vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
         if (properties14.copySrcLayoutCount > 0u) {
             properties14.pCopySrcLayouts = allocator.allocArray<VkImageLayoutVar>(properties14.copySrcLayoutCount.toLong())
         }
         if (properties14.copyDstLayoutCount > 0u) {
             properties14.pCopyDstLayouts = allocator.allocArray<VkImageLayoutVar>(properties14.copyDstLayoutCount.toLong())
         }
-        vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
+        instance.dispatch.vkGetPhysicalDeviceProperties2!!(handle, properties.ptr)
         return Properties(properties, properties11, properties12, properties13, properties14)
     }
 
@@ -365,13 +355,13 @@ class PhysicalDevice internal constructor(
      */
     fun getQueueFamilyProperties(): List<QueueFamilyProperties> = memScoped {
         val countVar = alloc<UIntVar>()
-        vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
+        instance.dispatch.vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, null)
 
         val count = countVar.value.toInt()
         if (count == 0) return emptyList()
 
         val queueFamilyProperties = allocArray<VkQueueFamilyProperties>(count)
-        vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
+        instance.dispatch.vkGetPhysicalDeviceQueueFamilyProperties!!(handle, countVar.ptr, queueFamilyProperties)
 
         List(countVar.value.toInt()) { index ->
             queueFamilyProperties[index].toQueueFamilyProperties()
@@ -385,7 +375,7 @@ class PhysicalDevice internal constructor(
      */
     fun getSurfaceCapabilities(surface: Surface): SurfaceCapabilities = memScoped {
         val capabilities = alloc<VkSurfaceCapabilitiesKHR>()
-        vkGetPhysicalDeviceSurfaceCapabilitiesKHR!!(handle, surface.handle, capabilities.ptr)
+        instance.dispatch.vkGetPhysicalDeviceSurfaceCapabilitiesKHR!!(handle, surface.handle, capabilities.ptr)
             .checkResult("Failed to get surface capabilities")
         return capabilities.toSurfaceCapabilities()
     }
@@ -400,14 +390,14 @@ class PhysicalDevice internal constructor(
         var surfaceFormats: CArrayPointer<VkSurfaceFormatKHR>
         var result: VkResult
         do {
-            vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
+            instance.dispatch.vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, null)
                 .checkResult("Failed to get surface formats")
 
             val count = countVar.value.toInt()
             if (count == 0) return emptyList()
 
             surfaceFormats = allocArray<VkSurfaceFormatKHR>(count)
-            result = vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
+            result = instance.dispatch.vkGetPhysicalDeviceSurfaceFormatsKHR!!(handle, surface.handle, countVar.ptr, surfaceFormats)
         } while (result == VK_INCOMPLETE)
         result.checkResult("Failed to get surface formats")
 
@@ -426,14 +416,14 @@ class PhysicalDevice internal constructor(
         var presentModes: CArrayPointer<VkPresentModeKHRVar>
         var result: VkResult
         do {
-            vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
+            instance.dispatch.vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, null)
                 .checkResult("Failed to get surface present modes")
 
             val count = countVar.value.toInt()
             if (count == 0) return emptySet()
 
             presentModes = allocArray<VkPresentModeKHRVar>(count)
-            result = vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)
+            result = instance.dispatch.vkGetPhysicalDeviceSurfacePresentModesKHR!!(handle, surface.handle, countVar.ptr, presentModes)
         } while (result == VK_INCOMPLETE)
         result.checkResult("Failed to get surface present modes")
 
@@ -447,7 +437,7 @@ class PhysicalDevice internal constructor(
      */
     fun getSurfaceSupport(surface: Surface, queueFamilyIndex: UInt): Boolean = memScoped {
         val isSupported = alloc<VkBool32Var>()
-        vkGetPhysicalDeviceSurfaceSupportKHR!!(handle, queueFamilyIndex, surface.handle, isSupported.ptr)
+        instance.dispatch.vkGetPhysicalDeviceSurfaceSupportKHR!!(handle, queueFamilyIndex, surface.handle, isSupported.ptr)
             .checkResult("Failed to check surface support")
         return isSupported.value == VK_TRUE
     }

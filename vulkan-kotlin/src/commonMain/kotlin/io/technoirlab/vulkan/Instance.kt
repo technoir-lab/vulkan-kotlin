@@ -6,10 +6,10 @@ import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPhysicalDeviceVar
 import io.technoirlab.volk.VkResult
-import io.technoirlab.volk.vkDestroyInstance
-import io.technoirlab.volk.vkEnumeratePhysicalDevices
-import io.technoirlab.volk.volkLoadInstanceOnly
+import io.technoirlab.volk.VolkInstanceTable
 import io.technoirlab.vulkan.device.PhysicalDevice
+import io.technoirlab.vulkan.internal.DispatchLoader
+import io.technoirlab.vulkan.internal.DispatchTable
 import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.UIntVar
 import kotlinx.cinterop.alloc
@@ -28,11 +28,17 @@ import kotlinx.cinterop.value
 class Instance internal constructor(
     override val handle: VkInstance,
     val enabledExtensions: Set<String>,
+    private val dispatchTable: DispatchTable<VolkInstanceTable>,
+    internal val dispatchLoader: DispatchLoader,
 ) : VulkanObject,
     AutoCloseable {
-    init {
-        volkLoadInstanceOnly(handle)
-    }
+    /**
+     * The instance-level commands resolved for this instance, including those of its physical devices.
+     *
+     * Use it to call commands that this library does not wrap. The table belongs to the instance: closing the
+     * instance clears it, and it must not be used once the instance object is unreachable.
+     */
+    val dispatch = dispatchTable.commands
 
     /**
      * @inheritDoc
@@ -49,18 +55,18 @@ class Instance internal constructor(
         var physicalDevices: CArrayPointer<VkPhysicalDeviceVar>
         var result: VkResult
         do {
-            vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
+            dispatch.vkEnumeratePhysicalDevices!!(handle, countVar.ptr, null)
                 .checkResult("Failed to enumerate physical devices")
 
             val count = countVar.value.toInt()
             if (count == 0) return emptyList()
 
             physicalDevices = allocArray<VkPhysicalDeviceVar>(count)
-            result = vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
+            result = dispatch.vkEnumeratePhysicalDevices!!(handle, countVar.ptr, physicalDevices)
         } while (result == VK_INCOMPLETE)
         result.checkResult("Failed to enumerate physical devices")
 
-        List(countVar.value.toInt()) { index -> PhysicalDevice(physicalDevices[index]!!) }
+        List(countVar.value.toInt()) { index -> PhysicalDevice(this@Instance, physicalDevices[index]!!) }
     }
 
     /**
@@ -69,6 +75,7 @@ class Instance internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyInstance.html">vkDestroyInstance Manual Page</a>
      */
     override fun close() {
-        vkDestroyInstance!!(handle, null)
+        dispatch.vkDestroyInstance!!(handle, null)
+        dispatchLoader.unload(dispatchTable)
     }
 }

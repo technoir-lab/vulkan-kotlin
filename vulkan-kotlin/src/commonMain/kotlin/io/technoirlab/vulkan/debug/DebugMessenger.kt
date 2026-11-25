@@ -8,10 +8,8 @@ import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagBitsEXT
 import io.technoirlab.volk.VkDebugUtilsMessageTypeFlagsEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerCallbackDataEXT
 import io.technoirlab.volk.VkDebugUtilsMessengerEXT
-import io.technoirlab.volk.VkInstance
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkDestroyDebugUtilsMessengerEXT
-import io.technoirlab.volk.vkSubmitDebugUtilsMessageEXT
+import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.CPointer
@@ -30,7 +28,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDebugUtilsMessengerEXT.html">VkDebugUtilsMessengerEXT Manual Page</a>
  */
 class DebugMessenger internal constructor(
-    private val instance: VkInstance,
+    private val instance: Instance,
     override val handle: VkDebugUtilsMessengerEXT,
     private val callbackRef: StableRef<Callback>,
 ) : VulkanObject,
@@ -55,7 +53,7 @@ class DebugMessenger internal constructor(
             sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CALLBACK_DATA_EXT
             callbackData()
         }
-        vkSubmitDebugUtilsMessageEXT!!(instance, messageSeverity, messageTypes, callbackDataStruct.ptr)
+        instance.dispatch.vkSubmitDebugUtilsMessageEXT!!(instance.handle, messageSeverity, messageTypes, callbackDataStruct.ptr)
     }
 
     /**
@@ -64,7 +62,7 @@ class DebugMessenger internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyDebugUtilsMessengerEXT.html">vkDestroyDebugUtilsMessengerEXT Manual Page</a>
      */
     override fun close() {
-        vkDestroyDebugUtilsMessengerEXT!!(instance, handle, null)
+        instance.dispatch.vkDestroyDebugUtilsMessengerEXT!!(instance.handle, handle, null)
         callbackRef.dispose()
     }
 

@@ -1,11 +1,10 @@
 package io.technoirlab.vulkan.image
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_SAMPLER
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkSampler
-import io.technoirlab.volk.vkDestroySampler
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.invoke
 
 /**
@@ -14,7 +13,7 @@ import kotlinx.cinterop.invoke
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkSampler.html">VkSampler Manual Page</a>
  */
 class Sampler internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkSampler,
 ) : VulkanObject,
     AutoCloseable {
@@ -29,6 +28,6 @@ class Sampler internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroySampler.html">vkDestroySampler Manual Page</a>
      */
     override fun close() {
-        vkDestroySampler!!(device, handle, null)
+        device.dispatch.vkDestroySampler!!(device.handle, handle, null)
     }
 }

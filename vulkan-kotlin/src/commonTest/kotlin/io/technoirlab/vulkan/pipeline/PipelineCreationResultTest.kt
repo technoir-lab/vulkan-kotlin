@@ -3,6 +3,7 @@ package io.technoirlab.vulkan.pipeline
 import io.technoirlab.volk.VK_PIPELINE_CREATION_FEEDBACK_APPLICATION_PIPELINE_CACHE_HIT_BIT
 import io.technoirlab.volk.VK_PIPELINE_CREATION_FEEDBACK_VALID_BIT
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_PIPELINE_CREATION_FEEDBACK_CREATE_INFO
+import io.technoirlab.vulkan.device.fakeDevice
 import kotlinx.cinterop.ByteVar
 import kotlinx.cinterop.NativePlacement
 import kotlinx.cinterop.alloc
@@ -131,8 +132,5 @@ class PipelineCreationResultTest {
     /**
      * A pipeline wrapper over placeholder handles. It reaches no Vulkan implementation and must not be closed.
      */
-    private fun NativePlacement.fakePipeline(): Pipeline {
-        val storage = alloc<ByteVar>().ptr
-        return Pipeline(storage.reinterpret(), storage.reinterpret())
-    }
+    private fun NativePlacement.fakePipeline(): Pipeline = Pipeline(fakeDevice(), alloc<ByteVar>().ptr.reinterpret())
 }

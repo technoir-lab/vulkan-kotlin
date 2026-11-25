@@ -9,15 +9,10 @@ import io.technoirlab.volk.VkCommandBufferVar
 import io.technoirlab.volk.VkCommandPool
 import io.technoirlab.volk.VkCommandPoolResetFlags
 import io.technoirlab.volk.VkCommandPoolTrimFlags
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkAllocateCommandBuffers
-import io.technoirlab.volk.vkDestroyCommandPool
-import io.technoirlab.volk.vkFreeCommandBuffers
-import io.technoirlab.volk.vkResetCommandPool
-import io.technoirlab.volk.vkTrimCommandPool
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.allocArray
 import kotlinx.cinterop.allocArrayOf
@@ -33,7 +28,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkCommandPool.html">VkCommandPool Manual Page</a>
  */
 class CommandPool internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkCommandPool,
 ) : VulkanObject,
     AutoCloseable {
@@ -59,9 +54,9 @@ class CommandPool internal constructor(
             this.level = level
         }
         val commandBufferArray = allocArray<VkCommandBufferVar>(count)
-        vkAllocateCommandBuffers!!(device, allocateInfo.ptr, commandBufferArray)
+        device.dispatch.vkAllocateCommandBuffers!!(device.handle, allocateInfo.ptr, commandBufferArray)
             .checkResult("Failed to allocate command buffers")
-        return (0 until count).map { CommandBuffer(commandBufferArray[it]!!) }
+        return (0 until count).map { CommandBuffer(device, commandBufferArray[it]!!) }
     }
 
     /**
@@ -72,7 +67,7 @@ class CommandPool internal constructor(
     fun freeCommandBuffers(commandBuffers: List<CommandBuffer>): Unit = memScoped {
         assert(commandBuffers.isNotEmpty()) { "commandBuffers must not be empty" }
         val commandBufferHandles = allocArrayOf(commandBuffers.map { it.handle })
-        vkFreeCommandBuffers!!(device, handle, commandBuffers.size.toUInt(), commandBufferHandles)
+        device.dispatch.vkFreeCommandBuffers!!(device.handle, handle, commandBuffers.size.toUInt(), commandBufferHandles)
     }
 
     /**
@@ -81,7 +76,7 @@ class CommandPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkResetCommandPool.html">vkResetCommandPool Manual Page</a>
      */
     fun reset(flags: VkCommandPoolResetFlags = 0u) {
-        vkResetCommandPool!!(device, handle, flags)
+        device.dispatch.vkResetCommandPool!!(device.handle, handle, flags)
             .checkResult("Failed to reset command pool")
     }
 
@@ -91,7 +86,7 @@ class CommandPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkTrimCommandPool.html">vkTrimCommandPool Manual Page</a>
      */
     fun trim(flags: VkCommandPoolTrimFlags = 0u) {
-        vkTrimCommandPool!!(device, handle, flags)
+        device.dispatch.vkTrimCommandPool!!(device.handle, handle, flags)
     }
 
     /**
@@ -100,6 +95,6 @@ class CommandPool internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyCommandPool.html">vkDestroyCommandPool Manual Page</a>
      */
     override fun close() {
-        vkDestroyCommandPool!!(device, handle, null)
+        device.dispatch.vkDestroyCommandPool!!(device.handle, handle, null)
     }
 }
