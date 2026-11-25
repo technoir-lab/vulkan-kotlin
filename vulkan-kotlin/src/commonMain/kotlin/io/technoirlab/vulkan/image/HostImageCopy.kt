@@ -15,10 +15,6 @@ import io.technoirlab.volk.VkImageCopy2
 import io.technoirlab.volk.VkImageLayout
 import io.technoirlab.volk.VkImageToMemoryCopy
 import io.technoirlab.volk.VkMemoryToImageCopy
-import io.technoirlab.volk.vkCopyImageToImage
-import io.technoirlab.volk.vkCopyImageToMemory
-import io.technoirlab.volk.vkCopyMemoryToImage
-import io.technoirlab.volk.vkTransitionImageLayout
 import io.technoirlab.vulkan.Extent3D
 import io.technoirlab.vulkan.Offset3D
 import io.technoirlab.vulkan.checkResult
@@ -75,7 +71,7 @@ fun Image.copyFromMemory(destinationLayout: VkImageLayout, regions: List<HostIma
             this.regionCount = regionCount
             pRegions = regions
         }
-        vkCopyMemoryToImage!!(device, copyInfo.ptr)
+        device.dispatch.vkCopyMemoryToImage!!(device.handle, copyInfo.ptr)
             .checkResult("Failed to copy host memory to image")
     }
 
@@ -107,7 +103,7 @@ fun Image.copyToImage(
         this.regionCount = regionCount
         pRegions = regions
     }
-    vkCopyImageToImage!!(device, copyInfo.ptr)
+    device.dispatch.vkCopyImageToImage!!(device.handle, copyInfo.ptr)
         .checkResult("Failed to copy image to image")
 }
 
@@ -132,7 +128,7 @@ fun Image.copyToMemory(sourceLayout: VkImageLayout, regions: List<HostImageCopyR
             this.regionCount = regionCount
             pRegions = regions
         }
-        vkCopyImageToMemory!!(device, copyInfo.ptr)
+        device.dispatch.vkCopyImageToMemory!!(device.handle, copyInfo.ptr)
             .checkResult("Failed to copy image to host memory")
     }
 
@@ -155,7 +151,7 @@ fun Image.transitionLayout(oldLayout: VkImageLayout, newLayout: VkImageLayout, s
         this.newLayout = newLayout
         this.subresourceRange.from(subresourceRange)
     }
-    vkTransitionImageLayout!!(device, 1u, transition.ptr)
+    device.dispatch.vkTransitionImageLayout!!(device.handle, 1u, transition.ptr)
         .checkResult("Failed to transition image layout")
 }
 

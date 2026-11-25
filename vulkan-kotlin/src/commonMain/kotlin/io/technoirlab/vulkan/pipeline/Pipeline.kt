@@ -2,13 +2,12 @@ package io.technoirlab.vulkan.pipeline
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_PIPELINE
 import io.technoirlab.volk.VK_PIPELINE_COMPILE_REQUIRED
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
 import io.technoirlab.volk.VkPipeline
 import io.technoirlab.volk.VkResult
-import io.technoirlab.volk.vkDestroyPipeline
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.invoke
 
 /**
@@ -17,7 +16,7 @@ import kotlinx.cinterop.invoke
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkPipeline.html">VkPipeline Manual Page</a>
  */
 class Pipeline internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkPipeline,
 ) : VulkanObject,
     AutoCloseable {
@@ -29,7 +28,7 @@ class Pipeline internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyPipeline.html">vkDestroyPipeline Manual Page</a>
      */
     override fun close() {
-        vkDestroyPipeline!!(device, handle, null)
+        device.dispatch.vkDestroyPipeline!!(device.handle, handle, null)
     }
 }
 
@@ -44,7 +43,7 @@ class Pipeline internal constructor(
  * @param message Describes the failure when this result is neither `VK_SUCCESS` nor `VK_PIPELINE_COMPILE_REQUIRED`.
  * @return The created pipeline, or `null` for `VK_PIPELINE_COMPILE_REQUIRED`.
  */
-internal fun VkResult.toPipelineOrNull(device: VkDevice, pipeline: VkPipeline?, message: String): Pipeline? {
+internal fun VkResult.toPipelineOrNull(device: Device, pipeline: VkPipeline?, message: String): Pipeline? {
     if (this == VK_PIPELINE_COMPILE_REQUIRED) return null
     checkResult(message)
     return Pipeline(device, pipeline!!)

@@ -127,37 +127,10 @@ import io.technoirlab.volk.VkSubresourceLayout2
 import io.technoirlab.volk.VkSwapchainCreateInfoKHR
 import io.technoirlab.volk.VkSwapchainKHRVar
 import io.technoirlab.volk.VkWriteDescriptorSet
-import io.technoirlab.volk.vkAllocateMemory
-import io.technoirlab.volk.vkCreateBuffer
-import io.technoirlab.volk.vkCreateBufferView
-import io.technoirlab.volk.vkCreateCommandPool
-import io.technoirlab.volk.vkCreateComputePipelines
-import io.technoirlab.volk.vkCreateDescriptorPool
-import io.technoirlab.volk.vkCreateDescriptorSetLayout
-import io.technoirlab.volk.vkCreateEvent
-import io.technoirlab.volk.vkCreateFence
-import io.technoirlab.volk.vkCreateGraphicsPipelines
-import io.technoirlab.volk.vkCreateImage
-import io.technoirlab.volk.vkCreateImageView
-import io.technoirlab.volk.vkCreatePipelineCache
-import io.technoirlab.volk.vkCreatePipelineLayout
-import io.technoirlab.volk.vkCreateQueryPool
-import io.technoirlab.volk.vkCreateSampler
-import io.technoirlab.volk.vkCreateSemaphore
-import io.technoirlab.volk.vkCreateShaderModule
-import io.technoirlab.volk.vkCreateSwapchainKHR
-import io.technoirlab.volk.vkDestroyDevice
-import io.technoirlab.volk.vkDeviceWaitIdle
-import io.technoirlab.volk.vkGetDescriptorSetLayoutSupport
-import io.technoirlab.volk.vkGetDeviceBufferMemoryRequirements
-import io.technoirlab.volk.vkGetDeviceImageMemoryRequirements
-import io.technoirlab.volk.vkGetDeviceImageSubresourceLayout
-import io.technoirlab.volk.vkGetDeviceQueue
-import io.technoirlab.volk.vkGetImageSubresourceLayout2
-import io.technoirlab.volk.vkGetRenderingAreaGranularity
-import io.technoirlab.volk.vkUpdateDescriptorSets
-import io.technoirlab.volk.volkLoadDevice
+import io.technoirlab.volk.VolkDeviceTable
+import io.technoirlab.volk.VolkInstanceTable
 import io.technoirlab.vulkan.Extent2D
+import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.buffer.Buffer
 import io.technoirlab.vulkan.buffer.BufferView
@@ -170,6 +143,7 @@ import io.technoirlab.vulkan.image.ImageSubresourceLayout
 import io.technoirlab.vulkan.image.ImageView
 import io.technoirlab.vulkan.image.Sampler
 import io.technoirlab.vulkan.image.toImageSubresourceLayout
+import io.technoirlab.vulkan.internal.DispatchTable
 import io.technoirlab.vulkan.internal.containsStructure
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.memory.MemoryRegion
@@ -207,13 +181,33 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkDevice.html">VkDevice Manual Page</a>
  */
 class Device internal constructor(
+    instance: Instance,
     override val handle: VkDevice,
     val enabledExtensions: Set<String>,
+    private val dispatchTable: DispatchTable<VolkDeviceTable>,
 ) : VulkanObject,
     AutoCloseable {
-    init {
-        volkLoadDevice(handle)
-    }
+    private val dispatchLoader = instance.dispatchLoader
+
+    // Dropped on close, so that instance extension commands on a closed device fail like its own commands.
+    private var instance: Instance? = instance
+
+    /**
+     * The table holding the commands of instance extensions that take this device or one of its queues and command
+     * buffers, such as those of `VK_EXT_debug_utils`. volk resolves them with the instance, not with the device.
+     */
+    internal val instanceDispatch: VolkInstanceTable
+        get() = instance!!.dispatch
+
+    /**
+     * The device-level commands resolved for this device, including those of its queues and command buffers.
+     *
+     * Use it to call commands that this library does not wrap. Commands of instance extensions, such as
+     * `VK_EXT_debug_utils`, are in [Instance.dispatch] even when they take a device, queue or command buffer. The
+     * table belongs to the device: closing the device clears it, and it must not be used once the device object is
+     * unreachable.
+     */
+    val dispatch = dispatchTable.commands
 
     /**
      * @inheritDoc
@@ -236,9 +230,9 @@ class Device internal constructor(
             allocateInfo()
         }
         val memory = alloc<VkDeviceMemoryVar>()
-        vkAllocateMemory!!(handle, memoryAllocateInfo.ptr, null, memory.ptr)
+        dispatch.vkAllocateMemory!!(handle, memoryAllocateInfo.ptr, null, memory.ptr)
             .checkResult("Failed to allocate memory")
-        return DeviceMemory(handle, memory.value!!, memoryAllocateInfo.allocationSize)
+        return DeviceMemory(this@Device, memory.value!!, memoryAllocateInfo.allocationSize)
     }
 
     /**
@@ -257,9 +251,9 @@ class Device internal constructor(
             createInfo()
         }
         val bufferVar = alloc<VkBufferVar>()
-        vkCreateBuffer!!(handle, bufferCreateInfo.ptr, null, bufferVar.ptr)
+        dispatch.vkCreateBuffer!!(handle, bufferCreateInfo.ptr, null, bufferVar.ptr)
             .checkResult("Failed to create a buffer")
-        return Buffer(handle, bufferVar.value!!, bufferCreateInfo.size)
+        return Buffer(this@Device, bufferVar.value!!, bufferCreateInfo.size)
     }
 
     /**
@@ -273,9 +267,9 @@ class Device internal constructor(
             createInfo()
         }
         val bufferViewVar = alloc<VkBufferViewVar>()
-        vkCreateBufferView!!(handle, bufferViewCreateInfo.ptr, null, bufferViewVar.ptr)
+        dispatch.vkCreateBufferView!!(handle, bufferViewCreateInfo.ptr, null, bufferViewVar.ptr)
             .checkResult("Failed to create buffer view")
-        return BufferView(handle, bufferViewVar.value!!)
+        return BufferView(this@Device, bufferViewVar.value!!)
     }
 
     /**
@@ -293,9 +287,9 @@ class Device internal constructor(
             this.flags = flags
         }
         val commandPoolVar = alloc<VkCommandPoolVar>()
-        vkCreateCommandPool!!(handle, commandPoolCreateInfo.ptr, null, commandPoolVar.ptr)
+        dispatch.vkCreateCommandPool!!(handle, commandPoolCreateInfo.ptr, null, commandPoolVar.ptr)
             .checkResult("Failed to create a command pool")
-        return CommandPool(handle, commandPoolVar.value!!)
+        return CommandPool(this@Device, commandPoolVar.value!!)
     }
 
     /**
@@ -364,9 +358,9 @@ class Device internal constructor(
             createInfo()
         }
         val poolVar = alloc<VkDescriptorPoolVar>()
-        vkCreateDescriptorPool!!(handle, descriptorPoolCreateInfo.ptr, null, poolVar.ptr)
+        dispatch.vkCreateDescriptorPool!!(handle, descriptorPoolCreateInfo.ptr, null, poolVar.ptr)
             .checkResult("Failed to create descriptor pool")
-        return DescriptorPool(handle, poolVar.value!!, descriptorPoolCreateInfo.flags)
+        return DescriptorPool(this@Device, poolVar.value!!, descriptorPoolCreateInfo.flags)
     }
 
     /**
@@ -387,9 +381,9 @@ class Device internal constructor(
             createInfo()
         }
         val layoutVar = alloc<VkDescriptorSetLayoutVar>()
-        vkCreateDescriptorSetLayout!!(handle, descriptorSetLayoutCreateInfo.ptr, null, layoutVar.ptr)
+        dispatch.vkCreateDescriptorSetLayout!!(handle, descriptorSetLayoutCreateInfo.ptr, null, layoutVar.ptr)
             .checkResult("Failed to create descriptor set layout")
-        return DescriptorSetLayout(handle, layoutVar.value!!)
+        return DescriptorSetLayout(this@Device, layoutVar.value!!)
     }
 
     /**
@@ -403,9 +397,9 @@ class Device internal constructor(
             this.flags = flags
         }
         val eventVar = alloc<VkEventVar>()
-        vkCreateEvent!!(handle, eventInfo.ptr, null, eventVar.ptr)
+        dispatch.vkCreateEvent!!(handle, eventInfo.ptr, null, eventVar.ptr)
             .checkResult("Failed to create event")
-        return Event(handle, eventVar.value!!)
+        return Event(this@Device, eventVar.value!!)
     }
 
     /**
@@ -426,9 +420,9 @@ class Device internal constructor(
             createInfo()
         }
         val imageVar = alloc<VkImageVar>()
-        vkCreateImage!!(handle, imageCreateInfo.ptr, null, imageVar.ptr)
+        dispatch.vkCreateImage!!(handle, imageCreateInfo.ptr, null, imageVar.ptr)
             .checkResult("Failed to create an image")
-        return Image(handle, imageVar.value!!)
+        return Image(this@Device, imageVar.value!!)
     }
 
     /**
@@ -444,9 +438,9 @@ class Device internal constructor(
             createInfo()
         }
         val imageViewVar = alloc<VkImageViewVar>()
-        vkCreateImageView!!(handle, imageViewCreateInfo.ptr, null, imageViewVar.ptr)
+        dispatch.vkCreateImageView!!(handle, imageViewCreateInfo.ptr, null, imageViewVar.ptr)
             .checkResult("Failed to create an image view")
-        return ImageView(handle, imageViewVar.value!!)
+        return ImageView(this@Device, imageViewVar.value!!)
     }
 
     /**
@@ -460,9 +454,9 @@ class Device internal constructor(
             createInfo()
         }
         val fenceVar = alloc<VkFenceVar>()
-        vkCreateFence!!(handle, fenceInfo.ptr, null, fenceVar.ptr)
+        dispatch.vkCreateFence!!(handle, fenceInfo.ptr, null, fenceVar.ptr)
             .checkResult("Failed to create a fence")
-        return Fence(handle, fenceVar.value!!)
+        return Fence(this@Device, fenceVar.value!!)
     }
 
     /**
@@ -605,9 +599,9 @@ class Device internal constructor(
             createInfo()
         }
         val pipelineCacheVar = alloc<VkPipelineCacheVar>()
-        vkCreatePipelineCache!!(handle, pipelineCacheCreateInfo.ptr, null, pipelineCacheVar.ptr)
+        dispatch.vkCreatePipelineCache!!(handle, pipelineCacheCreateInfo.ptr, null, pipelineCacheVar.ptr)
             .checkResult("Failed to create pipeline cache")
-        return PipelineCache(handle, pipelineCacheVar.value!!)
+        return PipelineCache(this@Device, pipelineCacheVar.value!!)
     }
 
     /**
@@ -621,9 +615,9 @@ class Device internal constructor(
             createInfo()
         }
         val pipelineLayoutVar = alloc<VkPipelineLayoutVar>()
-        vkCreatePipelineLayout!!(handle, pipelineLayoutCreateInfo.ptr, null, pipelineLayoutVar.ptr)
+        dispatch.vkCreatePipelineLayout!!(handle, pipelineLayoutCreateInfo.ptr, null, pipelineLayoutVar.ptr)
             .checkResult("Failed to create pipeline layout")
-        return PipelineLayout(handle, pipelineLayoutVar.value!!)
+        return PipelineLayout(this@Device, pipelineLayoutVar.value!!)
     }
 
     /**
@@ -640,7 +634,7 @@ class Device internal constructor(
             createInfo()
         }
         val queryPoolVar = alloc<VkQueryPoolVar>()
-        vkCreateQueryPool!!(handle, queryPoolCreateInfo.ptr, null, queryPoolVar.ptr)
+        dispatch.vkCreateQueryPool!!(handle, queryPoolCreateInfo.ptr, null, queryPoolVar.ptr)
             .checkResult("Failed to create query pool")
         val valuesPerQuery = when (queryPoolCreateInfo.queryType) {
             VK_QUERY_TYPE_PIPELINE_STATISTICS -> queryPoolCreateInfo.pipelineStatistics.countOneBits()
@@ -648,7 +642,7 @@ class Device internal constructor(
             VK_QUERY_TYPE_RESULT_STATUS_ONLY_KHR -> 0
             else -> 1
         }
-        return QueryPool(handle, queryPoolVar.value!!, valuesPerQuery)
+        return QueryPool(this@Device, queryPoolVar.value!!, valuesPerQuery)
     }
 
     /**
@@ -666,9 +660,9 @@ class Device internal constructor(
             createInfo()
         }
         val samplerVar = alloc<VkSamplerVar>()
-        vkCreateSampler!!(handle, samplerCreateInfo.ptr, null, samplerVar.ptr)
+        dispatch.vkCreateSampler!!(handle, samplerCreateInfo.ptr, null, samplerVar.ptr)
             .checkResult("Failed to create sampler")
-        return Sampler(handle, samplerVar.value!!)
+        return Sampler(this@Device, samplerVar.value!!)
     }
 
     /**
@@ -696,9 +690,9 @@ class Device internal constructor(
             pNext = typeInfo.ptr
         }
         val semaphore = alloc<VkSemaphoreVar>()
-        vkCreateSemaphore!!(handle, semaphoreInfo.ptr, null, semaphore.ptr)
+        dispatch.vkCreateSemaphore!!(handle, semaphoreInfo.ptr, null, semaphore.ptr)
             .checkResult("Failed to create a semaphore")
-        return Semaphore(device = handle, handle = semaphore.value!!, semaphoreType)
+        return Semaphore(this@Device, semaphore.value!!, semaphoreType)
     }
 
     /**
@@ -722,9 +716,9 @@ class Device internal constructor(
             createInfo.pNext = extensions
             createInfo.flags = flags
             val shaderModule = alloc<VkShaderModuleVar>()
-            vkCreateShaderModule!!(handle, createInfo.ptr, null, shaderModule.ptr)
+            dispatch.vkCreateShaderModule!!(handle, createInfo.ptr, null, shaderModule.ptr)
                 .checkResult("Failed to create shader module")
-            return ShaderModule(handle, shaderModule.value!!)
+            return ShaderModule(this@Device, shaderModule.value!!)
         }
 
     /**
@@ -742,9 +736,9 @@ class Device internal constructor(
             createInfo()
         }
         val swapChainVar = alloc<VkSwapchainKHRVar>()
-        vkCreateSwapchainKHR!!(handle, swapChainCreateInfo.ptr, null, swapChainVar.ptr)
+        dispatch.vkCreateSwapchainKHR!!(handle, swapChainCreateInfo.ptr, null, swapChainVar.ptr)
             .checkResult("Failed to create a swap chain")
-        return Swapchain(handle, swapChainVar.value!!)
+        return Swapchain(this@Device, swapChainVar.value!!)
     }
 
     /**
@@ -756,7 +750,7 @@ class Device internal constructor(
         val layoutSupport = alloc<VkDescriptorSetLayoutSupport> {
             sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT
         }
-        vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
+        dispatch.vkGetDescriptorSetLayoutSupport!!(handle, createInfo.ptr, layoutSupport.ptr)
         return layoutSupport.supported == VK_TRUE
     }
 
@@ -782,7 +776,7 @@ class Device internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
             pNext = dedicatedRequirements.ptr
         }
-        vkGetDeviceBufferMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
+        dispatch.vkGetDeviceBufferMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
         return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 
@@ -820,7 +814,7 @@ class Device internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
             pNext = dedicatedRequirements.ptr
         }
-        vkGetDeviceImageMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
+        dispatch.vkGetDeviceImageMemoryRequirements!!(handle, requirementsInfo.ptr, memoryRequirements.ptr)
         return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 
@@ -857,7 +851,7 @@ class Device internal constructor(
             sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
             pNext = hostMemcpySize.ptr
         }
-        vkGetDeviceImageSubresourceLayout!!(handle, deviceImageSubresourceInfo.ptr, subresourceLayout.ptr)
+        dispatch.vkGetDeviceImageSubresourceLayout!!(handle, deviceImageSubresourceInfo.ptr, subresourceLayout.ptr)
         return subresourceLayout.subresourceLayout.toImageSubresourceLayout(hostMemcpySize.size)
     }
 
@@ -886,7 +880,7 @@ class Device internal constructor(
             sType = VK_STRUCTURE_TYPE_SUBRESOURCE_LAYOUT_2
             pNext = hostMemcpySize.ptr
         }
-        vkGetImageSubresourceLayout2!!(handle, image.handle, subresource.ptr, subresourceLayout.ptr)
+        dispatch.vkGetImageSubresourceLayout2!!(handle, image.handle, subresource.ptr, subresourceLayout.ptr)
         return subresourceLayout.subresourceLayout.toImageSubresourceLayout(hostMemcpySize.size)
     }
 
@@ -897,8 +891,8 @@ class Device internal constructor(
      */
     fun getQueue(queueFamilyIndex: UInt, queueIndex: UInt = 0u): Queue = memScoped {
         val queueVar = alloc<VkQueueVar>()
-        vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
-        return Queue(queueVar.value!!, queueFamilyIndex)
+        dispatch.vkGetDeviceQueue!!(handle, queueFamilyIndex, queueIndex, queueVar.ptr)
+        return Queue(this@Device, queueVar.value!!, queueFamilyIndex)
     }
 
     /**
@@ -929,7 +923,7 @@ class Device internal constructor(
             this.stencilAttachmentFormat = stencilAttachmentFormat
         }
         val granularity = alloc<VkExtent2D>()
-        vkGetRenderingAreaGranularity!!(handle, renderingAreaInfo.ptr, granularity.ptr)
+        dispatch.vkGetRenderingAreaGranularity!!(handle, renderingAreaInfo.ptr, granularity.ptr)
         return granularity.toExtent2D()
     }
 
@@ -957,7 +951,7 @@ class Device internal constructor(
             null
         }
 
-        vkUpdateDescriptorSets!!(
+        dispatch.vkUpdateDescriptorSets!!(
             handle,
             writes.size.toUInt(),
             writesArray,
@@ -972,7 +966,7 @@ class Device internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDeviceWaitIdle.html">vkDeviceWaitIdle Manual Page</a>
      */
     fun waitIdle() {
-        vkDeviceWaitIdle!!(handle).checkResult("Failed to wait for device idle")
+        dispatch.vkDeviceWaitIdle!!(handle).checkResult("Failed to wait for device idle")
     }
 
     /**
@@ -981,7 +975,9 @@ class Device internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyDevice.html">vkDestroyDevice Manual Page</a>
      */
     override fun close() {
-        vkDestroyDevice!!(handle, null)
+        dispatch.vkDestroyDevice!!(handle, null)
+        dispatchLoader.unload(dispatchTable)
+        instance = null
     }
 
     /**
@@ -1012,7 +1008,7 @@ class Device internal constructor(
             }
         }
         val pipelineVar = alloc<VkPipelineVar>()
-        val result = vkCreateComputePipelines!!(
+        val result = dispatch.vkCreateComputePipelines!!(
             handle,
             cache?.handle,
             1u,
@@ -1020,7 +1016,7 @@ class Device internal constructor(
             null,
             pipelineVar.ptr,
         )
-        return result.toPipelineOrNull(handle, pipelineVar.value, "Failed to create compute pipeline")
+        return result.toPipelineOrNull(this@Device, pipelineVar.value, "Failed to create compute pipeline")
     }
 
     /**
@@ -1124,7 +1120,7 @@ class Device internal constructor(
             basePipelineIndex = -1
         }
         val pipelineVar = alloc<VkPipelineVar>()
-        val result = vkCreateGraphicsPipelines!!(
+        val result = dispatch.vkCreateGraphicsPipelines!!(
             handle,
             cache?.handle,
             1u,
@@ -1132,6 +1128,6 @@ class Device internal constructor(
             null,
             pipelineVar.ptr,
         )
-        return result.toPipelineOrNull(handle, pipelineVar.value, "Failed to create graphics pipeline")
+        return result.toPipelineOrNull(this@Device, pipelineVar.value, "Failed to create graphics pipeline")
     }
 }

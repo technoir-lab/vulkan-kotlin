@@ -1,7 +1,11 @@
 package io.technoirlab.vulkan.internal
 
+import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkInstance
+import io.technoirlab.volk.VolkDeviceTable
 import io.technoirlab.volk.VolkInstanceTable
+import io.technoirlab.volk.vkGetDeviceProcAddr
+import io.technoirlab.volk.volkLoadDeviceTable
 import io.technoirlab.volk.volkLoadInstanceTable
 import kotlinx.cinterop.alloc
 import kotlinx.cinterop.nativeHeap
@@ -13,11 +17,27 @@ import kotlin.concurrent.AtomicInt
  * Loads the dispatch tables of instances and devices and keeps track of the ones in use.
  *
  * volk resolves device-level commands through its process-wide `vkGetDeviceProcAddr` pointer, and loading an
- * instance table overwrites that pointer. Table loads are therefore serialized.
+ * instance table overwrites that pointer. Table loads are therefore serialized, and a device table load first points
+ * the pointer at the instance that owns the device.
  */
 internal class DispatchLoader {
     private val isBusy = AtomicInt(0)
     private val loadedTables = mutableSetOf<DispatchTable<*>>()
+
+    /**
+     * Resolves the device-level commands of [device] into a new table.
+     *
+     * @param instanceTable The table of the instance that owns [device].
+     */
+    fun loadDeviceTable(device: VkDevice, instanceTable: VolkInstanceTable): DispatchTable<VolkDeviceTable> {
+        val table = DispatchTable(nativeHeap.alloc<VolkDeviceTable>(), sizeOf<VolkDeviceTable>())
+        exclusively {
+            vkGetDeviceProcAddr = instanceTable.vkGetDeviceProcAddr
+            volkLoadDeviceTable(table.commands.ptr, device)
+            loadedTables += table
+        }
+        return table
+    }
 
     /**
      * Resolves the instance-level commands of [instance] into a new table.

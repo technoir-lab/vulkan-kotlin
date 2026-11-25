@@ -1,8 +1,5 @@
 package io.technoirlab.vulkan.command
 
-import io.technoirlab.volk.vkCmdDrawMeshTasksEXT
-import io.technoirlab.volk.vkCmdDrawMeshTasksIndirectCountEXT
-import io.technoirlab.volk.vkCmdDrawMeshTasksIndirectEXT
 import io.technoirlab.vulkan.buffer.Buffer
 import kotlinx.cinterop.invoke
 import kotlin.assert
@@ -17,7 +14,7 @@ private const val DRAW_MESH_TASKS_INDIRECT_COMMAND_SIZE = 12u
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkCmdDrawMeshTasksEXT.html">vkCmdDrawMeshTasksEXT Manual Page</a>
  */
 fun CommandBuffer.drawMeshTasks(groupCountX: UInt, groupCountY: UInt = 1u, groupCountZ: UInt = 1u) {
-    vkCmdDrawMeshTasksEXT!!(handle, groupCountX, groupCountY, groupCountZ)
+    device.dispatch.vkCmdDrawMeshTasksEXT!!(handle, groupCountX, groupCountY, groupCountZ)
 }
 
 /**
@@ -38,7 +35,7 @@ fun CommandBuffer.drawMeshTasksIndirect(
     assert(drawCount <= 1u || stride % 4u == 0u && stride >= DRAW_MESH_TASKS_INDIRECT_COMMAND_SIZE) {
         "stride must be a multiple of 4 and must be greater than or equal to sizeof(VkDrawMeshTasksIndirectCommandEXT)"
     }
-    vkCmdDrawMeshTasksIndirectEXT!!(handle, buffer.handle, offset, drawCount, stride)
+    device.dispatch.vkCmdDrawMeshTasksIndirectEXT!!(handle, buffer.handle, offset, drawCount, stride)
 }
 
 /**
@@ -64,7 +61,7 @@ fun CommandBuffer.drawMeshTasksIndirectCount(
     assert(countBuffer.size >= DRAW_COUNT_SIZE && countBufferOffset <= countBuffer.size - DRAW_COUNT_SIZE) {
         "countBufferOffset + sizeof(uint32_t) must be less than or equal to ${countBuffer.size}"
     }
-    vkCmdDrawMeshTasksIndirectCountEXT!!(
+    device.dispatch.vkCmdDrawMeshTasksIndirectCountEXT!!(
         handle,
         buffer.handle,
         offset,

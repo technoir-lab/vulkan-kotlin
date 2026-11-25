@@ -14,12 +14,17 @@ import kotlinx.cinterop.memScoped
 import kotlinx.cinterop.ptr
 import kotlinx.cinterop.value
 
-internal fun createTestDevice(physicalDevice: PhysicalDevice, features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {}): Device? {
+internal fun createTestDevice(
+    physicalDevice: PhysicalDevice,
+    extensions: List<String> = emptyList(),
+    features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {},
+): Device? {
     val deviceExtensions = physicalDevice.enumerateDeviceExtensionProperties()
     val enabledExtensions = buildList {
         if (deviceExtensions.any { it.name == VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME }) {
             add(VK_KHR_PORTABILITY_SUBSET_EXTENSION_NAME)
         }
+        addAll(extensions)
     }
     val queueFamilyIndex = physicalDevice.getQueueFamilyProperties()
         .indexOfFirst { it.queueCount > 0u }
@@ -57,14 +62,23 @@ internal fun Vulkan.createTestInstance(extensions: List<String> = emptyList()): 
 }
 
 /**
+ * Returns the first Vulkan 1.4 physical device, or `null` if there is none.
+ */
+internal fun Instance.findTestPhysicalDevice(): PhysicalDevice? =
+    enumeratePhysicalDevices().firstOrNull { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
+
+/**
  * Runs [block] with a device created on the first Vulkan 1.4 physical device, or skips it if there is none.
  */
-internal fun Vulkan.withTestDevice(features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {}, block: (PhysicalDevice, Device) -> Unit) {
-    createTestInstance().use { instance ->
-        val physicalDevice = instance.enumeratePhysicalDevices()
-            .firstOrNull { memScoped { it.getProperties().apiVersion >= VK_API_VERSION_1_4 } }
-            ?: return
-        val device = createTestDevice(physicalDevice, features13) ?: return
+internal fun Vulkan.withTestDevice(
+    instanceExtensions: List<String> = emptyList(),
+    extensions: List<String> = emptyList(),
+    features13: VkPhysicalDeviceVulkan13Features.() -> Unit = {},
+    block: (PhysicalDevice, Device) -> Unit,
+) {
+    createTestInstance(instanceExtensions).use { instance ->
+        val physicalDevice = instance.findTestPhysicalDevice() ?: return
+        val device = createTestDevice(physicalDevice, extensions, features13) ?: return
         device.use { block(physicalDevice, it) }
     }
 }

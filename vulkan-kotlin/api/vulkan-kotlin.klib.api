@@ -376,6 +376,8 @@ final class io.technoirlab.vulkan.descriptor/DescriptorSetLayout : io.technoirla
 }
 
 final class io.technoirlab.vulkan.device/Device : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan.device/Device|null[0]
+    final val dispatch // io.technoirlab.vulkan.device/Device.dispatch|{}dispatch[0]
+        final fun <get-dispatch>(): io.technoirlab.volk/VolkDeviceTable // io.technoirlab.vulkan.device/Device.dispatch.<get-dispatch>|<get-dispatch>(){}[0]
     final val enabledExtensions // io.technoirlab.vulkan.device/Device.enabledExtensions|{}enabledExtensions[0]
         final fun <get-enabledExtensions>(): kotlin.collections/Set<kotlin/String> // io.technoirlab.vulkan.device/Device.enabledExtensions.<get-enabledExtensions>|<get-enabledExtensions>(){}[0]
     final val handle // io.technoirlab.vulkan.device/Device.handle|{}handle[0]

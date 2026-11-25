@@ -6,17 +6,14 @@ import io.technoirlab.volk.VK_STRUCTURE_TYPE_IMAGE_MEMORY_REQUIREMENTS_INFO_2
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_DEDICATED_REQUIREMENTS
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
 import io.technoirlab.volk.VkBindImageMemoryInfo
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkImage
 import io.technoirlab.volk.VkImageMemoryRequirementsInfo2
 import io.technoirlab.volk.VkMemoryDedicatedRequirements
 import io.technoirlab.volk.VkMemoryRequirements2
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkBindImageMemory2
-import io.technoirlab.volk.vkDestroyImage
-import io.technoirlab.volk.vkGetImageMemoryRequirements2
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
+import io.technoirlab.vulkan.device.Device
 import io.technoirlab.vulkan.memory.DeviceMemory
 import io.technoirlab.vulkan.memory.MemoryRequirements
 import io.technoirlab.vulkan.memory.toMemoryRequirements
@@ -32,7 +29,7 @@ import kotlin.assert
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkImage.html">VkImage Manual Page</a>
  */
 class Image internal constructor(
-    internal val device: VkDevice,
+    internal val device: Device,
     override val handle: VkImage,
     val destroyable: Boolean = true,
 ) : VulkanObject,
@@ -56,7 +53,7 @@ class Image internal constructor(
             memoryOffset = offset
             this.memory = memory.handle
         }
-        vkBindImageMemory2!!(device, 1u, bindImageMemoryInfo.ptr)
+        device.dispatch.vkBindImageMemory2!!(device.handle, 1u, bindImageMemoryInfo.ptr)
             .checkResult("Failed to bind image memory")
     }
 
@@ -67,7 +64,7 @@ class Image internal constructor(
      */
     override fun close() {
         if (destroyable) {
-            vkDestroyImage!!(device, handle, null)
+            device.dispatch.vkDestroyImage!!(device.handle, handle, null)
         }
     }
 
@@ -88,7 +85,7 @@ class Image internal constructor(
             sType = VK_STRUCTURE_TYPE_MEMORY_REQUIREMENTS_2
             pNext = dedicatedRequirements.ptr
         }
-        vkGetImageMemoryRequirements2!!(device, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
+        device.dispatch.vkGetImageMemoryRequirements2!!(device.handle, memoryRequirementsInfo.ptr, memoryRequirements.ptr)
         return memoryRequirements.memoryRequirements.toMemoryRequirements(dedicatedRequirements)
     }
 }

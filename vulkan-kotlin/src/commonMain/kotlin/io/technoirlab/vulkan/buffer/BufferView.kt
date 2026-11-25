@@ -2,10 +2,9 @@ package io.technoirlab.vulkan.buffer
 
 import io.technoirlab.volk.VK_OBJECT_TYPE_BUFFER_VIEW
 import io.technoirlab.volk.VkBufferView
-import io.technoirlab.volk.VkDevice
 import io.technoirlab.volk.VkObjectType
-import io.technoirlab.volk.vkDestroyBufferView
 import io.technoirlab.vulkan.VulkanObject
+import io.technoirlab.vulkan.device.Device
 import kotlinx.cinterop.invoke
 
 /**
@@ -14,7 +13,7 @@ import kotlinx.cinterop.invoke
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkBufferView.html">VkBufferView Manual Page</a>
  */
 class BufferView internal constructor(
-    private val device: VkDevice,
+    private val device: Device,
     override val handle: VkBufferView,
 ) : VulkanObject,
     AutoCloseable {
@@ -29,6 +28,6 @@ class BufferView internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkDestroyBufferView.html">vkDestroyBufferView Manual Page</a>
      */
     override fun close() {
-        vkDestroyBufferView!!(device, handle, null)
+        device.dispatch.vkDestroyBufferView!!(device.handle, handle, null)
     }
 }

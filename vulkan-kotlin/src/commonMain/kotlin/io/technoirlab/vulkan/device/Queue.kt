@@ -11,9 +11,6 @@ import io.technoirlab.volk.VkQueue
 import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.VkSubmitInfo2
 import io.technoirlab.volk.VkSwapchainKHRVar
-import io.technoirlab.volk.vkQueuePresentKHR
-import io.technoirlab.volk.vkQueueSubmit2
-import io.technoirlab.volk.vkQueueWaitIdle
 import io.technoirlab.vulkan.VulkanObject
 import io.technoirlab.vulkan.checkResult
 import io.technoirlab.vulkan.presentation.Swapchain
@@ -34,6 +31,7 @@ import kotlinx.cinterop.value
  * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/VkQueue.html">VkQueue Manual Page</a>
  */
 class Queue internal constructor(
+    internal val device: Device,
     override val handle: VkQueue,
     val familyIndex: UInt,
 ) : VulkanObject {
@@ -76,7 +74,7 @@ class Queue internal constructor(
                 pWaitSemaphores = allocArrayOf(waitSemaphores.map { it.handle })
             }
         }
-        val result = vkQueuePresentKHR!!(handle, presentInfo.ptr)
+        val result = device.dispatch.vkQueuePresentKHR!!(handle, presentInfo.ptr)
         if (result != VK_ERROR_OUT_OF_DATE_KHR && result != VK_SUBOPTIMAL_KHR) {
             result.checkResult("Queue present failed")
         }
@@ -93,7 +91,7 @@ class Queue internal constructor(
             sType = VK_STRUCTURE_TYPE_SUBMIT_INFO_2
             submitInfo()
         }
-        vkQueueSubmit2!!(handle, 1u, submitInfo.ptr, fence?.handle)
+        device.dispatch.vkQueueSubmit2!!(handle, 1u, submitInfo.ptr, fence?.handle)
             .checkResult("Queue submit failed")
     }
 
@@ -103,6 +101,6 @@ class Queue internal constructor(
      * @see <a href="https://registry.khronos.org/vulkan/specs/latest/man/html/vkQueueWaitIdle.html">vkQueueWaitIdle Manual Page</a>
      */
     fun waitIdle() {
-        vkQueueWaitIdle!!(handle).checkResult("Failed to wait for queue idle")
+        device.dispatch.vkQueueWaitIdle!!(handle).checkResult("Failed to wait for queue idle")
     }
 }
