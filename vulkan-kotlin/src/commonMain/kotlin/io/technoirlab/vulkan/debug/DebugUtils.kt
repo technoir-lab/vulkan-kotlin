@@ -15,7 +15,6 @@ import io.technoirlab.volk.VkDebugUtilsObjectTagInfoEXT
 import io.technoirlab.volk.vkCmdBeginDebugUtilsLabelEXT
 import io.technoirlab.volk.vkCmdEndDebugUtilsLabelEXT
 import io.technoirlab.volk.vkCmdInsertDebugUtilsLabelEXT
-import io.technoirlab.volk.vkCreateDebugUtilsMessengerEXT
 import io.technoirlab.volk.vkQueueBeginDebugUtilsLabelEXT
 import io.technoirlab.volk.vkQueueEndDebugUtilsLabelEXT
 import io.technoirlab.volk.vkQueueInsertDebugUtilsLabelEXT
@@ -64,9 +63,9 @@ fun Instance.createDebugMessenger(
             this.messageType = messageType
         }
         val messengerVar = alloc<VkDebugUtilsMessengerEXTVar>()
-        vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
+        dispatch.vkCreateDebugUtilsMessengerEXT!!(handle, debugUtilsMessengerCreateInfo.ptr, null, messengerVar.ptr)
             .checkResult("Failed to create a debug messenger")
-        return DebugMessenger(handle, messengerVar.value!!, callbackRef)
+        return DebugMessenger(this@createDebugMessenger, messengerVar.value!!, callbackRef)
     } catch (e: Throwable) {
         callbackRef.dispose()
         throw e

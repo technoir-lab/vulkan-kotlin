@@ -7,7 +7,6 @@ import io.technoirlab.volk.VK_KHR_WAYLAND_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_WAYLAND_SURFACE_CREATE_INFO_KHR
 import io.technoirlab.volk.VkSurfaceKHRVar
 import io.technoirlab.volk.VkWaylandSurfaceCreateInfoKHR
-import io.technoirlab.volk.vkCreateWaylandSurfaceKHR
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.checkResult
 import kotlinx.cinterop.CPointer
@@ -33,7 +32,7 @@ fun Instance.createWaylandSurface(display: CPointer<wl_display>, surface: CPoint
         this.surface = surface
     }
     val surfaceVar = alloc<VkSurfaceKHRVar>()
-    vkCreateWaylandSurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
+    dispatch.vkCreateWaylandSurfaceKHR!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create a Wayland surface")
-    return Surface(handle, surfaceVar.value!!)
+    return Surface(this@createWaylandSurface, surfaceVar.value!!)
 }

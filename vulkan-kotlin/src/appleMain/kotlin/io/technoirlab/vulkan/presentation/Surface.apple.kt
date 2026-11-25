@@ -5,7 +5,6 @@ import io.technoirlab.volk.VK_KHR_SURFACE_EXTENSION_NAME
 import io.technoirlab.volk.VK_STRUCTURE_TYPE_METAL_SURFACE_CREATE_INFO_EXT
 import io.technoirlab.volk.VkMetalSurfaceCreateInfoEXT
 import io.technoirlab.volk.VkSurfaceKHRVar
-import io.technoirlab.volk.vkCreateMetalSurfaceEXT
 import io.technoirlab.vulkan.Instance
 import io.technoirlab.vulkan.checkResult
 import kotlinx.cinterop.alloc
@@ -32,7 +31,7 @@ fun Instance.createMetalSurface(layer: CAMetalLayer): Surface = memScoped {
         pLayer = interpretCPointer(layer.objcPtr())
     }
     val surfaceVar = alloc<VkSurfaceKHRVar>()
-    vkCreateMetalSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
+    dispatch.vkCreateMetalSurfaceEXT!!(handle, surfaceCreateInfo.ptr, null, surfaceVar.ptr)
         .checkResult("Failed to create a Metal surface")
-    return Surface(handle, surfaceVar.value!!)
+    return Surface(this@createMetalSurface, surfaceVar.value!!)
 }

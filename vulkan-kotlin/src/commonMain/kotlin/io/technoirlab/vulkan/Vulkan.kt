@@ -14,10 +14,12 @@ import io.technoirlab.volk.VkResult
 import io.technoirlab.volk.vkCreateInstance
 import io.technoirlab.volk.vkEnumerateInstanceExtensionProperties
 import io.technoirlab.volk.vkEnumerateInstanceLayerProperties
+import io.technoirlab.volk.vkGetInstanceProcAddr
 import io.technoirlab.volk.volkFinalize
 import io.technoirlab.volk.volkGetInstanceVersion
 import io.technoirlab.volk.volkInitialize
 import io.technoirlab.volk.volkKotlinInitialize
+import io.technoirlab.vulkan.internal.DispatchLoader
 import kotlinx.cinterop.AutofreeScope
 import kotlinx.cinterop.CArrayPointer
 import kotlinx.cinterop.COpaquePointer
@@ -32,12 +34,21 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.toCStringArray
 import kotlinx.cinterop.toKString
 import kotlinx.cinterop.value
+import kotlin.assert
 
 /**
  * Vulkan instance loader.
+ *
+ * The Vulkan loader is loaded once per process, so at most one `Vulkan` object may be live at a time. Close it
+ * before constructing another one, and only after closing every [Instance] created from it.
  */
 class Vulkan : AutoCloseable {
+    private val dispatchLoader = DispatchLoader()
+
     init {
+        assert(vkGetInstanceProcAddr == null) {
+            "Only one Vulkan object may be live at a time, and an earlier one has not been closed"
+        }
         volkKotlinInitialize()
         volkInitialize().checkResult("Failed to initialize Volk")
     }
@@ -50,8 +61,12 @@ class Vulkan : AutoCloseable {
 
     /**
      * Unload Vulkan.
+     *
+     * Instances and devices that are still open become unusable: every later call through them, or through an
+     * object created from them, fails.
      */
     override fun close() {
+        dispatchLoader.unloadAll()
         volkFinalize()
     }
 
@@ -96,7 +111,8 @@ class Vulkan : AutoCloseable {
         val instanceVar = alloc<VkInstanceVar>()
         vkCreateInstance!!(instanceCreateInfo.ptr, null, instanceVar.ptr)
             .checkResult("Failed to create a Vulkan instance")
-        return Instance(instanceVar.value!!, enabledExtensions.toSet())
+        val instance = instanceVar.value!!
+        return Instance(instance, enabledExtensions.toSet(), dispatchLoader.loadInstanceTable(instance), dispatchLoader)
     }
 
     /**

@@ -1329,6 +1329,8 @@ final class io.technoirlab.vulkan/FormatProperties { // io.technoirlab.vulkan/Fo
 }
 
 final class io.technoirlab.vulkan/Instance : io.technoirlab.vulkan/VulkanObject, kotlin/AutoCloseable { // io.technoirlab.vulkan/Instance|null[0]
+    final val dispatch // io.technoirlab.vulkan/Instance.dispatch|{}dispatch[0]
+        final fun <get-dispatch>(): io.technoirlab.volk/VolkInstanceTable // io.technoirlab.vulkan/Instance.dispatch.<get-dispatch>|<get-dispatch>(){}[0]
     final val enabledExtensions // io.technoirlab.vulkan/Instance.enabledExtensions|{}enabledExtensions[0]
         final fun <get-enabledExtensions>(): kotlin.collections/Set<kotlin/String> // io.technoirlab.vulkan/Instance.enabledExtensions.<get-enabledExtensions>|<get-enabledExtensions>(){}[0]
     final val handle // io.technoirlab.vulkan/Instance.handle|{}handle[0]

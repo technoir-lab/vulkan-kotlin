@@ -27,6 +27,7 @@ import kotlinx.cinterop.value
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -41,6 +42,23 @@ class VulkanTest {
     @Test
     fun `create instance`() {
         vulkan.createTestInstance().use { }
+    }
+
+    @Test
+    fun `second live Vulkan object is rejected`() {
+        assertFailsWith<AssertionError> {
+            Vulkan()
+        }
+    }
+
+    @Test
+    fun `instance of a closed Vulkan rejects further calls`() {
+        val instance = vulkan.createTestInstance()
+        vulkan.close()
+
+        assertFailsWith<NullPointerException> {
+            instance.enumeratePhysicalDevices()
+        }
     }
 
     @Test

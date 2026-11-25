@@ -45,16 +45,15 @@ internal fun createTestDevice(physicalDevice: PhysicalDevice, features13: VkPhys
     }
 }
 
-internal fun Vulkan.createTestInstance(): Instance {
+internal fun Vulkan.createTestInstance(extensions: List<String> = emptyList()): Instance {
     val hasPortabilityExtension = enumerateInstanceExtensionProperties().any {
         it.name == VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME
     }
-    val extensions = if (hasPortabilityExtension) {
-        listOf(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
-    } else {
-        emptyList()
+    val enabledExtensions = buildList {
+        if (hasPortabilityExtension) add(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME)
+        addAll(extensions)
     }
-    return createInstance(ApplicationInfo(), enabledExtensions = extensions)
+    return createInstance(ApplicationInfo(), enabledExtensions = enabledExtensions)
 }
 
 /**
